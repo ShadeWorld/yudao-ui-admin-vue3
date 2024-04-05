@@ -10,6 +10,17 @@
       <el-form-item label="品牌名称" prop="name">
         <el-input v-model="formData.name" placeholder="请输入品牌名称" />
       </el-form-item>
+      <el-form-item label="商品分类" prop="categoryIds">
+        <el-cascader
+          v-model="formData.categoryIds"
+          :options="categoryList"
+          :props="treeProps"
+          class="w-1/1"
+          clearable
+          filterable
+          placeholder="请选择商品分类"
+        />
+      </el-form-item>
       <el-form-item label="品牌图片" prop="picUrl">
         <UploadImg v-model="formData.picUrl" :limit="1" :is-show-tip="false" />
       </el-form-item>
@@ -41,6 +52,8 @@
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { CommonStatusEnum } from '@/utils/constants'
 import * as ProductBrandApi from '@/api/mall/product/brand'
+import { defaultProps, handleTree, treeToString } from '@/utils/tree'
+import * as ProductCategoryApi from '@/api/mall/product/category'
 
 defineOptions({ name: 'ProductBrandForm' })
 
@@ -54,12 +67,14 @@ const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref({
   id: undefined,
   name: '',
+  categoryIds: [],
   picUrl: '',
   status: CommonStatusEnum.ENABLE,
   description: ''
 })
 const formRules = reactive({
   name: [{ required: true, message: '品牌名称不能为空', trigger: 'blur' }],
+  categoryIds: [{ required: true, message: '商品分类不能为空', trigger: 'blur' }],
   picUrl: [{ required: true, message: '品牌图片不能为空', trigger: 'blur' }],
   sort: [{ required: true, message: '品牌排序不能为空', trigger: 'blur' }]
 })
@@ -120,4 +135,27 @@ const resetForm = () => {
   }
   formRef.value?.resetFields()
 }
+
+/** 获取分类的节点的完整结构 */
+const categoryList = ref() // 分类树
+const formatCategoryName = (categoryId: number) => {
+  return treeToString(categoryList.value, categoryId)
+}
+
+/** 多选下拉 */
+const treeProps = {
+  multiple: true,
+  children: 'children',
+  label: 'name',
+  value: 'id',
+  isLeaf: 'leaf',
+  emitPath: false // 用于 cascader 组件：在选中节点改变时，是否返回由该节点所在的各级菜单的值所组成的数组，若设置 false，则只返回该节点的值
+}
+
+onMounted(async () => {
+  // 获得分类树
+  const data = await ProductCategoryApi.getCategoryList({})
+  categoryList.value = handleTree(data, 'id', 'parentId')
+})
+
 </script>

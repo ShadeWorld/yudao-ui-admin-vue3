@@ -13,6 +13,10 @@ export interface BrandVO {
    */
   name: string
   /**
+   * 商品分类
+   */
+  categoryIds: number[]
+  /**
    * 品牌图片
    */
   picUrl: string
