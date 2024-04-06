@@ -6,9 +6,26 @@
       :model="formData"
       :rules="formRules"
       label-width="80px"
-    >
+    >    
+      <el-form-item label="商品分类" prop="categoryId">
+        <el-cascader
+          v-model="formData.categoryId"
+          :options="categoryList"
+          :props="defaultProps"
+          class="w-80"
+          clearable
+          filterable
+          placeholder="请选择商品分类"
+        />
+      </el-form-item>
       <el-form-item label="名称" prop="name">
         <el-input v-model="formData.name" placeholder="请输入名称" />
+      </el-form-item>
+      <el-form-item label="类型" prop="type">
+        <el-radio-group v-model="formData.type">
+          <el-radio :label="1">属性</el-radio>
+          <el-radio :label="2">规格</el-radio>
+        </el-radio-group>
       </el-form-item>
       <el-form-item label="备注" prop="remark">
         <el-input v-model="formData.remark" placeholder="请输入内容" type="textarea" />
@@ -21,7 +38,10 @@
   </Dialog>
 </template>
 <script lang="ts" setup>
+import * as ProductCategoryApi from '@/api/mall/product/category';
+import { CategoryVO } from '@/api/mall/product/category';
 import * as PropertyApi from '@/api/mall/product/property'
+import { defaultProps, handleTree } from '@/utils/tree';
 
 defineOptions({ name: 'ProductPropertyForm' })
 
@@ -34,15 +54,26 @@ const formLoading = ref(false) // 表单的加载中：1）修改时的数据加
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref({
   id: undefined,
-  name: ''
+  name: '',
+  categoryId: undefined,
+  type: 1,
+  remark: undefined
 })
 const formRules = reactive({
-  name: [{ required: true, message: '名称不能为空', trigger: 'blur' }]
+  categoryId: [{ required: true, message: '分类不能为空', trigger: 'blur' }],
+  name: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
+  type: [{ required: true, message: '类型不能为空', trigger: 'blur' }]
 })
 const formRef = ref() // 表单 Ref
 
+const categoryList = ref<CategoryVO[]>([]) // 商品分类
+
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {
+  // 获得分类树
+  const data = await ProductCategoryApi.getCategoryList({})
+  categoryList.value = handleTree(data, 'id')
+
   dialogVisible.value = true
   dialogTitle.value = t('action.' + type)
   formType.value = type
@@ -89,7 +120,10 @@ const submitForm = async () => {
 const resetForm = () => {
   formData.value = {
     id: undefined,
-    name: ''
+    name: '',
+    categoryId: undefined,
+    type: 1,
+    remark: undefined
   }
   formRef.value?.resetFields()
 }

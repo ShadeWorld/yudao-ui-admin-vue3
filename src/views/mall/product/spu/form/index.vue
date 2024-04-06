@@ -56,6 +56,7 @@
 import { cloneDeep } from 'lodash-es'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import * as ProductSpuApi from '@/api/mall/product/spu'
+import * as ProductPropertyApi from '@/api/mall/product/property'
 import InfoForm from './InfoForm.vue'
 import DescriptionForm from './DescriptionForm.vue'
 import OtherForm from './OtherForm.vue'
@@ -111,6 +112,8 @@ const formData = ref<ProductSpuApi.Spu>({
   giveIntegral: 0, // 赠送积分
   virtualSalesCount: 0 // 虚拟销量
 })
+// 属性规格数据
+const propertyList = ref([])
 
 /** 获得详情 */
 const getDetail = async () => {
@@ -195,6 +198,15 @@ const submitForm = async () => {
 const close = () => {
   delView(unref(currentRoute))
   push({ name: 'ProductSpu' })
+}
+
+/** 获取属性规格集合 */
+const getPropertiesByCategory = (categoryId: number) => {
+  ProductPropertyApi.getPropertiesByCategory(categoryId).then((data) => {
+    propertyList.value = data
+  }).catch((error) => {
+    console.log(error)
+  })
 }
 
 /** 初始化 */

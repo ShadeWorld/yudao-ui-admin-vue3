@@ -104,10 +104,6 @@ const rules = reactive({
 /** 修改商品分类 */
 async function changeCategory(value: CascaderValue) {
   brandList.value = await ProductBrandApi.getSimpleBrandList(value as number)
-  // 镜片
-  if (value === 1) {
-    
-  }
 }
 
 /** 将传进来的值赋值给 formData */

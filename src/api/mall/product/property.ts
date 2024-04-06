@@ -7,6 +7,10 @@ export interface PropertyVO {
   id?: number
   /** 名称 */
   name: string
+  /** 分类编号 */
+  categoryId: number
+  /** 类型 1-属性 2-规格 */
+  type: number
   /** 备注 */
   remark?: string
 }
@@ -63,6 +67,11 @@ export const getProperty = (id: number): Promise<PropertyVO> => {
 // 获得属性项分页
 export const getPropertyPage = (params: PageParam) => {
   return request.get({ url: '/product/property/page', params })
+}
+
+// 获得分类下的所有属性和规格
+export const getPropertiesByCategory = (categoryId: number) => {
+  return request.get({ url: `/product/property/getPropertiesByCategory?categoryId=${categoryId}` })
 }
 
 // ------------------------ 属性值 -------------------
