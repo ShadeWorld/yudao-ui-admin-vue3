@@ -18,6 +18,7 @@
         v-model="formData.categoryId"
         :options="categoryList"
         :props="defaultProps"
+        @change="changeCategory"
         class="w-80"
         clearable
         filterable
@@ -25,7 +26,7 @@
       />
     </el-form-item>
     <el-form-item label="商品品牌" prop="brandId">
-      <el-select v-model="formData.brandId" class="w-80" placeholder="请选择商品品牌">
+      <el-select v-model="formData.brandId" class="w-80!" placeholder="请选择商品品牌">
         <el-option
           v-for="item in brandList"
           :key="item.id"
@@ -67,6 +68,7 @@ import * as ProductCategoryApi from '@/api/mall/product/category'
 import { CategoryVO } from '@/api/mall/product/category'
 import * as ProductBrandApi from '@/api/mall/product/brand'
 import { BrandVO } from '@/api/mall/product/brand'
+import { CascaderValue } from 'element-plus'
 
 defineOptions({ name: 'ProductSpuInfoForm' })
 const props = defineProps({
@@ -98,6 +100,15 @@ const rules = reactive({
   sliderPicUrls: [required],
   brandId: [required]
 })
+
+/** 修改商品分类 */
+async function changeCategory(value: CascaderValue) {
+  brandList.value = await ProductBrandApi.getSimpleBrandList(value as number)
+  // 镜片
+  if (value === 1) {
+    
+  }
+}
 
 /** 将传进来的值赋值给 formData */
 watch(

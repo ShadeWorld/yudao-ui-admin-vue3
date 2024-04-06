@@ -60,6 +60,10 @@ export const getBrandParam = (params: PageParam) => {
 }
 
 // 获得商品品牌精简信息列表
-export const getSimpleBrandList = () => {
-  return request.get({ url: '/product/brand/list-all-simple' })
+export const getSimpleBrandList = (categoryId?: number) => {
+  if (categoryId) {
+    return request.get({ url: '/product/brand/list-all-simple?categoryId=' + categoryId })
+  } else {
+    return request.get({ url: '/product/brand/list-all-simple' })
+  }
 }
