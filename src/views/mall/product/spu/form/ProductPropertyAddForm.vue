@@ -20,6 +20,7 @@
 </template>
 <script lang="ts" setup>
 import * as PropertyApi from '@/api/mall/product/property'
+import { propTypes } from '@/utils/propTypes'
 
 defineOptions({ name: 'ProductPropertyForm' })
 
@@ -40,7 +41,8 @@ const props = defineProps({
   propertyList: {
     type: Array,
     default: () => {}
-  }
+  },
+  categoryId: propTypes.number
 })
 
 watch(
@@ -72,6 +74,8 @@ const submitForm = async () => {
   formLoading.value = true
   try {
     const data = formData.value as PropertyApi.PropertyVO
+    data.categoryId = props.categoryId
+    data.type = 2
     const propertyId = await PropertyApi.createProperty(data)
     // 添加到属性列表
     attributeList.value.push({

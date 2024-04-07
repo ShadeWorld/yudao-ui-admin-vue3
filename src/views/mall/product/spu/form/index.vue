@@ -9,14 +9,14 @@
           :propFormData="formData"
         />
       </el-tab-pane>
-      <el-tab-pane label="价格库存" name="sku">
+      <!-- <el-tab-pane label="价格库存" name="sku">
         <SkuForm
           ref="skuRef"
           v-model:activeName="activeName"
           :is-detail="isDetail"
           :propFormData="formData"
         />
-      </el-tab-pane>
+      </el-tab-pane> -->
       <el-tab-pane label="物流设置" name="delivery">
         <DeliveryForm
           ref="deliveryRef"
@@ -56,13 +56,18 @@
 import { cloneDeep } from 'lodash-es'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import * as ProductSpuApi from '@/api/mall/product/spu'
-import * as ProductPropertyApi from '@/api/mall/product/property'
 import InfoForm from './InfoForm.vue'
 import DescriptionForm from './DescriptionForm.vue'
 import OtherForm from './OtherForm.vue'
 import SkuForm from './SkuForm.vue'
 import DeliveryForm from './DeliveryForm.vue'
 import { convertToInteger, floatToFixed2, formatToFraction } from '@/utils'
+import { onMounted } from 'vue'
+
+/** 初始化 */
+onMounted(async () => {
+  await getDetail()
+})
 
 defineOptions({ name: 'ProductSpuForm' })
 
@@ -112,8 +117,6 @@ const formData = ref<ProductSpuApi.Spu>({
   giveIntegral: 0, // 赠送积分
   virtualSalesCount: 0 // 虚拟销量
 })
-// 属性规格数据
-const propertyList = ref([])
 
 /** 获得详情 */
 const getDetail = async () => {
@@ -199,18 +202,4 @@ const close = () => {
   delView(unref(currentRoute))
   push({ name: 'ProductSpu' })
 }
-
-/** 获取属性规格集合 */
-const getPropertiesByCategory = (categoryId: number) => {
-  ProductPropertyApi.getPropertiesByCategory(categoryId).then((data) => {
-    propertyList.value = data
-  }).catch((error) => {
-    console.log(error)
-  })
-}
-
-/** 初始化 */
-onMounted(async () => {
-  await getDetail()
-})
 </script>

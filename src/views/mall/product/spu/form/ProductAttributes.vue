@@ -44,7 +44,6 @@
 <script lang="ts" setup>
 import { ElInput } from 'element-plus'
 import * as PropertyApi from '@/api/mall/product/property'
-import { PropertyVO } from '@/api/mall/product/property'
 import { PropertyAndValues } from '@/views/mall/product/spu/components'
 import { propTypes } from '@/utils/propTypes'
 

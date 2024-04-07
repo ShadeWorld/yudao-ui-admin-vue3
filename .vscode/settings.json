@@ -2,7 +2,7 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "npm.packageManager": "pnpm",
   "editor.tabSize": 2,
-  "prettier.printWidth": 100, // 超过最大值换行
+  "prettier.printWidth": 80, // 超过最大值换行
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "files.eol": "\n",
   "search.exclude": {
@@ -86,7 +86,7 @@
     "source.fixAll.eslint": "explicit"
   },
   "[vue]": {
-    "editor.defaultFormatter": "Vue.volar"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "i18n-ally.localesPaths": ["src/locales"],
   "i18n-ally.keystyle": "nested",
@@ -140,5 +140,7 @@
     "package.json": "pnpm-lock.yaml,yarn.lock,LICENSE,README*,CHANGELOG*,CNAME,.gitattributes,.eslintrc-auto-import.json,.gitignore,prettier.config.js,stylelint.config.js,commitlint.config.js,.stylelintignore,.prettierignore,.gitpod.yml,.eslintrc.js,.eslintignore"
   },
   "terminal.integrated.scrollback": 10000,
-  "nuxt.isNuxtApp": false
+  "nuxt.isNuxtApp": false,
+  "editor.formatOnSave": false,
+  "prettier.singleAttributePerLine": true
 }

@@ -51,7 +51,7 @@
   </el-form>
 
   <!-- 商品属性添加 Form 表单 -->
-  <ProductPropertyAddForm ref="attributesAddFormRef" :propertyList="propertyList" />
+  <ProductPropertyAddForm ref="attributesAddFormRef" :propertyList="propertyList" :categoryId="1" />
 </template>
 <script lang="ts" setup>
 import { PropType } from 'vue'

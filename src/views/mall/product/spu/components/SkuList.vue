@@ -8,7 +8,7 @@
     max-height="500"
     size="small"
   >
-    <el-table-column align="center" label="图片" min-width="65">
+    <el-table-column align="center" label="图片" min-width="65" v-if="formData!.categoryId === 3">
       <template #default="{ row }">
         <UploadImg v-model="row.picUrl" height="50px" width="50px" />
       </template>
@@ -26,6 +26,37 @@
           <span style="font-weight: bold; color: #40aaff">
             {{ row.properties[index]?.valueName }}
           </span>
+        </template>
+      </el-table-column>
+    </template>
+    <template v-if="formData!.categoryId === 1 && isBatch">
+      <!-- 批量添加镜片规格 -->
+      <el-table-column align="center" label="柱镜范围" min-width="100">
+        <template #default="{ row }">
+          <el-input-number v-model="row.lsph" :precision="2" :step="0.25" :min="-20" :max="20" class="w-100%!" controls-position="right" />
+          到
+          <el-input-number v-model="row.rsph" :precision="2" :step="0.25" :min="-20" :max="20" class="w-100%!" controls-position="right" />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="球镜范围" min-width="100">
+        <template #default="{ row }">
+          <el-input-number v-model="row.lcyl" :precision="2" :step="0.25" :min="-20" :max="20" class="w-100%!" controls-position="right" />
+          到
+          <el-input-number v-model="row.rcyl" :precision="2" :step="0.25" :min="-20" :max="20" class="w-100%!" controls-position="right" />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="加光范围" min-width="100">
+        <template #default="{ row }">
+          <el-input-number v-model="row.ladd" :precision="2" :step="0.25" :min="-20" :max="20" class="w-100%!" controls-position="right" />
+          到
+          <el-input-number v-model="row.radd" :precision="2" :step="0.25" :min="-20" :max="20" class="w-100%!" controls-position="right" />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="联合光度" min-width="100">
+        <template #default="{ row }">
+          <el-input-number v-model="row.lunion" :precision="2" :step="0.25" :min="-20" :max="20" class="w-100%!" controls-position="right" />
+          到
+          <el-input-number v-model="row.runion" :precision="2" :step="0.25" :min="-20" :max="20" class="w-100%!" controls-position="right" />
         </template>
       </el-table-column>
     </template>
@@ -75,7 +106,7 @@
         <el-input-number v-model="row.stock" :min="0" class="w-100%" controls-position="right" />
       </template>
     </el-table-column>
-    <el-table-column align="center" label="重量(kg)" min-width="168">
+    <!-- <el-table-column align="center" label="重量(kg)" min-width="168">
       <template #default="{ row }">
         <el-input-number
           v-model="row.weight"
@@ -98,7 +129,7 @@
           controls-position="right"
         />
       </template>
-    </el-table-column>
+    </el-table-column> -->
     <template v-if="formData!.subCommissionType">
       <el-table-column align="center" label="一级返佣(元)" min-width="168">
         <template #default="{ row }">
@@ -286,7 +317,6 @@
 import { PropType, Ref } from 'vue'
 import { copyValueToTarget } from '@/utils'
 import { propTypes } from '@/utils/propTypes'
-import { UploadImg } from '@/components/UploadFile'
 import type { Property, Sku, Spu } from '@/api/mall/product/spu'
 import { createImageViewer } from '@/components/ImageViewer'
 import { RuleConfig } from '@/views/mall/product/spu/components/index'
@@ -315,8 +345,16 @@ const props = defineProps({
   isActivityComponent: propTypes.bool.def(false) // 是否作为 sku 活动配置组件
 })
 const formData: Ref<Spu | undefined> = ref<Spu>() // 表单数据
-const skuList = ref<Sku[]>([
+const skuList = ref([
   {
+    lsph: 0,
+    rsph: 0,
+    lcyl: 0,
+    rcyl: 0,
+    ladd: 0,
+    radd: 0,
+    lunion: 0,
+    runion: 0,
     price: 0, // 商品价格
     marketPrice: 0, // 市场价
     costPrice: 0, // 成本价
@@ -340,9 +378,14 @@ const imagePreview = (imgUrl: string) => {
 
 /** 批量添加 */
 const batchAdd = () => {
-  formData.value!.skus!.forEach((item) => {
-    copyValueToTarget(item, skuList.value[0])
-  })
+  if (formData.value!.categoryId === 1) {
+    const baseSku = skuList.value[0];
+    
+  } else {
+    formData.value!.skus!.forEach((item) => {
+      copyValueToTarget(item, skuList.value[0])
+    })
+  }
 }
 
 /** 删除 sku */
@@ -464,15 +507,14 @@ const generateTableData = (propertyList: any[]) => {
  */
 const validateData = (propertyList: any[]) => {
   const skuPropertyIds: number[] = []
-  formData.value!.skus!.forEach(
-    (sku) =>
-      sku.properties
-        ?.map((property) => property.propertyId)
-        ?.forEach((propertyId) => {
-          if (skuPropertyIds.indexOf(propertyId!) === -1) {
-            skuPropertyIds.push(propertyId!)
-          }
-        })
+  formData.value!.skus!.forEach((sku) =>
+    sku.properties
+      ?.map((property) => property.propertyId)
+      ?.forEach((propertyId) => {
+        if (skuPropertyIds.indexOf(propertyId!) === -1) {
+          skuPropertyIds.push(propertyId!)
+        }
+      })
   )
   const propertyIds = propertyList.map((item) => item.id)
   return skuPropertyIds.length === propertyIds.length
@@ -522,7 +564,15 @@ watch(
           weight: 0,
           volume: 0,
           firstBrokeragePrice: 0,
-          secondBrokeragePrice: 0
+          secondBrokeragePrice: 0,
+          lsph: 0,
+          rsph: 0,
+          lcyl: 0,
+          rcyl: 0,
+          ladd: 0,
+          radd: 0,
+          lunion: 0,
+          runion: 0
         }
       ]
     }
