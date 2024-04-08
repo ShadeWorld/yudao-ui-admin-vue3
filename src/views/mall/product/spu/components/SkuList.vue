@@ -242,7 +242,7 @@
     @selection-change="handleSelectionChange"
   >
     <el-table-column v-if="isComponent" type="selection" width="45" />
-    <el-table-column align="center" label="图片" min-width="80">
+    <el-table-column align="center" label="图片" min-width="80" v-if="formData!.categoryId === 3">
       <template #default="{ row }">
         <el-image
           v-if="row.picUrl"
@@ -265,6 +265,83 @@
           <span style="font-weight: bold; color: #40aaff">
             {{ row.properties[index]?.valueName }}
           </span>
+        </template>
+      </el-table-column>
+    </template>
+    <template v-if="formData!.categoryId === 1">
+      <!-- 批量添加镜片规格 -->
+      <el-table-column align="center" label="柱镜范围" min-width="100">
+        <template #default="{ row }">
+          {{ row.skuLens.min_sph }} 到 {{ row.skuLens.max_sph }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="球镜范围" min-width="100">
+        <template #default="{ row }">
+          <el-input-number
+            v-model="row.skuLens.min_cyl"
+            :precision="2"
+            :step="0.25"
+            :min="-20"
+            :max="20"
+            class="w-100%!"
+            controls-position="right"
+          />
+          到
+          <el-input-number
+            v-model="row.skuLens.max_cyl"
+            :precision="2"
+            :step="0.25"
+            :min="-20"
+            :max="20"
+            class="w-100%!"
+            controls-position="right"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="加光范围" min-width="100">
+        <template #default="{ row }">
+          <el-input-number
+            v-model="row.skuLens.min_add"
+            :precision="2"
+            :step="0.25"
+            :min="-20"
+            :max="20"
+            class="w-100%!"
+            controls-position="right"
+          />
+          到
+          <el-input-number
+            v-model="row.skuLens.max_add"
+            :precision="2"
+            :step="0.25"
+            :min="-20"
+            :max="20"
+            class="w-100%!"
+            controls-position="right"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="联合光度" min-width="100">
+        <template #default="{ row }">
+          <el-input-number
+            v-model="row.skuLens.min_union"
+            :precision="2"
+            :step="0.25"
+            :min="-20"
+            :max="20"
+            class="w-100%!"
+            controls-position="right"
+          />
+          到
+          <el-input-number
+            v-model="row.skuLens.max_union"
+            :precision="2"
+            :step="0.25"
+            :min="-20"
+            :max="20"
+            class="w-100%!"
+            controls-position="right"
+          />
         </template>
       </el-table-column>
     </template>
@@ -380,7 +457,6 @@
 <script lang="ts" setup>
 import { PropType, Ref } from 'vue'
 import { copyValueToTarget } from '@/utils'
-import { propTypes } from '@/utils/propTypes'
 import type { Property, Sku, Spu } from '@/api/mall/product/spu'
 import { createImageViewer } from '@/components/ImageViewer'
 import { RuleConfig } from '@/views/mall/product/spu/components/index'
@@ -411,14 +487,6 @@ const props = defineProps({
 const formData: Ref<Spu | undefined> = ref<Spu>() // 表单数据
 const skuList = ref([
   {
-    min_sph: 0,
-    max_sph: 0,
-    min_cyl: 0,
-    max_cyl: 0,
-    min_add: 0,
-    max_add: 0,
-    min_union: 0,
-    max_union: 0,
     price: 0, // 商品价格
     marketPrice: 0, // 市场价
     costPrice: 0, // 成本价
@@ -442,13 +510,9 @@ const imagePreview = (imgUrl: string) => {
 
 /** 批量添加 */
 const batchAdd = () => {
-  if (formData.value!.categoryId === 1) {
-    const baseSku = skuList.value[0]
-  } else {
-    formData.value!.skus!.forEach((item) => {
-      copyValueToTarget(item, skuList.value[0])
-    })
-  }
+  formData.value!.skus!.forEach((item) => {
+    copyValueToTarget(item, skuList.value[0])
+  })
 }
 
 /** 删除 sku */
@@ -516,12 +580,95 @@ watch(
   (data) => {
     if (!data) return
     formData.value = data
+    console.log(formData.value)
   },
   {
     deep: true,
     immediate: true
   }
 )
+
+/** 构建所有排列组合 */
+const build = (propertyValuesList: Property[][]) => {
+  if (propertyValuesList.length === 0) {
+    return []
+  } else if (propertyValuesList.length === 1) {
+    return propertyValuesList[0]
+  } else {
+    const result: Property[][] = []
+    const rest = build(propertyValuesList.slice(1))
+    for (let i = 0; i < propertyValuesList[0].length; i++) {
+      for (let j = 0; j < rest.length; j++) {
+        // 第一次不是数组结构，后面的都是数组结构
+        if (Array.isArray(rest[j])) {
+          result.push([propertyValuesList[0][i], ...rest[j]])
+        } else {
+          result.push([propertyValuesList[0][i], rest[j]])
+        }
+      }
+    }
+    return result
+  }
+}
+
+/** 监听属性列表，生成相关参数和表头 */
+watch(
+  () => props.propertyList,
+  (propertyList: PropertyAndValues[]) => {
+    // 如果不是多规格则结束
+    if (!formData.value!.specType) {
+      return
+    }
+    // 如果当前组件作为批量添加数据使用，则重置表数据
+    if (props.isBatch) {
+      skuList.value = [
+        {
+          price: 0,
+          marketPrice: 0,
+          costPrice: 0,
+          barCode: '',
+          picUrl: '',
+          stock: 0,
+          weight: 0,
+          volume: 0,
+          firstBrokeragePrice: 0,
+          secondBrokeragePrice: 0
+        }
+      ]
+    }
+
+    // 判断代理对象是否为空
+    if (JSON.stringify(propertyList) === '[]') {
+      return
+    }
+    // 重置表头
+    tableHeaders.value = []
+    // 生成表头
+    propertyList.forEach((item, index) => {
+      // name加属性项index区分属性值
+      tableHeaders.value.push({ prop: `name${index}`, label: item.name })
+    })
+    // 如果回显的 sku 属性和添加的属性一致则不处理
+    if (validateData(propertyList)) {
+      return
+    }
+    // 添加新属性没有属性值也不做处理
+    if (propertyList.some((item) => item.values!.length === 0)) {
+      return
+    }
+    // 生成 table 数据，即 sku 列表
+    generateTableData(propertyList)
+  },
+  {
+    deep: true,
+    immediate: true
+  }
+)
+const activitySkuListRef = ref<InstanceType<typeof ElTable>>()
+
+const getSkuTableRef = () => {
+  return activitySkuListRef.value
+}
 
 /** 生成表数据 */
 const generateTableData = (propertyList: any[]) => {
@@ -583,95 +730,33 @@ const validateData = (propertyList: any[]) => {
   return skuPropertyIds.length === propertyIds.length
 }
 
-/** 构建所有排列组合 */
-const build = (propertyValuesList: Property[][]) => {
-  if (propertyValuesList.length === 0) {
-    return []
-  } else if (propertyValuesList.length === 1) {
-    return propertyValuesList[0]
-  } else {
-    const result: Property[][] = []
-    const rest = build(propertyValuesList.slice(1))
-    for (let i = 0; i < propertyValuesList[0].length; i++) {
-      for (let j = 0; j < rest.length; j++) {
-        // 第一次不是数组结构，后面的都是数组结构
-        if (Array.isArray(rest[j])) {
-          result.push([propertyValuesList[0][i], ...rest[j]])
-        } else {
-          result.push([propertyValuesList[0][i], rest[j]])
-        }
-      }
-    }
-    return result
+/** 镜片类型添加新行 */
+const addLensRow = () => {
+  const row = {
+    skuLens: {
+      min_sph: 0,
+      max_sph: 0,
+      min_cyl: 0,
+      max_cyl: 0,
+      min_add: 0,
+      max_add: 0,
+      min_union: 0,
+      max_union: 0
+    },
+    price: 0,
+    marketPrice: 0,
+    costPrice: 0,
+    barCode: '',
+    picUrl: '',
+    stock: 0,
+    weight: 0,
+    volume: 0,
+    firstBrokeragePrice: 0,
+    secondBrokeragePrice: 0
   }
+  formData.value!.skus!.push(row)
 }
 
-/** 监听属性列表，生成相关参数和表头 */
-watch(
-  () => props.propertyList,
-  (propertyList: PropertyAndValues[]) => {
-    // 如果不是多规格则结束
-    if (!formData.value!.specType) {
-      return
-    }
-    // 如果当前组件作为批量添加数据使用，则重置表数据
-    if (props.isBatch) {
-      skuList.value = [
-        {
-          min_sph: 0,
-          max_sph: 0,
-          min_cyl: 0,
-          max_cyl: 0,
-          min_add: 0,
-          max_add: 0,
-          min_union: 0,
-          max_union: 0,
-          price: 0,
-          marketPrice: 0,
-          costPrice: 0,
-          barCode: '',
-          picUrl: '',
-          stock: 0,
-          weight: 0,
-          volume: 0,
-          firstBrokeragePrice: 0,
-          secondBrokeragePrice: 0
-        }
-      ]
-    }
-
-    // 判断代理对象是否为空
-    if (JSON.stringify(propertyList) === '[]') {
-      return
-    }
-    // 重置表头
-    tableHeaders.value = []
-    // 生成表头
-    propertyList.forEach((item, index) => {
-      // name加属性项index区分属性值
-      tableHeaders.value.push({ prop: `name${index}`, label: item.name })
-    })
-    // 如果回显的 sku 属性和添加的属性一致则不处理
-    if (validateData(propertyList)) {
-      return
-    }
-    // 添加新属性没有属性值也不做处理
-    if (propertyList.some((item) => item.values!.length === 0)) {
-      return
-    }
-    // 生成 table 数据，即 sku 列表
-    generateTableData(propertyList)
-  },
-  {
-    deep: true,
-    immediate: true
-  }
-)
-const activitySkuListRef = ref<InstanceType<typeof ElTable>>()
-
-const getSkuTableRef = () => {
-  return activitySkuListRef.value
-}
 // 暴露出生成 sku 方法，给添加属性成功时调用
-defineExpose({ generateTableData, validateSku, getSkuTableRef })
+defineExpose({ generateTableData, validateSku, getSkuTableRef, addLensRow })
 </script>

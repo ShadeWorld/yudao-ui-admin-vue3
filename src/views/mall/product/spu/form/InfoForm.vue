@@ -72,7 +72,11 @@
       <el-col :span="24" v-if="formData.categoryId">
         <el-form-item label="商品规格" props="specType">
           <el-radio-group v-model="formData.specType" @change="onChangeSpec" class="w-80">
-            <el-radio :label="false" :disabled="formData.categoryId === 1" class="radio">
+            <el-radio
+              :label="false"
+              :disabled="lensCategory.includes(formData.categoryId)"
+              class="radio"
+            >
               单规格
             </el-radio>
             <el-radio :label="true">多规格</el-radio>
@@ -89,7 +93,10 @@
             :rule-config="ruleConfig"
           />
         </el-form-item>
-        <el-form-item v-if="formData.specType && formData.categoryId === 3" label="规格">
+        <el-form-item
+          v-if="!isDetail && formData.specType && !lensCategory.includes(formData.categoryId)"
+          label="规格"
+        >
           <el-button class="mb-10px mr-15px" @click="attributesAddFormRef.open">添加属性</el-button>
           <ProductAttributes
             :property-list="specList"
@@ -102,6 +109,7 @@
         <!--          <SkuList :is-batch="true" :prop-form-data="formData" :property-list="specList" />-->
         <!--        </el-form-item>-->
         <el-form-item label="规格列表" v-if="formData.specType">
+          <el-button class="mb-10px mr-15px" @click="addLensRow" v-if="!isDetail">添加</el-button>
           <SkuList
             ref="skuListRef"
             :prop-form-data="formData"
@@ -125,7 +133,6 @@
 <script lang="ts" setup>
 import { PropType } from 'vue'
 import { copyValueToTarget } from '@/utils'
-import { propTypes } from '@/utils/propTypes'
 import { defaultProps, handleTree } from '@/utils/tree'
 import type { Spu } from '@/api/mall/product/spu'
 import * as ProductCategoryApi from '@/api/mall/product/category'
@@ -150,6 +157,8 @@ const props = defineProps({
   },
   isDetail: Boolean // 是否作为详情组件
 })
+
+const lensCategory: number[] = [1, 2]
 
 const message = useMessage() // 消息弹窗
 
@@ -205,7 +214,7 @@ const ruleConfig: RuleConfig[] = [
 const changeCategory = async (value: CascaderValue) => {
   brandList.value = await ProductBrandApi.getSimpleBrandList(value as number)
   if (value) {
-    formData.specType = value === 1
+    formData.specType = lensCategory.includes(value as number)
     getPropertiesByCategory(value as number)
   }
 }
@@ -306,5 +315,9 @@ const getPropertiesByCategory = (categoryId: number) => {
 /** 调用 SkuList generateTableData 方法*/
 const generateSkus = (propertyList) => {
   skuListRef.value.generateTableData(propertyList)
+}
+
+const addLensRow = () => {
+  skuListRef.value.addLensRow()
 }
 </script>
