@@ -114,7 +114,11 @@
   </el-form>
 
   <!-- 商品属性添加 Form 表单 -->
-  <ProductPropertyAddForm ref="attributesAddFormRef" :propertyList="specList" :categoryId="formData.categoryId" />
+  <ProductPropertyAddForm
+    ref="attributesAddFormRef"
+    :propertyList="specList"
+    :categoryId="formData.categoryId"
+  />
 </template>
 <script lang="ts" setup>
 import { PropType } from 'vue'
@@ -237,7 +241,7 @@ watch(
 )
 
 /** 表单校验 */
-const emit = defineEmits(['update:activeName', 'cateChange'])
+const emit = defineEmits(['update:activeName'])
 const validate = async () => {
   if (!formRef) return
   try {
@@ -265,7 +269,6 @@ onMounted(async () => {
   brandList.value = await ProductBrandApi.getSimpleBrandList()
   // 回显规格
   specList.value = getPropertyList(props.propFormData)
-
 })
 
 // 属性数组

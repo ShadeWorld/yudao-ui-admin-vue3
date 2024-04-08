@@ -33,30 +33,94 @@
       <!-- 批量添加镜片规格 -->
       <el-table-column align="center" label="柱镜范围" min-width="100">
         <template #default="{ row }">
-          <el-input-number v-model="row.lsph" :precision="2" :step="0.25" :min="-20" :max="20" class="w-100%!" controls-position="right" />
+          <el-input-number
+            v-model="row.lsph"
+            :precision="2"
+            :step="0.25"
+            :min="-20"
+            :max="20"
+            class="w-100%!"
+            controls-position="right"
+          />
           到
-          <el-input-number v-model="row.rsph" :precision="2" :step="0.25" :min="-20" :max="20" class="w-100%!" controls-position="right" />
+          <el-input-number
+            v-model="row.rsph"
+            :precision="2"
+            :step="0.25"
+            :min="-20"
+            :max="20"
+            class="w-100%!"
+            controls-position="right"
+          />
         </template>
       </el-table-column>
       <el-table-column align="center" label="球镜范围" min-width="100">
         <template #default="{ row }">
-          <el-input-number v-model="row.lcyl" :precision="2" :step="0.25" :min="-20" :max="20" class="w-100%!" controls-position="right" />
+          <el-input-number
+            v-model="row.lcyl"
+            :precision="2"
+            :step="0.25"
+            :min="-20"
+            :max="20"
+            class="w-100%!"
+            controls-position="right"
+          />
           到
-          <el-input-number v-model="row.rcyl" :precision="2" :step="0.25" :min="-20" :max="20" class="w-100%!" controls-position="right" />
+          <el-input-number
+            v-model="row.rcyl"
+            :precision="2"
+            :step="0.25"
+            :min="-20"
+            :max="20"
+            class="w-100%!"
+            controls-position="right"
+          />
         </template>
       </el-table-column>
       <el-table-column align="center" label="加光范围" min-width="100">
         <template #default="{ row }">
-          <el-input-number v-model="row.ladd" :precision="2" :step="0.25" :min="-20" :max="20" class="w-100%!" controls-position="right" />
+          <el-input-number
+            v-model="row.ladd"
+            :precision="2"
+            :step="0.25"
+            :min="-20"
+            :max="20"
+            class="w-100%!"
+            controls-position="right"
+          />
           到
-          <el-input-number v-model="row.radd" :precision="2" :step="0.25" :min="-20" :max="20" class="w-100%!" controls-position="right" />
+          <el-input-number
+            v-model="row.radd"
+            :precision="2"
+            :step="0.25"
+            :min="-20"
+            :max="20"
+            class="w-100%!"
+            controls-position="right"
+          />
         </template>
       </el-table-column>
       <el-table-column align="center" label="联合光度" min-width="100">
         <template #default="{ row }">
-          <el-input-number v-model="row.lunion" :precision="2" :step="0.25" :min="-20" :max="20" class="w-100%!" controls-position="right" />
+          <el-input-number
+            v-model="row.lunion"
+            :precision="2"
+            :step="0.25"
+            :min="-20"
+            :max="20"
+            class="w-100%!"
+            controls-position="right"
+          />
           到
-          <el-input-number v-model="row.runion" :precision="2" :step="0.25" :min="-20" :max="20" class="w-100%!" controls-position="right" />
+          <el-input-number
+            v-model="row.runion"
+            :precision="2"
+            :step="0.25"
+            :min="-20"
+            :max="20"
+            class="w-100%!"
+            controls-position="right"
+          />
         </template>
       </el-table-column>
     </template>
@@ -379,8 +443,7 @@ const imagePreview = (imgUrl: string) => {
 /** 批量添加 */
 const batchAdd = () => {
   if (formData.value!.categoryId === 1) {
-    const baseSku = skuList.value[0];
-    
+    const baseSku = skuList.value[0]
   } else {
     formData.value!.skus!.forEach((item) => {
       copyValueToTarget(item, skuList.value[0])
