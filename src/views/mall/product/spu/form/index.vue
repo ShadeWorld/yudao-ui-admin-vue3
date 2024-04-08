@@ -99,6 +99,16 @@ const formData = ref<ProductSpuApi.Spu>({
   subCommissionType: false, // 分销类型
   skus: [
     {
+      skuLens: {
+        min_sph: 0,
+        max_sph: 0,
+        min_cyl: 0,
+        max_cyl: 0,
+        min_add: 0,
+        max_add: 0,
+        min_union: 0,
+        max_union: 0
+      },
       price: 0, // 商品价格
       marketPrice: 0, // 市场价
       costPrice: 0, // 成本价

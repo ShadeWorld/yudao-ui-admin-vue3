@@ -69,15 +69,17 @@
           <UploadImgs v-model="formData.sliderPicUrls" :disabled="isDetail" />
         </el-form-item>
       </el-col>
-      <el-col :span="24">
+      <el-col :span="24" v-if="formData.categoryId">
         <el-form-item label="商品规格" props="specType">
           <el-radio-group v-model="formData.specType" @change="onChangeSpec" class="w-80">
-            <el-radio :label="false" class="radio">单规格</el-radio>
-            <el-radio :label="true" :disabled="!formData.categoryId">多规格</el-radio>
+            <el-radio :label="false" :disabled="formData.categoryId === 1" class="radio">
+              单规格
+            </el-radio>
+            <el-radio :label="true">多规格</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-col>
-      <el-col :span="24">
+      <el-col :span="24" v-if="formData.categoryId">
         <!-- 单规格添加-->
         <el-form-item v-if="!formData.specType">
           <SkuList
@@ -87,28 +89,28 @@
             :rule-config="ruleConfig"
           />
         </el-form-item>
-        <el-form-item v-if="formData.specType" label="规格">
-          <!-- <el-button class="mb-10px mr-15px" @click="attributesAddFormRef.open">添加属性</el-button> -->
+        <el-form-item v-if="formData.specType && formData.categoryId === 3" label="规格">
+          <el-button class="mb-10px mr-15px" @click="attributesAddFormRef.open">添加属性</el-button>
           <ProductAttributes
             :property-list="specList"
             @success="generateSkus"
             :is-detail="isDetail"
           />
         </el-form-item>
-        <template v-if="formData.specType && specList.length > 0">
-          <el-form-item label="批量设置" v-if="!isDetail">
-            <SkuList :is-batch="true" :prop-form-data="formData" :property-list="specList" />
-          </el-form-item>
-          <el-form-item label="规格列表">
-            <SkuList
-              ref="skuListRef"
-              :prop-form-data="formData"
-              :property-list="specList"
-              :rule-config="ruleConfig"
-              :is-detail="isDetail"
-            />
-          </el-form-item>
-        </template>
+        <!--        <template v-if="formData.specType && specList.length > 0">-->
+        <!--        <el-form-item label="批量设置" v-if="!isDetail">-->
+        <!--          <SkuList :is-batch="true" :prop-form-data="formData" :property-list="specList" />-->
+        <!--        </el-form-item>-->
+        <el-form-item label="规格列表" v-if="formData.specType">
+          <SkuList
+            ref="skuListRef"
+            :prop-form-data="formData"
+            :property-list="specList"
+            :rule-config="ruleConfig"
+            :is-detail="isDetail"
+          />
+        </el-form-item>
+        <!--        </template>-->
       </el-col>
     </el-row>
   </el-form>
@@ -146,7 +148,7 @@ const props = defineProps({
     type: Object as PropType<Spu>,
     default: () => {}
   },
-  isDetail: propTypes.bool.def(false) // 是否作为详情组件
+  isDetail: Boolean // 是否作为详情组件
 })
 
 const message = useMessage() // 消息弹窗
@@ -203,6 +205,7 @@ const ruleConfig: RuleConfig[] = [
 const changeCategory = async (value: CascaderValue) => {
   brandList.value = await ProductBrandApi.getSimpleBrandList(value as number)
   if (value) {
+    formData.specType = value === 1
     getPropertiesByCategory(value as number)
   }
 }

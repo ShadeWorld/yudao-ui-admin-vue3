@@ -29,12 +29,12 @@
         </template>
       </el-table-column>
     </template>
-    <template v-if="formData!.categoryId === 1 && isBatch">
+    <template v-if="formData!.categoryId === 1">
       <!-- 批量添加镜片规格 -->
       <el-table-column align="center" label="柱镜范围" min-width="100">
         <template #default="{ row }">
           <el-input-number
-            v-model="row.lsph"
+            v-model="row.skuLens.min_sph"
             :precision="2"
             :step="0.25"
             :min="-20"
@@ -44,7 +44,7 @@
           />
           到
           <el-input-number
-            v-model="row.rsph"
+            v-model="row.skuLens.max_sph"
             :precision="2"
             :step="0.25"
             :min="-20"
@@ -57,7 +57,7 @@
       <el-table-column align="center" label="球镜范围" min-width="100">
         <template #default="{ row }">
           <el-input-number
-            v-model="row.lcyl"
+            v-model="row.skuLens.min_cyl"
             :precision="2"
             :step="0.25"
             :min="-20"
@@ -67,7 +67,7 @@
           />
           到
           <el-input-number
-            v-model="row.rcyl"
+            v-model="row.skuLens.max_cyl"
             :precision="2"
             :step="0.25"
             :min="-20"
@@ -80,7 +80,7 @@
       <el-table-column align="center" label="加光范围" min-width="100">
         <template #default="{ row }">
           <el-input-number
-            v-model="row.ladd"
+            v-model="row.skuLens.min_add"
             :precision="2"
             :step="0.25"
             :min="-20"
@@ -90,7 +90,7 @@
           />
           到
           <el-input-number
-            v-model="row.radd"
+            v-model="row.skuLens.max_add"
             :precision="2"
             :step="0.25"
             :min="-20"
@@ -103,7 +103,7 @@
       <el-table-column align="center" label="联合光度" min-width="100">
         <template #default="{ row }">
           <el-input-number
-            v-model="row.lunion"
+            v-model="row.skuLens.min_union"
             :precision="2"
             :step="0.25"
             :min="-20"
@@ -113,7 +113,7 @@
           />
           到
           <el-input-number
-            v-model="row.runion"
+            v-model="row.skuLens.max_union"
             :precision="2"
             :step="0.25"
             :min="-20"
@@ -403,22 +403,22 @@ const props = defineProps({
     type: Array as PropType<RuleConfig[]>,
     default: () => []
   },
-  isBatch: propTypes.bool.def(false), // 是否作为批量操作组件
-  isDetail: propTypes.bool.def(false), // 是否作为 sku 详情组件
-  isComponent: propTypes.bool.def(false), // 是否作为 sku 选择组件
-  isActivityComponent: propTypes.bool.def(false) // 是否作为 sku 活动配置组件
+  isBatch: Boolean, // 是否作为批量操作组件
+  isDetail: Boolean, // 是否作为 sku 详情组件
+  isComponent: Boolean, // 是否作为 sku 选择组件
+  isActivityComponent: Boolean // 是否作为 sku 活动配置组件
 })
 const formData: Ref<Spu | undefined> = ref<Spu>() // 表单数据
 const skuList = ref([
   {
-    lsph: 0,
-    rsph: 0,
-    lcyl: 0,
-    rcyl: 0,
-    ladd: 0,
-    radd: 0,
-    lunion: 0,
-    runion: 0,
+    min_sph: 0,
+    max_sph: 0,
+    min_cyl: 0,
+    max_cyl: 0,
+    min_add: 0,
+    max_add: 0,
+    min_union: 0,
+    max_union: 0,
     price: 0, // 商品价格
     marketPrice: 0, // 市场价
     costPrice: 0, // 成本价
@@ -618,6 +618,14 @@ watch(
     if (props.isBatch) {
       skuList.value = [
         {
+          min_sph: 0,
+          max_sph: 0,
+          min_cyl: 0,
+          max_cyl: 0,
+          min_add: 0,
+          max_add: 0,
+          min_union: 0,
+          max_union: 0,
           price: 0,
           marketPrice: 0,
           costPrice: 0,
@@ -627,15 +635,7 @@ watch(
           weight: 0,
           volume: 0,
           firstBrokeragePrice: 0,
-          secondBrokeragePrice: 0,
-          lsph: 0,
-          rsph: 0,
-          lcyl: 0,
-          rcyl: 0,
-          ladd: 0,
-          radd: 0,
-          lunion: 0,
-          runion: 0
+          secondBrokeragePrice: 0
         }
       ]
     }

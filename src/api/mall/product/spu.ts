@@ -23,6 +23,19 @@ export interface Sku {
   firstBrokeragePrice?: number | string // 一级分销的佣金
   secondBrokeragePrice?: number | string // 二级分销的佣金
   salesCount?: number // 商品销量
+  skuLens?: SkuLens
+}
+
+export interface SkuLens {
+  id?: number
+  min_sph?: number
+  max_sph?: number
+  min_cyl?: number
+  max_cyl?: number
+  min_add?: number
+  max_add?: number
+  min_union?: number
+  max_union?: number
 }
 
 export interface GiveCouponTemplate {
