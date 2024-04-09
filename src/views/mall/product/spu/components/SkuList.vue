@@ -31,10 +31,10 @@
     </template>
     <template v-if="formData!.categoryId === 1">
       <!-- 批量添加镜片规格 -->
-      <el-table-column align="center" label="柱镜范围" min-width="100">
+      <el-table-column align="center" label="柱镜范围" min-width="168">
         <template #default="{ row }">
           <el-input-number
-            v-model="row.skuLens.min_sph"
+            v-model="row.skuLens.minSph"
             :precision="2"
             :step="0.25"
             :min="-20"
@@ -44,20 +44,26 @@
           />
           到
           <el-input-number
-            v-model="row.skuLens.max_sph"
+            v-model="row.skuLens.maxSph"
             :precision="2"
             :step="0.25"
             :min="-20"
             :max="20"
             class="w-100%!"
             controls-position="right"
+          />
+          跳过
+          <RangeSelect
+            :max-value="row.skuLens.maxSph"
+            :min-value="row.skuLens.minSph"
+            v-model="row.skuLens.skipSph"
           />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="球镜范围" min-width="100">
+      <el-table-column align="center" label="球镜范围" min-width="168">
         <template #default="{ row }">
           <el-input-number
-            v-model="row.skuLens.min_cyl"
+            v-model="row.skuLens.minCyl"
             :precision="2"
             :step="0.25"
             :min="-20"
@@ -67,20 +73,26 @@
           />
           到
           <el-input-number
-            v-model="row.skuLens.max_cyl"
+            v-model="row.skuLens.maxCyl"
             :precision="2"
             :step="0.25"
             :min="-20"
             :max="20"
             class="w-100%!"
             controls-position="right"
+          />
+          跳过
+          <RangeSelect
+            :max-value="row.skuLens.maxCyl"
+            :min-value="row.skuLens.minCyl"
+            v-model="row.skuLens.skipCyl"
           />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="加光范围" min-width="100">
+      <el-table-column align="center" label="加光范围" min-width="168">
         <template #default="{ row }">
           <el-input-number
-            v-model="row.skuLens.min_add"
+            v-model="row.skuLens.minAdd"
             :precision="2"
             :step="0.25"
             :min="-20"
@@ -90,20 +102,26 @@
           />
           到
           <el-input-number
-            v-model="row.skuLens.max_add"
+            v-model="row.skuLens.maxAdd"
             :precision="2"
             :step="0.25"
             :min="-20"
             :max="20"
             class="w-100%!"
             controls-position="right"
+          />
+          忽略
+          <RangeSelect
+            :max-value="row.skuLens.maxAdd"
+            :min-value="row.skuLens.minAdd"
+            v-model="row.skuLens.skipAdd"
           />
         </template>
       </el-table-column>
       <el-table-column align="center" label="联合光度" min-width="100">
         <template #default="{ row }">
           <el-input-number
-            v-model="row.skuLens.min_union"
+            v-model="row.skuLens.minUnion"
             :precision="2"
             :step="0.25"
             :min="-20"
@@ -113,7 +131,7 @@
           />
           到
           <el-input-number
-            v-model="row.skuLens.max_union"
+            v-model="row.skuLens.maxUnion"
             :precision="2"
             :step="0.25"
             :min="-20"
@@ -129,45 +147,45 @@
         <el-input v-model="row.barCode" class="w-100%" />
       </template>
     </el-table-column>
-    <el-table-column align="center" label="销售价" min-width="168">
+    <el-table-column align="center" label="销售价" min-width="115">
       <template #default="{ row }">
         <el-input-number
           v-model="row.price"
           :min="0"
           :precision="2"
           :step="0.1"
-          class="w-100%"
+          class="w-100%!"
           controls-position="right"
         />
       </template>
     </el-table-column>
-    <el-table-column align="center" label="市场价" min-width="168">
+    <el-table-column align="center" label="市场价" min-width="115">
       <template #default="{ row }">
         <el-input-number
           v-model="row.marketPrice"
           :min="0"
           :precision="2"
           :step="0.1"
-          class="w-100%"
+          class="w-100%!"
           controls-position="right"
         />
       </template>
     </el-table-column>
-    <el-table-column align="center" label="成本价" min-width="168">
+    <el-table-column align="center" label="成本价" min-width="115">
       <template #default="{ row }">
         <el-input-number
           v-model="row.costPrice"
           :min="0"
           :precision="2"
           :step="0.1"
-          class="w-100%"
+          class="w-100%!"
           controls-position="right"
         />
       </template>
     </el-table-column>
-    <el-table-column align="center" label="库存" min-width="168">
+    <el-table-column align="center" label="库存" min-width="115">
       <template #default="{ row }">
-        <el-input-number v-model="row.stock" :min="0" class="w-100%" controls-position="right" />
+        <el-input-number v-model="row.stock" :min="0" class="w-100%!" controls-position="right" />
       </template>
     </el-table-column>
     <!-- <el-table-column align="center" label="重量(kg)" min-width="168">
@@ -272,13 +290,8 @@
       <!-- 批量添加镜片规格 -->
       <el-table-column align="center" label="柱镜范围" min-width="100">
         <template #default="{ row }">
-          {{ row.skuLens.min_sph }} 到 {{ row.skuLens.max_sph }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="球镜范围" min-width="100">
-        <template #default="{ row }">
           <el-input-number
-            v-model="row.skuLens.min_cyl"
+            v-model="row.skuLens.minSph"
             :precision="2"
             :step="0.25"
             :min="-20"
@@ -288,20 +301,55 @@
           />
           到
           <el-input-number
-            v-model="row.skuLens.max_cyl"
+            v-model="row.skuLens.maxSph"
             :precision="2"
             :step="0.25"
             :min="-20"
             :max="20"
             class="w-100%!"
             controls-position="right"
+          />
+          跳过
+          <RangeSelect
+            :max-value="row.skuLens.maxSph"
+            :min-value="row.skuLens.minSph"
+            v-model="row.skuLens.skipSph"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="球镜范围" min-width="100">
+        <template #default="{ row }">
+          <el-input-number
+            v-model="row.skuLens.minCyl"
+            :precision="2"
+            :step="0.25"
+            :min="-20"
+            :max="20"
+            class="w-100%!"
+            controls-position="right"
+          />
+          到
+          <el-input-number
+            v-model="row.skuLens.maxCyl"
+            :precision="2"
+            :step="0.25"
+            :min="-20"
+            :max="20"
+            class="w-100%!"
+            controls-position="right"
+          />
+          跳过
+          <RangeSelect
+            :max-value="row.skuLens.maxCyl"
+            :min-value="row.skuLens.minCyl"
+            v-model="row.skuLens.skipCyl"
           />
         </template>
       </el-table-column>
       <el-table-column align="center" label="加光范围" min-width="100">
         <template #default="{ row }">
           <el-input-number
-            v-model="row.skuLens.min_add"
+            v-model="row.skuLens.minAdd"
             :precision="2"
             :step="0.25"
             :min="-20"
@@ -311,20 +359,26 @@
           />
           到
           <el-input-number
-            v-model="row.skuLens.max_add"
+            v-model="row.skuLens.maxAdd"
             :precision="2"
             :step="0.25"
             :min="-20"
             :max="20"
             class="w-100%!"
             controls-position="right"
+          />
+          跳过
+          <RangeSelect
+            :max-value="row.skuLens.maxAdd"
+            :min-value="row.skuLens.minAdd"
+            v-model="row.skuLens.skipAdd"
           />
         </template>
       </el-table-column>
       <el-table-column align="center" label="联合光度" min-width="100">
         <template #default="{ row }">
           <el-input-number
-            v-model="row.skuLens.min_union"
+            v-model="row.skuLens.minUnion"
             :precision="2"
             :step="0.25"
             :min="-20"
@@ -334,7 +388,7 @@
           />
           到
           <el-input-number
-            v-model="row.skuLens.max_union"
+            v-model="row.skuLens.maxUnion"
             :precision="2"
             :step="0.25"
             :min="-20"
@@ -580,7 +634,6 @@ watch(
   (data) => {
     if (!data) return
     formData.value = data
-    console.log(formData.value)
   },
   {
     deep: true,
@@ -734,14 +787,17 @@ const validateData = (propertyList: any[]) => {
 const addLensRow = () => {
   const row = {
     skuLens: {
-      min_sph: 0,
-      max_sph: 0,
-      min_cyl: 0,
-      max_cyl: 0,
-      min_add: 0,
-      max_add: 0,
-      min_union: 0,
-      max_union: 0
+      minSph: 0,
+      maxSph: 0,
+      skipSph: [],
+      minCyl: 0,
+      maxCyl: 0,
+      skipCyl: [],
+      minAdd: 0,
+      maxAdd: 0,
+      skipAdd: [],
+      minUnion: 0,
+      maxUnion: 0
     },
     price: 0,
     marketPrice: 0,

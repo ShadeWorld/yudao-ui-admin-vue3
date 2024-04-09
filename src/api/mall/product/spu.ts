@@ -28,14 +28,17 @@ export interface Sku {
 
 export interface SkuLens {
   id?: number
-  min_sph?: number
-  max_sph?: number
-  min_cyl?: number
-  max_cyl?: number
-  min_add?: number
-  max_add?: number
-  min_union?: number
-  max_union?: number
+  minSph?: number
+  maxSph?: number
+  skipSph: number[]
+  minCyl?: number
+  maxCyl?: number
+  skipCyl: number[]
+  minAdd?: number
+  maxAdd?: number
+  skipAdd: number[]
+  minUnion?: number
+  maxUnion?: number
 }
 
 export interface GiveCouponTemplate {

@@ -100,14 +100,17 @@ const formData = ref<ProductSpuApi.Spu>({
   skus: [
     {
       skuLens: {
-        min_sph: 0,
-        max_sph: 0,
-        min_cyl: 0,
-        max_cyl: 0,
-        min_add: 0,
-        max_add: 0,
-        min_union: 0,
-        max_union: 0
+        minSph: 0,
+        maxSph: 0,
+        skipSph: [],
+        minCyl: 0,
+        maxCyl: 0,
+        skipCyl: [],
+        minAdd: 0,
+        maxAdd: 0,
+        skipAdd: [],
+        minUnion: 0,
+        maxUnion: 0
       },
       price: 0, // 商品价格
       marketPrice: 0, // 市场价
