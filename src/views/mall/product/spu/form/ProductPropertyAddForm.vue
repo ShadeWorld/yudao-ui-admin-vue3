@@ -1,6 +1,6 @@
 <!-- 商品发布 - 库存价格 - 添加属性 -->
 <template>
-  <Dialog v-model="dialogVisible" title="添加商品属性">
+  <Dialog v-model="dialogVisible" :title="isAttr ? '添加商品属性' : '添加商品规格'">
     <el-form
       ref="formRef"
       v-loading="formLoading"
@@ -8,7 +8,7 @@
       :rules="formRules"
       label-width="80px"
     >
-      <el-form-item label="属性名称" prop="name">
+      <el-form-item :label="isAttr ? '属性名称' : '规格名称'" prop="name">
         <el-input v-model="formData.name" placeholder="请输入名称" />
       </el-form-item>
     </el-form>
@@ -42,7 +42,8 @@ const props = defineProps({
     type: Array,
     default: () => {}
   },
-  categoryId: propTypes.number
+  categoryId: propTypes.number,
+  isAttr: Boolean
 })
 
 watch(

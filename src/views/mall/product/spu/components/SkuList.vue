@@ -702,9 +702,9 @@ watch(
       tableHeaders.value.push({ prop: `name${index}`, label: item.name })
     })
     // 如果回显的 sku 属性和添加的属性一致则不处理
-    if (validateData(propertyList)) {
-      return
-    }
+    // if (validateData(propertyList)) {
+    //   return
+    // }
     // 添加新属性没有属性值也不做处理
     if (propertyList.some((item) => item.values!.length === 0)) {
       return

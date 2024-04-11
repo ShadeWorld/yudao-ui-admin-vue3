@@ -21,6 +21,7 @@
             :options="categoryList"
             :props="defaultProps"
             @change="changeCategory"
+            :disabled="formData.id !== undefined"
             class="w-100%!"
             clearable
             filterable
@@ -30,7 +31,12 @@
       </el-col>
       <el-col :span="12">
         <el-form-item label="商品品牌" prop="brandId">
-          <el-select v-model="formData.brandId" class="w-100%!" placeholder="请选择商品品牌">
+          <el-select
+            v-model="formData.brandId"
+            class="w-100%!"
+            placeholder="请选择商品品牌"
+            :disabled="formData.id !== undefined"
+          >
             <el-option
               v-for="item in brandList"
               :key="item.id"
@@ -97,11 +103,12 @@
           v-if="!isDetail && formData.specType && !lensCategory.includes(formData.categoryId)"
           label="规格"
         >
-          <el-button class="mb-10px mr-15px" @click="attributesAddFormRef.open">添加属性</el-button>
+          <el-button class="mb-10px mr-15px" @click="attributesAddFormRef.open">添加规格</el-button>
           <ProductAttributes
             :property-list="specList"
             @success="generateSkus"
             :is-detail="isDetail"
+            :is-attr="false"
           />
         </el-form-item>
         <!--        <template v-if="formData.specType && specList.length > 0">-->
@@ -109,7 +116,13 @@
         <!--          <SkuList :is-batch="true" :prop-form-data="formData" :property-list="specList" />-->
         <!--        </el-form-item>-->
         <el-form-item label="规格列表" v-if="formData.specType">
-          <el-button class="mb-10px mr-15px" @click="addLensRow" v-if="!isDetail">添加</el-button>
+          <el-button
+            class="mb-10px mr-15px"
+            @click="addLensRow"
+            v-if="!isDetail && formData.categoryId !== 3"
+          >
+            添加
+          </el-button>
           <SkuList
             ref="skuListRef"
             :prop-form-data="formData"
@@ -128,6 +141,7 @@
     ref="attributesAddFormRef"
     :propertyList="specList"
     :categoryId="formData.categoryId"
+    :is-attr="false"
   />
 </template>
 <script lang="ts" setup>
@@ -140,6 +154,7 @@ import { CategoryVO } from '@/api/mall/product/category'
 import * as ProductBrandApi from '@/api/mall/product/brand'
 import { BrandVO } from '@/api/mall/product/brand'
 import { CascaderValue } from 'element-plus'
+import ProductPropertyAddForm from './ProductPropertyAddForm.vue'
 import ProductAttributes from './ProductAttributes.vue'
 import * as ProductPropertyApi from '@/api/mall/product/property'
 import {

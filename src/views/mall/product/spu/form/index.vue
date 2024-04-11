@@ -9,14 +9,14 @@
           :propFormData="formData"
         />
       </el-tab-pane>
-      <!-- <el-tab-pane label="价格库存" name="sku">
-        <SkuForm
-          ref="skuRef"
-          v-model:activeName="activeName"
-          :is-detail="isDetail"
-          :propFormData="formData"
-        />
-      </el-tab-pane> -->
+      <!--      <el-tab-pane label="价格库存" name="sku">-->
+      <!--        <SkuForm-->
+      <!--          ref="skuRef"-->
+      <!--          v-model:activeName="activeName"-->
+      <!--          :is-detail="isDetail"-->
+      <!--          :propFormData="formData"-->
+      <!--        />-->
+      <!--      </el-tab-pane>-->
       <el-tab-pane label="物流设置" name="delivery">
         <DeliveryForm
           ref="deliveryRef"

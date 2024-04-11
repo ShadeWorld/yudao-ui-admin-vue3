@@ -2,13 +2,13 @@
 <template>
   <el-col v-for="(item, index) in attributeList" :key="index">
     <div>
-      <el-text class="mx-1">属性名：</el-text>
+      <el-text class="mx-1">{{ isAttr ? '属性名' : '规格名' }}：</el-text>
       <el-tag class="mx-1" :closable="!isDetail" type="success" @close="handleCloseProperty(index)">
         {{ item.name }}
       </el-tag>
     </div>
     <div>
-      <el-text class="mx-1">属性值：</el-text>
+      <el-text class="mx-1">{{ isAttr ? '属性值' : '规格值' }}：</el-text>
       <el-tag
         v-for="(value, valueIndex) in item.values"
         :key="value.id"
@@ -45,7 +45,6 @@
 import { ElInput } from 'element-plus'
 import * as PropertyApi from '@/api/mall/product/property'
 import { PropertyAndValues } from '@/views/mall/product/spu/components'
-import { propTypes } from '@/utils/propTypes'
 
 defineOptions({ name: 'ProductAttributes' })
 
@@ -73,7 +72,8 @@ const props = defineProps({
     type: Array,
     default: () => {}
   },
-  isDetail: propTypes.bool.def(false) // 是否作为详情组件
+  isDetail: Boolean,
+  isAttr: Boolean
 })
 
 watch(
