@@ -70,13 +70,19 @@
           <UploadImg v-model="formData.picUrl" :disabled="isDetail" height="80px" />
         </el-form-item>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="24">
         <el-form-item label="商品轮播图" prop="sliderPicUrls">
           <UploadImgs v-model="formData.sliderPicUrls" :disabled="isDetail" />
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item label="商品属性"> </el-form-item>
+        <el-form-item label="商品属性">
+          <ProductPropertyForm
+            :properties="propertyList"
+            :is-detail="isDetail"
+            v-model="formData"
+          />
+        </el-form-item>
       </el-col>
       <el-col :span="24" v-if="formData.categoryId">
         <el-form-item label="商品规格" props="specType">
@@ -154,6 +160,7 @@ import { BrandVO } from '@/api/mall/product/brand'
 import { CascaderValue } from 'element-plus'
 import ProductSpecAddForm from './ProductSpecAddForm.vue'
 import ProductSpec from './ProductSpec.vue'
+import ProductPropertyForm from './ProductPropertyForm.vue'
 import * as ProductPropertyApi from '@/api/mall/product/property'
 import {
   getPropertyList,
@@ -180,6 +187,7 @@ const skuListRef = ref() // 商品属性列表 Ref
 const formRef = ref() // 表单 Ref
 const formData = reactive<Spu>({
   name: '', // 商品名称
+  properties: [],
   categoryId: undefined, // 商品分类
   keyword: '', // 关键字
   picUrl: '', // 商品封面图
@@ -259,6 +267,8 @@ watch(
       return
     }
     copyValueToTarget(formData, data)
+    console.log(formData)
+    console.log(data)
   },
   {
     immediate: true

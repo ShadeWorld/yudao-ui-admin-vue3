@@ -50,6 +50,7 @@ export interface Spu {
   id?: number
   name?: string // 商品名称
   categoryId?: number // 商品分类
+  properties?: Property[] // 属性数组
   keyword?: string // 关键字
   unit?: number | undefined // 单位
   picUrl?: string // 商品封面图
