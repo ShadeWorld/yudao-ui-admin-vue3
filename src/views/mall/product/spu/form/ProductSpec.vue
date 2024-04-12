@@ -2,13 +2,13 @@
 <template>
   <el-col v-for="(item, index) in attributeList" :key="index">
     <div>
-      <el-text class="mx-1">{{ isAttr ? '属性名' : '规格名' }}：</el-text>
+      <el-text class="mx-1">名称：</el-text>
       <el-tag class="mx-1" :closable="!isDetail" type="success" @close="handleCloseProperty(index)">
         {{ item.name }}
       </el-tag>
     </div>
     <div>
-      <el-text class="mx-1">{{ isAttr ? '属性值' : '规格值' }}：</el-text>
+      <el-text class="mx-1">规格值：</el-text>
       <el-tag
         v-for="(value, valueIndex) in item.values"
         :key="value.id"
@@ -72,8 +72,7 @@ const props = defineProps({
     type: Array,
     default: () => {}
   },
-  isDetail: Boolean,
-  isAttr: Boolean
+  isDetail: Boolean
 })
 
 watch(

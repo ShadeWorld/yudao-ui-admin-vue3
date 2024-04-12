@@ -63,8 +63,8 @@ import {
   RuleConfig,
   SkuList
 } from '@/views/mall/product/spu/components/index'
-import ProductAttributes from './ProductAttributes.vue'
-import ProductPropertyAddForm from './ProductPropertyAddForm.vue'
+import ProductAttributes from './ProductSpec.vue'
+import ProductPropertyAddForm from './ProductSpecAddForm.vue'
 import type { Spu } from '@/api/mall/product/spu'
 
 defineOptions({ name: 'ProductSpuSkuForm' })

@@ -3,25 +3,13 @@
   <el-form ref="formRef" :disabled="isDetail" :model="formData" :rules="rules" label-width="120px">
     <el-row>
       <el-col :span="12">
-        <el-form-item label="商品名称" prop="name">
-          <el-input
-            v-model="formData.name"
-            :clearable="true"
-            :show-word-limit="true"
-            class="w-100%!"
-            maxlength="64"
-            placeholder="请输入商品名称"
-          />
-        </el-form-item>
-      </el-col>
-      <el-col :span="12">
         <el-form-item label="商品分类" prop="categoryId">
           <el-cascader
             v-model="formData.categoryId"
             :options="categoryList"
             :props="defaultProps"
             @change="changeCategory"
-            :disabled="formData.id !== undefined"
+            :disabled="propFormData.id !== undefined"
             class="w-100%!"
             clearable
             filterable
@@ -35,7 +23,7 @@
             v-model="formData.brandId"
             class="w-100%!"
             placeholder="请选择商品品牌"
-            :disabled="formData.id !== undefined"
+            :disabled="propFormData.id !== undefined"
           >
             <el-option
               v-for="item in brandList"
@@ -44,6 +32,18 @@
               :value="item.id as number"
             />
           </el-select>
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item label="商品名称" prop="name">
+          <el-input
+            v-model="formData.name"
+            :clearable="true"
+            :show-word-limit="true"
+            class="w-100%!"
+            maxlength="64"
+            placeholder="请输入商品名称"
+          />
         </el-form-item>
       </el-col>
       <el-col :span="12">
@@ -70,10 +70,13 @@
           <UploadImg v-model="formData.picUrl" :disabled="isDetail" height="80px" />
         </el-form-item>
       </el-col>
-      <el-col :span="24">
+      <el-col :span="12">
         <el-form-item label="商品轮播图" prop="sliderPicUrls">
           <UploadImgs v-model="formData.sliderPicUrls" :disabled="isDetail" />
         </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item label="商品属性"> </el-form-item>
       </el-col>
       <el-col :span="24" v-if="formData.categoryId">
         <el-form-item label="商品规格" props="specType">
@@ -95,7 +98,7 @@
           <SkuList
             ref="skuListRef"
             :prop-form-data="formData"
-            :property-list="propertyList"
+            :property-list="specList"
             :rule-config="ruleConfig"
           />
         </el-form-item>
@@ -104,12 +107,7 @@
           label="规格"
         >
           <el-button class="mb-10px mr-15px" @click="attributesAddFormRef.open">添加规格</el-button>
-          <ProductAttributes
-            :property-list="specList"
-            @success="generateSkus"
-            :is-detail="isDetail"
-            :is-attr="false"
-          />
+          <ProductSpec :property-list="specList" @success="generateSkus" :is-detail="isDetail" />
         </el-form-item>
         <!--        <template v-if="formData.specType && specList.length > 0">-->
         <!--        <el-form-item label="批量设置" v-if="!isDetail">-->
@@ -137,7 +135,7 @@
   </el-form>
 
   <!-- 商品属性添加 Form 表单 -->
-  <ProductPropertyAddForm
+  <ProductSpecAddForm
     ref="attributesAddFormRef"
     :propertyList="specList"
     :categoryId="formData.categoryId"
@@ -154,8 +152,8 @@ import { CategoryVO } from '@/api/mall/product/category'
 import * as ProductBrandApi from '@/api/mall/product/brand'
 import { BrandVO } from '@/api/mall/product/brand'
 import { CascaderValue } from 'element-plus'
-import ProductPropertyAddForm from './ProductPropertyAddForm.vue'
-import ProductAttributes from './ProductAttributes.vue'
+import ProductSpecAddForm from './ProductSpecAddForm.vue'
+import ProductSpec from './ProductSpec.vue'
 import * as ProductPropertyApi from '@/api/mall/product/property'
 import {
   getPropertyList,
