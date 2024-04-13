@@ -312,6 +312,7 @@ const propertyList = ref<PropertyAndValues[]>([])
 const specList = ref<PropertyAndValues[]>([])
 /** 获取属性规格集合 */
 const getPropertiesByCategory = (categoryId: number) => {
+  formData.properties = []
   ProductPropertyApi.getPropertiesByCategory(categoryId)
     .then((data) => {
       propertyList.value = []
