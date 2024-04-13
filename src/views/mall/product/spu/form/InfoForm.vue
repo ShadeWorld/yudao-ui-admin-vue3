@@ -267,8 +267,6 @@ watch(
       return
     }
     copyValueToTarget(formData, data)
-    console.log(formData)
-    console.log(data)
   },
   {
     immediate: true
