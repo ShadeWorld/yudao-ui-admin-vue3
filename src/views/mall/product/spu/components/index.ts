@@ -29,7 +29,7 @@ interface RuleConfig {
  * @param spu
  * @return PropertyAndValues 规格列表
  */
-const getPropertyList = (spu: Spu): PropertyAndValues[] => {
+const getSpecList = (spu: Spu): PropertyAndValues[] => {
   //  直接拿返回的 skus 属性逆向生成出 propertyList
   const properties: PropertyAndValues[] = []
   // 只有是多规格才处理
@@ -51,4 +51,4 @@ const getPropertyList = (spu: Spu): PropertyAndValues[] => {
   return properties
 }
 
-export { SkuList, PropertyAndValues, RuleConfig, getPropertyList }
+export { SkuList, PropertyAndValues, RuleConfig, getSpecList }

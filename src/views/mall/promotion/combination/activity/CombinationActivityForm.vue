@@ -42,7 +42,7 @@ import * as CombinationActivityApi from '@/api/mall/promotion/combination/combin
 import { CombinationProductVO } from '@/api/mall/promotion/combination/combinationActivity'
 import { allSchemas, rules } from './combinationActivity.data'
 import { SpuAndSkuList, SpuProperty, SpuSelect } from '@/views/mall/promotion/components'
-import { getPropertyList, RuleConfig } from '@/views/mall/product/spu/components'
+import { getSpecList, RuleConfig } from '@/views/mall/product/spu/components'
 import * as ProductSpuApi from '@/api/mall/product/spu'
 import { convertToInteger, formatToFraction } from '@/utils'
 import { cloneDeep } from 'lodash-es'
@@ -114,7 +114,7 @@ const getSpuDetails = async (
   spuProperties.push({
     spuId: spu.id!,
     spuDetail: spu,
-    propertyList: getPropertyList(spu)
+    propertyList: getSpecList(spu)
   })
   spuList.value.push(spu)
   spuPropertyList.value = spuProperties
@@ -135,7 +135,11 @@ const open = async (type: string, id?: number) => {
       const data = (await CombinationActivityApi.getCombinationActivity(
         id
       )) as CombinationActivityApi.CombinationActivityVO
-      await getSpuDetails(data.spuId!, data.products?.map((sku) => sku.skuId), data.products)
+      await getSpuDetails(
+        data.spuId!,
+        data.products?.map((sku) => sku.skuId),
+        data.products
+      )
       formRef.value.setValues(data)
     } finally {
       formLoading.value = false

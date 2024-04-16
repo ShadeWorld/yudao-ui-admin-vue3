@@ -111,7 +111,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getPropertyList, PropertyAndValues, SkuList } from '@/views/mall/product/spu/components'
+import { getSpecList, PropertyAndValues, SkuList } from '@/views/mall/product/spu/components'
 import { ElTable } from 'element-plus'
 import { dateFormatter } from '@/utils/formatTime'
 import { createImageViewer } from '@/components/ImageViewer'
@@ -228,7 +228,7 @@ const expandChange = async (row: ProductSpuApi.Spu, expandedRows?: ProductSpuApi
   }
   // 获取 SPU 详情
   const res = (await ProductSpuApi.getSpu(row.id as number)) as ProductSpuApi.Spu
-  propertyList.value = getPropertyList(res)
+  propertyList.value = getSpecList(res)
   spuData.value = res
   isExpand.value = true
   expandRowKeys.value = [row.id!]

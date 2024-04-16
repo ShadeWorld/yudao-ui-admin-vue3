@@ -664,59 +664,6 @@ const build = (propertyValuesList: Property[][]) => {
   }
 }
 
-/** 监听属性列表，生成相关参数和表头 */
-watch(
-  () => props.propertyList,
-  (propertyList: PropertyAndValues[]) => {
-    // 如果不是多规格则结束
-    if (!formData.value!.specType) {
-      return
-    }
-    // 如果当前组件作为批量添加数据使用，则重置表数据
-    if (props.isBatch) {
-      skuList.value = [
-        {
-          price: 0,
-          marketPrice: 0,
-          costPrice: 0,
-          barCode: '',
-          picUrl: '',
-          stock: 0,
-          weight: 0,
-          volume: 0,
-          firstBrokeragePrice: 0,
-          secondBrokeragePrice: 0
-        }
-      ]
-    }
-
-    // 判断代理对象是否为空
-    if (JSON.stringify(propertyList) === '[]') {
-      return
-    }
-    // 重置表头
-    tableHeaders.value = []
-    // 生成表头
-    propertyList.forEach((item, index) => {
-      // name加属性项index区分属性值
-      tableHeaders.value.push({ prop: `name${index}`, label: item.name })
-    })
-    // 如果回显的 sku 属性和添加的属性一致则不处理
-    // if (validateData(propertyList)) {
-    //   return
-    // }
-    // 添加新属性没有属性值也不做处理
-    if (propertyList.some((item) => item.values!.length === 0)) {
-      return
-    }
-    // 生成 table 数据，即 sku 列表
-    generateTableData(propertyList)
-  },
-  {
-    deep: true,
-    immediate: true
-  }
-)
 const activitySkuListRef = ref<InstanceType<typeof ElTable>>()
 
 const getSkuTableRef = () => {
@@ -812,6 +759,60 @@ const addLensRow = () => {
   }
   formData.value!.skus!.push(row)
 }
+
+/** 监听属性列表，生成相关参数和表头 */
+watch(
+  () => props.propertyList,
+  (propertyList: PropertyAndValues[]) => {
+    // 如果不是多规格则结束
+    if (!formData.value!.specType) {
+      return
+    }
+    // 如果当前组件作为批量添加数据使用，则重置表数据
+    if (props.isBatch) {
+      skuList.value = [
+        {
+          price: 0,
+          marketPrice: 0,
+          costPrice: 0,
+          barCode: '',
+          picUrl: '',
+          stock: 0,
+          weight: 0,
+          volume: 0,
+          firstBrokeragePrice: 0,
+          secondBrokeragePrice: 0
+        }
+      ]
+    }
+
+    // 判断代理对象是否为空
+    if (JSON.stringify(propertyList) === '[]') {
+      return
+    }
+    // 重置表头
+    tableHeaders.value = []
+    // 生成表头
+    propertyList.forEach((item, index) => {
+      // name加属性项index区分属性值
+      tableHeaders.value.push({ prop: `name${index}`, label: item.name })
+    })
+    // 如果回显的 sku 属性和添加的属性一致则不处理
+    // if (validateData(propertyList)) {
+    //   return
+    // }
+    // 添加新属性没有属性值也不做处理
+    if (propertyList.some((item) => item.values!.length === 0)) {
+      return
+    }
+    // 生成 table 数据，即 sku 列表
+    generateTableData(propertyList)
+  },
+  {
+    deep: true,
+    immediate: true
+  }
+)
 
 // 暴露出生成 sku 方法，给添加属性成功时调用
 defineExpose({ generateTableData, validateSku, getSkuTableRef, addLensRow })

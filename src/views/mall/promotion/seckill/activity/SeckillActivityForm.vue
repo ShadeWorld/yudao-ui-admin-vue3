@@ -50,7 +50,7 @@ import { cloneDeep } from 'lodash-es'
 import * as SeckillActivityApi from '@/api/mall/promotion/seckill/seckillActivity'
 import { SeckillProductVO } from '@/api/mall/promotion/seckill/seckillActivity'
 import * as ProductSpuApi from '@/api/mall/product/spu'
-import { getPropertyList, RuleConfig } from '@/views/mall/product/spu/components'
+import { getSpecList, RuleConfig } from '@/views/mall/product/spu/components'
 import { convertToInteger, formatToFraction } from '@/utils'
 
 defineOptions({ name: 'PromotionSeckillActivityForm' })
@@ -123,7 +123,7 @@ const getSpuDetails = async (
   spuProperties.push({
     spuId: spu.id!,
     spuDetail: spu,
-    propertyList: getPropertyList(spu)
+    propertyList: getSpecList(spu)
   })
   spuList.value.push(spu)
   spuPropertyList.value = spuProperties
@@ -144,7 +144,11 @@ const open = async (type: string, id?: number) => {
       const data = (await SeckillActivityApi.getSeckillActivity(
         id
       )) as SeckillActivityApi.SeckillActivityVO
-      await getSpuDetails(data.spuId!, data.products?.map((sku) => sku.skuId), data.products)
+      await getSpuDetails(
+        data.spuId!,
+        data.products?.map((sku) => sku.skuId),
+        data.products
+      )
       formRef.value.setValues(data)
     } finally {
       formLoading.value = false

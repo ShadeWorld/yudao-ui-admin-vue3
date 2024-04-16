@@ -58,7 +58,7 @@ import * as BargainActivityApi from '@/api/mall/promotion/bargain/bargainActivit
 import { BargainProductVO } from '@/api/mall/promotion/bargain/bargainActivity'
 import { allSchemas, rules } from './bargainActivity.data'
 import { SpuAndSkuList, SpuProperty, SpuSelect } from '@/views/mall/promotion/components'
-import { getPropertyList, RuleConfig } from '@/views/mall/product/spu/components'
+import { getSpecList, RuleConfig } from '@/views/mall/product/spu/components'
 import * as ProductSpuApi from '@/api/mall/product/spu'
 import { convertToInteger, formatToFraction } from '@/utils'
 import { cloneDeep } from 'lodash-es'
@@ -141,7 +141,7 @@ const getSpuDetails = async (
   spuProperties.push({
     spuId: spu.id!,
     spuDetail: spu,
-    propertyList: getPropertyList(spu)
+    propertyList: getSpecList(spu)
   })
   spuList.value.push(spu)
   spuPropertyList.value = spuProperties

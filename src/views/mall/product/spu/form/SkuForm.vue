@@ -58,7 +58,7 @@ import { PropType } from 'vue'
 import { copyValueToTarget } from '@/utils'
 import { propTypes } from '@/utils/propTypes'
 import {
-  getPropertyList,
+  getSpecList,
   PropertyAndValues,
   RuleConfig,
   SkuList
@@ -125,7 +125,7 @@ watch(
     }
     copyValueToTarget(formData, data)
     // 将 SKU 的属性，整理成 PropertyAndValues 数组
-    propertyList.value = getPropertyList(data)
+    propertyList.value = getSpecList(data)
   },
   {
     immediate: true

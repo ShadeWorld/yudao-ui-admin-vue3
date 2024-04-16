@@ -46,7 +46,7 @@ import { allSchemas, rules } from './discountActivity.data'
 import { cloneDeep } from 'lodash-es'
 import * as DiscountActivityApi from '@/api/mall/promotion/discount/discountActivity'
 import * as ProductSpuApi from '@/api/mall/product/spu'
-import { getPropertyList, RuleConfig } from '@/views/mall/product/spu/components'
+import { getSpecList, RuleConfig } from '@/views/mall/product/spu/components'
 
 defineOptions({ name: 'PromotionDiscountActivityForm' })
 
@@ -105,7 +105,7 @@ const getSpuDetails = async (
   spuProperties.push({
     spuId: spu.id!,
     spuDetail: spu,
-    propertyList: getPropertyList(spu)
+    propertyList: getSpecList(spu)
   })
   spuList.value.push(spu)
   spuPropertyList.value = spuProperties
@@ -127,7 +127,11 @@ const open = async (type: string, id?: number) => {
         id
       )) as DiscountActivityApi.DiscountActivityVO
       const supId = data.products[0].spuId
-      await getSpuDetails(supId!, data.products?.map((sku) => sku.skuId), data.products)
+      await getSpuDetails(
+        supId!,
+        data.products?.map((sku) => sku.skuId),
+        data.products
+      )
       formRef.value.setValues(data)
     } finally {
       formLoading.value = false

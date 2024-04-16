@@ -140,7 +140,7 @@
     </el-row>
   </el-form>
 
-  <!-- 商品属性添加 Form 表单 -->
+  <!-- 商品规格添加 Form 表单 -->
   <ProductSpecAddForm
     ref="attributesAddFormRef"
     :propertyList="specList"
@@ -163,7 +163,7 @@ import ProductSpec from './ProductSpec.vue'
 import ProductPropertyForm from './ProductPropertyForm.vue'
 import * as ProductPropertyApi from '@/api/mall/product/property'
 import {
-  getPropertyList,
+  getSpecList,
   PropertyAndValues,
   RuleConfig,
   SkuList
@@ -267,6 +267,10 @@ watch(
       return
     }
     copyValueToTarget(formData, data)
+    if (data.id) {
+      // 回显规格
+      specList.value = getSpecList(data)
+    }
   },
   {
     immediate: true
@@ -300,8 +304,6 @@ onMounted(async () => {
   categoryList.value = handleTree(data, 'id')
   // 获取商品品牌列表
   brandList.value = await ProductBrandApi.getSimpleBrandList()
-  // 回显规格
-  specList.value = getPropertyList(props.propFormData)
 })
 
 // 属性数组
@@ -335,8 +337,8 @@ const getPropertiesByCategory = (categoryId: number) => {
 }
 
 /** 调用 SkuList generateTableData 方法*/
-const generateSkus = (propertyList) => {
-  skuListRef.value.generateTableData(propertyList)
+const generateSkus = (specList) => {
+  skuListRef.value.generateTableData(specList)
 }
 
 const addLensRow = () => {
