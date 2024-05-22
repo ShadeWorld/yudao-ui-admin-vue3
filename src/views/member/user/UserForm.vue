@@ -13,13 +13,23 @@
       <el-form-item label="状态" prop="status">
         <el-radio-group v-model="formData.status">
           <el-radio
-            v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
+            v-for="dict in getIntDictOptions(DICT_TYPE.MEMBER_STATUS)"
             :key="dict.value"
             :label="dict.value"
           >
             {{ dict.label }}
           </el-radio>
         </el-radio-group>
+      </el-form-item>
+      <el-form-item label="业务员" prop="userId">
+        <el-select v-model="formData.userId" placeholder="请选择业务员">
+          <el-option
+            v-for="user in userList"
+            :key="user.id"
+            :label="user.nickname"
+            :value="user.id"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="用户昵称" prop="nickname">
         <el-input v-model="formData.nickname" placeholder="请输入用户昵称" />
@@ -27,29 +37,29 @@
       <el-form-item label="头像" prop="avatar">
         <UploadImg v-model="formData.avatar" :limit="1" :is-show-tip="false" />
       </el-form-item>
-      <el-form-item label="真实名字" prop="name">
-        <el-input v-model="formData.name" placeholder="请输入真实名字" />
+      <el-form-item label="公司（店名）" prop="companyName">
+        <el-input v-model="formData.companyName" placeholder="请输入公司（店名）" />
       </el-form-item>
-      <el-form-item label="用户性别" prop="sex">
-        <el-radio-group v-model="formData.sex">
-          <el-radio
-            v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_USER_SEX)"
-            :key="dict.value"
-            :label="dict.value"
-          >
-            {{ dict.label }}
-          </el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="出生日期" prop="birthday">
-        <el-date-picker
-          v-model="formData.birthday"
-          type="date"
-          value-format="x"
-          placeholder="选择出生日期"
-        />
-      </el-form-item>
-      <el-form-item label="所在地" prop="areaId">
+      <!--      <el-form-item label="用户性别" prop="sex">-->
+      <!--        <el-radio-group v-model="formData.sex">-->
+      <!--          <el-radio-->
+      <!--            v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_USER_SEX)"-->
+      <!--            :key="dict.value"-->
+      <!--            :label="dict.value"-->
+      <!--          >-->
+      <!--            {{ dict.label }}-->
+      <!--          </el-radio>-->
+      <!--        </el-radio-group>-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="出生日期" prop="birthday">-->
+      <!--        <el-date-picker-->
+      <!--          v-model="formData.birthday"-->
+      <!--          type="date"-->
+      <!--          value-format="x"-->
+      <!--          placeholder="选择出生日期"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <el-form-item label="请选择地址" prop="areaId">
         <el-tree-select
           v-model="formData.areaId"
           :data="areaList"
@@ -77,6 +87,7 @@
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import * as UserApi from '@/api/member/user'
 import * as AreaApi from '@/api/system/area'
+import * as SysUserApi from '@/api/system/user'
 import { defaultProps } from '@/utils/tree'
 import MemberTagSelect from '@/views/member/tag/components/MemberTagSelect.vue'
 import MemberGroupSelect from '@/views/member/group/components/MemberGroupSelect.vue'
@@ -93,12 +104,11 @@ const formData = ref({
   mobile: undefined,
   password: undefined,
   status: undefined,
+  userId: undefined,
   nickname: undefined,
   avatar: undefined,
-  name: undefined,
-  sex: undefined,
+  companyName: undefined,
   areaId: undefined,
-  birthday: undefined,
   mark: undefined,
   tagIds: [],
   groupId: undefined
@@ -109,6 +119,7 @@ const formRules = reactive({
 })
 const formRef = ref() // 表单 Ref
 const areaList = ref([]) // 地区列表
+const userList = ref<any[]>([]) // 用户列表
 
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {
@@ -127,6 +138,8 @@ const open = async (type: string, id?: number) => {
   }
   // 获得地区列表
   areaList.value = await AreaApi.getAreaTree()
+  // 加载用户列表
+  userList.value = await SysUserApi.getSimpleUserList()
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
@@ -164,12 +177,11 @@ const resetForm = () => {
     mobile: undefined,
     password: undefined,
     status: undefined,
+    userId: undefined,
     nickname: undefined,
     avatar: undefined,
-    name: undefined,
-    sex: undefined,
+    companyName: undefined,
     areaId: undefined,
-    birthday: undefined,
     mark: undefined,
     tagIds: [],
     groupId: undefined

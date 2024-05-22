@@ -12,6 +12,7 @@ const props = defineProps({
   zIndex: propTypes.number.def(200),
   initialIndex: propTypes.number.def(0),
   infinite: propTypes.bool.def(true),
+  closeOnPressEscape: propTypes.bool.def(false),
   hideOnClickModal: propTypes.bool.def(false),
   teleported: propTypes.bool.def(false),
   show: propTypes.bool.def(false)

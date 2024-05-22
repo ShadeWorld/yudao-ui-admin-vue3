@@ -10,14 +10,38 @@
       class="-mb-15px"
       label-width="68px"
     >
-      <el-form-item label="用户昵称" prop="nickname">
+      <!--      <el-form-item label="用户昵称" prop="nickname">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.nickname"-->
+      <!--          class="!w-240px"-->
+      <!--          clearable-->
+      <!--          placeholder="请输入用户昵称"-->
+      <!--          @keyup.enter="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <el-form-item label="公司（店名）" prop="companyName" label-width="98px">
         <el-input
-          v-model="queryParams.nickname"
+          v-model="queryParams.companyName"
           class="!w-240px"
           clearable
-          placeholder="请输入用户昵称"
+          placeholder="请输入公司（店名）"
           @keyup.enter="handleQuery"
         />
+      </el-form-item>
+      <el-form-item label="业务员" prop="userId">
+        <el-select
+          v-model="queryParams.userId"
+          placeholder="请选择业务员"
+          clearable
+          class="!w-240px"
+        >
+          <el-option
+            v-for="user in userList"
+            :key="user.id"
+            :label="user.nickname"
+            :value="user.id"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="手机号" prop="mobile">
         <el-input
@@ -53,7 +77,7 @@
       <el-form-item label="用户标签" prop="tagIds">
         <MemberTagSelect v-model="queryParams.tagIds" />
       </el-form-item>
-      <el-form-item label="用户等级" prop="levelId">
+      <el-form-item label="用户等级" prop="levelId" label-width="98px">
         <MemberLevelSelect v-model="queryParams.levelId" />
       </el-form-item>
       <el-form-item label="用户分组" prop="groupId">
@@ -84,15 +108,18 @@
     >
       <el-table-column type="selection" width="55" />
       <el-table-column align="center" label="用户编号" prop="id" width="120px" />
-      <el-table-column align="center" label="头像" prop="avatar" width="80px">
-        <template #default="scope">
-          <img :src="scope.row.avatar" style="width: 40px" />
-        </template>
-      </el-table-column>
+      <!--      <el-table-column align="center" label="头像" prop="avatar" width="80px">-->
+      <!--        <template #default="scope">-->
+      <!--          <img :src="scope.row.avatar" style="width: 40px" />-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
+      <el-table-column align="center" label="联系人" prop="contactPerson" width="100px" />
       <el-table-column align="center" label="手机号" prop="mobile" width="120px" />
-      <el-table-column align="center" label="昵称" prop="nickname" width="80px" />
-      <el-table-column align="center" label="等级" prop="levelName" width="100px" />
-      <el-table-column align="center" label="分组" prop="groupName" width="100px" />
+      <!--      <el-table-column align="center" label="昵称" prop="nickname" width="80px" />-->
+      <el-table-column align="center" label="公司（店名）" prop="companyName" width="180px" />
+      <!--      <el-table-column align="center" label="等级" prop="levelName" width="100px" />-->
+      <!--      <el-table-column align="center" label="分组" prop="groupName" width="100px" />-->
+      <el-table-column align="center" label="业务员" prop="userName" width="100px" />
       <el-table-column
         :show-overflow-tooltip="false"
         align="center"
@@ -105,10 +132,10 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="积分" prop="point" width="100px" />
+      <!--      <el-table-column align="center" label="积分" prop="point" width="100px" />-->
       <el-table-column align="center" label="状态" prop="status" width="100px">
         <template #default="scope">
-          <dict-tag :type="DICT_TYPE.COMMON_STATUS" :value="scope.row.status" />
+          <dict-tag :type="DICT_TYPE.MEMBER_STATUS" :value="scope.row.status" />
         </template>
       </el-table-column>
       <el-table-column
@@ -211,6 +238,7 @@ import UserLevelUpdateForm from './UserLevelUpdateForm.vue'
 import UserPointUpdateForm from './UserPointUpdateForm.vue'
 import { CouponSendForm } from '@/views/mall/promotion/coupon/components'
 import { checkPermi } from '@/utils/permission'
+import * as SysUserApi from '@/api/system/user'
 
 defineOptions({ name: 'MemberUser' })
 
@@ -223,6 +251,8 @@ const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
   nickname: null,
+  companyName: null,
+  userId: undefined,
   mobile: null,
   loginDate: [],
   createTime: [],
@@ -234,6 +264,7 @@ const queryFormRef = ref() // 搜索的表单
 const updateLevelFormRef = ref() // 修改会员等级表单
 const updatePointFormRef = ref() // 修改会员积分表单
 const selectedIds = ref<number[]>([]) // 表格的选中 ID 数组
+const userList = ref<any[]>([]) // 用户列表
 
 /** 查询列表 */
 const getList = async () => {
@@ -307,7 +338,9 @@ const handleCommand = (command: string, row: UserApi.UserVO) => {
 }
 
 /** 初始化 **/
-onMounted(() => {
-  getList()
+onMounted(async () => {
+  await getList()
+  // 加载用户列表
+  userList.value = await SysUserApi.getSimpleUserList()
 })
 </script>

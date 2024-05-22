@@ -2,17 +2,22 @@ import request from '@/config/axios'
 
 export interface UserVO {
   id: number
+  userId: number | undefined
+  userName: string | undefined
   avatar: string | undefined
-  birthday: number | undefined
   createTime: number | undefined
   loginDate: number | undefined
   loginIp: string
   mark: string
   mobile: string
-  name: string | undefined
+  companyName: string
+  legalPerson: string
+  contactPerson: string
+  businessLicense: string
+  shopFront: string
+  recommender: string | undefined
   nickname: string | undefined
   registerIp: string
-  sex: number
   status: number
   areaId: number | undefined
   areaName: string | undefined
