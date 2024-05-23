@@ -159,7 +159,7 @@
           v-model="formData.fixedStartTerm"
           :min="0"
           :precision="0"
-          class="mx-2"
+          class="mx-2 !w-180px"
           placeholder="0 为今天生效"
         />
         至
@@ -167,7 +167,7 @@
           v-model="formData.fixedEndTerm"
           :min="0"
           :precision="0"
-          class="mx-2"
+          class="mx-2 !w-180px"
           placeholder="请输入结束天数"
         />
         天有效
@@ -230,8 +230,8 @@ const formRules = reactive({
   discountLimitPrice: [{ required: true, message: '最多优惠不能为空', trigger: 'blur' }],
   usePrice: [{ required: true, message: '满多少元可以使用不能为空', trigger: 'blur' }],
   takeType: [{ required: true, message: '领取方式不能为空', trigger: 'change' }],
-  totalCount: [{ required: true, message: '发放数量不能为空', trigger: 'blur' }],
-  takeLimitCount: [{ required: true, message: '每人限领个数不能为空', trigger: 'blur' }],
+  // totalCount: [{ required: true, message: '发放数量不能为空', trigger: 'blur' }],
+  // takeLimitCount: [{ required: true, message: '每人限领个数不能为空', trigger: 'blur' }],
   validityType: [{ required: true, message: '有效期类型不能为空', trigger: 'change' }],
   validTimes: [{ required: true, message: '固定日期不能为空', trigger: 'change' }],
   fixedStartTerm: [{ required: true, message: '开始领取天数不能为空', trigger: 'blur' }],

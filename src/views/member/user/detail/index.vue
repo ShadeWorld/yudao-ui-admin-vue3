@@ -30,15 +30,15 @@
           <CardTitle title="账户明细" />
         </template>
         <el-tabs>
-          <el-tab-pane label="积分">
-            <UserPointList :user-id="id" />
-          </el-tab-pane>
-          <el-tab-pane label="签到" lazy>
-            <UserSignList :user-id="id" />
-          </el-tab-pane>
-          <el-tab-pane label="成长值" lazy>
-            <UserExperienceRecordList :user-id="id" />
-          </el-tab-pane>
+          <!--          <el-tab-pane label="积分">-->
+          <!--            <UserPointList :user-id="id" />-->
+          <!--          </el-tab-pane>-->
+          <!--          <el-tab-pane label="签到" lazy>-->
+          <!--            <UserSignList :user-id="id" />-->
+          <!--          </el-tab-pane>-->
+          <!--          <el-tab-pane label="成长值" lazy>-->
+          <!--            <UserExperienceRecordList :user-id="id" />-->
+          <!--          </el-tab-pane>-->
           <!-- TODO @jason：增加一个余额变化； -->
           <el-tab-pane label="余额" lazy>余额(WIP)</el-tab-pane>
           <el-tab-pane label="收货地址" lazy>
@@ -54,9 +54,9 @@
           <el-tab-pane label="优惠劵" lazy>
             <UserCouponList :user-id="id" />
           </el-tab-pane>
-          <el-tab-pane label="推广用户" lazy>
-            <UserBrokerageList :bind-user-id="id" />
-          </el-tab-pane>
+          <!--          <el-tab-pane label="推广用户" lazy>-->
+          <!--            <UserBrokerageList :bind-user-id="id" />-->
+          <!--          </el-tab-pane>-->
         </el-tabs>
       </el-card>
     </el-row>
@@ -72,12 +72,8 @@ import UserForm from '@/views/member/user/UserForm.vue'
 import UserAccountInfo from './UserAccountInfo.vue'
 import UserAddressList from './UserAddressList.vue'
 import UserBasicInfo from './UserBasicInfo.vue'
-import UserBrokerageList from './UserBrokerageList.vue'
 import UserCouponList from './UserCouponList.vue'
-import UserExperienceRecordList from './UserExperienceRecordList.vue'
 import UserOrderList from './UserOrderList.vue'
-import UserPointList from './UserPointList.vue'
-import UserSignList from './UserSignList.vue'
 import UserFavoriteList from './UserFavoriteList.vue'
 import { CardTitle } from '@/components/Card/index'
 import { ElMessage } from 'element-plus'

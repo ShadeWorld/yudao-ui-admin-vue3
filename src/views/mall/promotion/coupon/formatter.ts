@@ -35,7 +35,10 @@ export const validityTypeFormat = (row: CouponTemplateVO) => {
 
 // 格式化【剩余数量】
 export const remainedCountFormat = (row: CouponTemplateVO) => {
-  return row.totalCount - row.takeCount
+  if (row.totalCount === -1) {
+    return '无限'
+  }
+  return `${row.totalCount - row.takeCount} 张`
 }
 
 // 格式化【最低消费】

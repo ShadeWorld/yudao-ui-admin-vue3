@@ -109,7 +109,12 @@
         prop="validityType"
         width="185"
       />
-      <el-table-column align="center" label="发放数量" prop="totalCount" />
+      <el-table-column
+        align="center"
+        label="发放数量"
+        prop="totalCount"
+        :formatter="(row) => (row.totalCount === -1 ? '无限' : `${row.totalCount} 张`)"
+      />
       <el-table-column
         :formatter="remainedCountFormat"
         align="center"
