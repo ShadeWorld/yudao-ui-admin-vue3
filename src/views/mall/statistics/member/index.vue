@@ -55,7 +55,7 @@
       </el-col>
     </el-row>
     <el-row :gutter="16">
-      <el-col :md="18" :sm="24">
+      <el-col :md="24" :sm="24">
         <el-card shadow="never">
           <template #header>
             <CardTitle title="会员地域分布" />
@@ -109,29 +109,28 @@
           </el-row>
         </el-card>
       </el-col>
-      <el-col :md="6" :sm="24">
-        <el-card shadow="never" v-loading="loading">
-          <template #header>
-            <CardTitle title="会员性别比例" />
-          </template>
-          <Echart :height="300" :options="sexChartOptions" />
-        </el-card>
-      </el-col>
+      <!--      <el-col :md="6" :sm="24">-->
+      <!--        <el-card shadow="never" v-loading="loading">-->
+      <!--          <template #header>-->
+      <!--            <CardTitle title="会员性别比例" />-->
+      <!--          </template>-->
+      <!--          <Echart :height="300" :options="sexChartOptions" />-->
+      <!--        </el-card>-->
+      <!--      </el-col>-->
     </el-row>
   </div>
 </template>
 <script lang="ts" setup>
 import * as MemberStatisticsApi from '@/api/mall/statistics/member'
+import {
+  MemberAreaStatisticsRespVO,
+  MemberSummaryRespVO,
+  MemberTerminalStatisticsRespVO
+} from '@/api/mall/statistics/member'
 import SummaryCard from '@/components/SummaryCard/index.vue'
 import { EChartsOption } from 'echarts'
 import china from '@/assets/map/json/china.json'
 import { fenToYuan } from '@/utils'
-import {
-  MemberAreaStatisticsRespVO,
-  MemberSexStatisticsRespVO,
-  MemberSummaryRespVO,
-  MemberTerminalStatisticsRespVO
-} from '@/api/mall/statistics/member'
 import { DICT_TYPE, DictDataType, getIntDictOptions } from '@/utils/dict'
 import echarts from '@/plugins/echarts'
 import { fenToYuanFormat } from '@/utils/formatter'
@@ -177,31 +176,31 @@ const terminalChartOptions = reactive<EChartsOption>({
 }) as EChartsOption
 
 /** 会员性别统计图配置 */
-const sexChartOptions = reactive<EChartsOption>({
-  tooltip: {
-    trigger: 'item',
-    confine: true,
-    formatter: '{a} <br/>{b} : {c} ({d}%)'
-  },
-  legend: {
-    orient: 'vertical',
-    left: 'right'
-  },
-  roseType: 'area',
-  series: [
-    {
-      name: '会员性别',
-      type: 'pie',
-      label: {
-        show: false
-      },
-      labelLine: {
-        show: false
-      },
-      data: []
-    }
-  ]
-}) as EChartsOption
+// const sexChartOptions = reactive<EChartsOption>({
+//   tooltip: {
+//     trigger: 'item',
+//     confine: true,
+//     formatter: '{a} <br/>{b} : {c} ({d}%)'
+//   },
+//   legend: {
+//     orient: 'vertical',
+//     left: 'right'
+//   },
+//   roseType: 'area',
+//   series: [
+//     {
+//       name: '会员性别',
+//       type: 'pie',
+//       label: {
+//         show: false
+//       },
+//       labelLine: {
+//         show: false
+//       },
+//       data: []
+//     }
+//   ]
+// }) as EChartsOption
 
 const areaChartOptions = reactive<EChartsOption>({
   tooltip: {
@@ -266,20 +265,20 @@ const getMemberAreaStatisticsList = async () => {
 }
 
 /** 按照性别，查询会员统计列表 */
-const getMemberSexStatisticsList = async () => {
-  const list = await MemberStatisticsApi.getMemberSexStatisticsList()
-  const dictDataList = getIntDictOptions(DICT_TYPE.SYSTEM_USER_SEX)
-  dictDataList.push({ label: '未知', value: null } as any)
-  sexChartOptions.series![0].data = dictDataList.map((dictData: DictDataType) => {
-    const userCount = list.find(
-      (item: MemberSexStatisticsRespVO) => item.sex === dictData.value
-    )?.userCount
-    return {
-      name: dictData.label,
-      value: userCount || 0
-    }
-  })
-}
+// const getMemberSexStatisticsList = async () => {
+//   const list = await MemberStatisticsApi.getMemberSexStatisticsList()
+//   const dictDataList = getIntDictOptions(DICT_TYPE.SYSTEM_USER_SEX)
+//   dictDataList.push({ label: '未知', value: null } as any)
+//   sexChartOptions.series![0].data = dictDataList.map((dictData: DictDataType) => {
+//     const userCount = list.find(
+//       (item: MemberSexStatisticsRespVO) => item.sex === dictData.value
+//     )?.userCount
+//     return {
+//       name: dictData.label,
+//       value: userCount || 0
+//     }
+//   })
+// }
 
 /** 按照终端，查询会员统计列表 */
 const getMemberTerminalStatisticsList = async () => {
@@ -303,8 +302,8 @@ onMounted(async () => {
   await Promise.all([
     getMemberSummary(),
     getMemberTerminalStatisticsList(),
-    getMemberAreaStatisticsList(),
-    getMemberSexStatisticsList()
+    getMemberAreaStatisticsList()
+    // getMemberSexStatisticsList()
   ])
   loading.value = false
 })
