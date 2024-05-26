@@ -31,7 +31,7 @@
     </template>
     <template v-if="formData!.categoryId === 1">
       <!-- 批量添加镜片规格 -->
-      <el-table-column align="center" label="柱镜范围" min-width="168">
+      <el-table-column align="center" label="球镜范围" min-width="168">
         <template #default="{ row }">
           <el-input-number
             v-model="row.skuLens.minSph"
@@ -60,7 +60,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="球镜范围" min-width="168">
+      <el-table-column align="center" label="柱镜范围" min-width="168">
         <template #default="{ row }">
           <el-input-number
             v-model="row.skuLens.minCyl"
@@ -110,7 +110,7 @@
             class="w-100%!"
             controls-position="right"
           />
-          忽略
+          跳过
           <RangeSelect
             :max-value="row.skuLens.maxAdd"
             :min-value="row.skuLens.minAdd"

@@ -50,14 +50,14 @@
       </el-col>
     </el-row>
     <el-row :gutter="16" class="mb-4">
-      <el-col :md="18" :sm="24">
+      <el-col :md="24" :sm="24">
         <!-- 会员概览 -->
         <MemberFunnelCard />
       </el-col>
-      <el-col :md="6" :sm="24">
-        <!-- 会员终端 -->
-        <MemberTerminalCard />
-      </el-col>
+      <!--      <el-col :md="6" :sm="24">-->
+      <!--        &lt;!&ndash; 会员终端 &ndash;&gt;-->
+      <!--        <MemberTerminalCard />-->
+      <!--      </el-col>-->
     </el-row>
     <!-- 交易量趋势 -->
     <TradeTrendCard class="mb-4" />
@@ -67,17 +67,16 @@
 </template>
 <script lang="ts" setup>
 import * as TradeStatisticsApi from '@/api/mall/statistics/trade'
-import * as MemberStatisticsApi from '@/api/mall/statistics/member'
-import { DataComparisonRespVO } from '@/api/mall/statistics/common'
 import { TradeOrderSummaryRespVO } from '@/api/mall/statistics/trade'
+import * as MemberStatisticsApi from '@/api/mall/statistics/member'
 import { MemberCountRespVO } from '@/api/mall/statistics/member'
+import { DataComparisonRespVO } from '@/api/mall/statistics/common'
 import { fenToYuan } from '@/utils'
 import ComparisonCard from './components/ComparisonCard.vue'
 import MemberStatisticsCard from './components/MemberStatisticsCard.vue'
 import OperationDataCard from './components/OperationDataCard.vue'
 import ShortcutCard from './components/ShortcutCard.vue'
 import TradeTrendCard from './components/TradeTrendCard.vue'
-import MemberTerminalCard from '@/views/mall/statistics/member/components/MemberTerminalCard.vue'
 import MemberFunnelCard from '@/views/mall/statistics/member/components/MemberFunnelCard.vue'
 
 /** 商城首页 */

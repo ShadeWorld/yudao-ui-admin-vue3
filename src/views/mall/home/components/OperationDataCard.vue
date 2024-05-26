@@ -35,12 +35,12 @@ const router = useRouter() // 路由
 /** 数据 */
 const data = reactive({
   orderUndelivered: { name: '待发货订单', value: 9, routerName: 'TradeOrder' },
-  orderAfterSaleApply: { name: '退款中订单', value: 4, routerName: 'TradeAfterSale' },
+  // orderAfterSaleApply: { name: '退款中订单', value: 4, routerName: 'TradeAfterSale' },
   orderWaitePickUp: { name: '待核销订单', value: 0, routerName: 'TradeOrder' },
   productAlertStock: { name: '库存预警', value: 0, routerName: 'ProductSpu' },
   productForSale: { name: '上架商品', value: 0, routerName: 'ProductSpu' },
   productInWarehouse: { name: '仓库商品', value: 0, routerName: 'ProductSpu' },
-  withdrawAuditing: { name: '提现待审核', value: 0, routerName: 'TradeBrokerageWithdraw' },
+  // withdrawAuditing: { name: '提现待审核', value: 0, routerName: 'TradeBrokerageWithdraw' },
   rechargePrice: {
     name: '账户充值',
     value: 0.0,
@@ -54,9 +54,9 @@ const data = reactive({
 const getOrderData = async () => {
   const orderCount = await TradeStatisticsApi.getOrderCount()
   data.orderUndelivered.value = orderCount.undelivered
-  data.orderAfterSaleApply.value = orderCount.afterSaleApply
+  // data.orderAfterSaleApply.value = orderCount.afterSaleApply
   data.orderWaitePickUp.value = orderCount.pickUp
-  data.withdrawAuditing.value = orderCount.auditingWithdraw
+  // data.withdrawAuditing.value = orderCount.auditingWithdraw
 }
 
 /** 查询商品数据 */

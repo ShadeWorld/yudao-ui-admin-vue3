@@ -70,18 +70,17 @@
           <UploadImg v-model="formData.picUrl" :disabled="isDetail" height="80px" />
         </el-form-item>
       </el-col>
-      <el-col :span="24">
+      <el-col :span="12">
         <el-form-item label="商品轮播图" prop="sliderPicUrls">
           <UploadImgs v-model="formData.sliderPicUrls" :disabled="isDetail" />
         </el-form-item>
+        <el-form-item label="属性" v-if="formData.categoryId && formData.categoryId != 3">
+          <ProductPropertyForm :is-detail="isDetail" v-model="formData" />
+        </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item label="商品属性">
-          <ProductPropertyForm
-            :properties="propertyList"
-            :is-detail="isDetail"
-            v-model="formData"
-          />
+        <el-form-item label="动态属性" v-if="formData.categoryId && formData.categoryId != 3">
+          <ProductLensTagForm :is-detail="isDetail" v-model="formData" />
         </el-form-item>
       </el-col>
       <el-col :span="24" v-if="formData.categoryId">
@@ -152,7 +151,7 @@
 import { PropType } from 'vue'
 import { copyValueToTarget } from '@/utils'
 import { defaultProps, handleTree } from '@/utils/tree'
-import type { Spu } from '@/api/mall/product/spu'
+import { Spu } from '@/api/mall/product/spu'
 import * as ProductCategoryApi from '@/api/mall/product/category'
 import { CategoryVO } from '@/api/mall/product/category'
 import * as ProductBrandApi from '@/api/mall/product/brand'
@@ -161,7 +160,8 @@ import { CascaderValue } from 'element-plus'
 import ProductSpecAddForm from './ProductSpecAddForm.vue'
 import ProductSpec from './ProductSpec.vue'
 import ProductPropertyForm from './ProductPropertyForm.vue'
-import * as ProductPropertyApi from '@/api/mall/product/property'
+import ProductLensTagForm from './ProductLensTagForm.vue'
+// import * as ProductPropertyApi from '@/api/mall/product/property'
 import {
   getSpecList,
   PropertyAndValues,
@@ -182,12 +182,25 @@ const lensCategory: number[] = [1, 2]
 
 const message = useMessage() // 消息弹窗
 
+// 规格数组
+const specList = ref<PropertyAndValues[]>([])
+
 const attributesAddFormRef = ref() // 添加商品属性表单
 const skuListRef = ref() // 商品属性列表 Ref
 const formRef = ref() // 表单 Ref
 const formData = reactive<Spu>({
   name: '', // 商品名称
-  properties: [],
+  lensTags: [],
+  lensProperty: {
+    series: '', // 系列
+    kind: '', // 品种
+    refractive: '', // 折射率
+    filmLayer: '', // 膜层
+    standard: '', // 执行标准
+    abbe: '', // 阿贝系数
+    color: '', // 颜色
+    transmittance: '' // 透射比
+  },
   categoryId: undefined, // 商品分类
   keyword: '', // 关键字
   picUrl: '', // 商品封面图
@@ -235,8 +248,9 @@ const ruleConfig: RuleConfig[] = [
 const changeCategory = async (value: CascaderValue) => {
   brandList.value = await ProductBrandApi.getSimpleBrandList(value as number)
   if (value) {
+    // 镜片、车房默认多规格
     formData.specType = lensCategory.includes(value as number)
-    getPropertiesByCategory(value as number)
+    // getPropertiesByCategory(value as number)
   }
 }
 
@@ -271,11 +285,39 @@ watch(
       // 回显规格
       specList.value = getSpecList(data)
     }
+    // if (data.categoryId) {
+    //   getPropertiesByCategory(data.categoryId)
+    // }
   },
   {
     immediate: true
   }
 )
+
+/** 获取属性规格集合 */
+// const getPropertiesByCategory = (categoryId: number) => {
+//   ProductPropertyApi.getPropertiesByCategory(categoryId)
+//     .then((data) => {
+//       propertyList.value = []
+//       specList.value = []
+//       data.forEach((item: any) => {
+//         if (item.type === 1) {
+//           propertyList.value.push({
+//             ...item,
+//             values: []
+//           })
+//         } else {
+//           specList.value.push({
+//             ...item,
+//             values: []
+//           })
+//         }
+//       })
+//     })
+//     .catch((error) => {
+//       console.log(error)
+//     })
+// }
 
 /** 表单校验 */
 const emit = defineEmits(['update:activeName'])
@@ -305,36 +347,6 @@ onMounted(async () => {
   // 获取商品品牌列表
   brandList.value = await ProductBrandApi.getSimpleBrandList()
 })
-
-// 属性数组
-const propertyList = ref<PropertyAndValues[]>([])
-// 规格数组
-const specList = ref<PropertyAndValues[]>([])
-/** 获取属性规格集合 */
-const getPropertiesByCategory = (categoryId: number) => {
-  formData.properties = []
-  ProductPropertyApi.getPropertiesByCategory(categoryId)
-    .then((data) => {
-      propertyList.value = []
-      specList.value = []
-      data.forEach((item: any) => {
-        if (item.type === 1) {
-          propertyList.value.push({
-            ...item,
-            values: []
-          })
-        } else {
-          specList.value.push({
-            ...item,
-            values: []
-          })
-        }
-      })
-    })
-    .catch((error) => {
-      console.log(error)
-    })
-}
 
 /** 调用 SkuList generateTableData 方法*/
 const generateSkus = (specList) => {

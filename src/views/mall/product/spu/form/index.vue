@@ -33,14 +33,14 @@
           :propFormData="formData"
         />
       </el-tab-pane>
-      <el-tab-pane label="其它设置" name="other">
-        <OtherForm
-          ref="otherRef"
-          v-model:activeName="activeName"
-          :is-detail="isDetail"
-          :propFormData="formData"
-        />
-      </el-tab-pane>
+      <!--      <el-tab-pane label="其它设置" name="other">-->
+      <!--        <OtherForm-->
+      <!--          ref="otherRef"-->
+      <!--          v-model:activeName="activeName"-->
+      <!--          :is-detail="isDetail"-->
+      <!--          :propFormData="formData"-->
+      <!--        />-->
+      <!--      </el-tab-pane>-->
     </el-tabs>
     <el-form>
       <el-form-item style="float: right">
@@ -58,7 +58,6 @@ import { useTagsViewStore } from '@/store/modules/tagsView'
 import * as ProductSpuApi from '@/api/mall/product/spu'
 import InfoForm from './InfoForm.vue'
 import DescriptionForm from './DescriptionForm.vue'
-import OtherForm from './OtherForm.vue'
 import DeliveryForm from './DeliveryForm.vue'
 import { convertToInteger, floatToFixed2, formatToFraction } from '@/utils'
 import { onMounted } from 'vue'
@@ -87,8 +86,18 @@ const otherRef = ref() // 其他设置 Ref
 // SPU 表单数据
 const formData = ref<ProductSpuApi.Spu>({
   name: '', // 商品名称
-  categoryId: undefined, // 商品分类
-  properties: [],
+  categoryId: undefined, // 商品分类]
+  lensProperty: {
+    series: '', // 系列
+    kind: '', // 品种
+    refractive: '', // 折射率
+    filmLayer: '', // 膜层
+    standard: '', // 执行标准
+    abbe: '', // 阿贝系数
+    color: '', // 颜色
+    transmittance: '' // 透射比
+  },
+  lensTags: [],
   keyword: '', // 关键字
   picUrl: '', // 商品封面图
   sliderPicUrls: [], // 商品轮播图

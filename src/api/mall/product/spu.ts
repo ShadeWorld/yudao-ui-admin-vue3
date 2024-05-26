@@ -7,6 +7,26 @@ export interface Property {
   valueName?: string // 属性值名称
 }
 
+export interface LensTag {
+  id?: number
+  minSph?: number
+  maxSph?: number
+  centerThickness?: number // 中心厚度
+  diameter?: string // 直径
+}
+
+export interface LensProperty {
+  id?: number
+  series?: string // 系列
+  kind?: string // 品种
+  refractive?: string // 折射率
+  filmLayer?: string // 膜层
+  standard?: string // 执行标准
+  abbe?: string // 阿贝系数
+  color?: string // 颜色
+  transmittance?: string // 透射比
+}
+
 export interface Sku {
   id?: number // 商品 SKU 编号
   name?: string // 商品 SKU 名称
@@ -50,7 +70,8 @@ export interface Spu {
   id?: number
   name?: string // 商品名称
   categoryId?: number // 商品分类
-  properties?: Property[] // 属性数组
+  lensProperty?: LensProperty // 属性数组
+  lensTags: LensTag[]
   keyword?: string // 关键字
   unit?: number | undefined // 单位
   picUrl?: string // 商品封面图

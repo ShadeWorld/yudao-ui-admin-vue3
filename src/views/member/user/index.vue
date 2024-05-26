@@ -183,23 +183,23 @@
                   >
                     编辑
                   </el-dropdown-item>
-                  <el-dropdown-item
-                    v-if="checkPermi(['member:user:update-level'])"
-                    command="handleUpdateLevel"
-                  >
-                    修改等级
-                  </el-dropdown-item>
-                  <el-dropdown-item
-                    v-if="checkPermi(['member:user:update-point'])"
-                    command="handleUpdatePoint"
-                  >
-                    修改积分
-                  </el-dropdown-item>
+                  <!--                  <el-dropdown-item-->
+                  <!--                    v-if="checkPermi(['member:user:update-level'])"-->
+                  <!--                    command="handleUpdateLevel"-->
+                  <!--                  >-->
+                  <!--                    修改等级-->
+                  <!--                  </el-dropdown-item>-->
+                  <!--                  <el-dropdown-item-->
+                  <!--                    v-if="checkPermi(['member:user:update-point'])"-->
+                  <!--                    command="handleUpdatePoint"-->
+                  <!--                  >-->
+                  <!--                    修改积分-->
+                  <!--                  </el-dropdown-item>-->
                   <el-dropdown-item
                     v-if="checkPermi(['member:user:update-balance'])"
-                    command="handleUpdateBlance"
+                    command="handleUpdateBalance"
                   >
-                    修改余额(WIP)
+                    修改余额
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -223,6 +223,8 @@
   <UserLevelUpdateForm ref="updateLevelFormRef" @success="getList" />
   <!-- 修改用户积分弹窗 -->
   <UserPointUpdateForm ref="updatePointFormRef" @success="getList" />
+  <!-- 修改用户余额弹窗 -->
+  <UserBalanceUpdateForm ref="updateBalanceFormRef" @success="getList" />
   <!-- 发送优惠券弹窗 -->
   <CouponSendForm ref="couponSendFormRef" />
 </template>
@@ -263,6 +265,7 @@ const queryParams = reactive({
 const queryFormRef = ref() // 搜索的表单
 const updateLevelFormRef = ref() // 修改会员等级表单
 const updatePointFormRef = ref() // 修改会员积分表单
+const updateBalanceFormRef = ref() // 修改会员余额表单
 const selectedIds = ref<number[]>([]) // 表格的选中 ID 数组
 const userList = ref<any[]>([]) // 用户列表
 
@@ -329,8 +332,8 @@ const handleCommand = (command: string, row: UserApi.UserVO) => {
     case 'handleUpdatePoint':
       updatePointFormRef.value.open(row.id)
       break
-    case 'handleUpdateBlance':
-      // todo @jason：增加一个【修改余额】
+    case 'handleUpdateBalance':
+      updateBalanceFormRef.value.open(row.id)
       break
     default:
       break

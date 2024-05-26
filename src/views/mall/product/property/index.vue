@@ -19,6 +19,17 @@
           @keyup.enter="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="商品分类" prop="categoryId">
+        <el-cascader
+          v-model="queryParams.categoryId"
+          :options="categoryList"
+          :props="defaultProps"
+          class="w-1/1"
+          clearable
+          filterable
+          placeholder="请选择商品分类"
+        />
+      </el-form-item>
       <el-form-item label="创建时间" prop="createTime">
         <el-date-picker
           v-model="queryParams.createTime"
@@ -56,6 +67,7 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list">
       <el-table-column align="center" label="编号" min-width="60" prop="id" />
+      <el-table-column align="center" label="分类" prop="categoryName" min-width="150" />
       <el-table-column align="center" label="属性名称" prop="name" min-width="150" />
       <el-table-column :show-overflow-tooltip="true" align="center" label="备注" prop="remark" />
       <el-table-column
@@ -103,6 +115,8 @@
 import { dateFormatter } from '@/utils/formatTime'
 import * as PropertyApi from '@/api/mall/product/property'
 import PropertyForm from './PropertyForm.vue'
+import { defaultProps, handleTree } from '@/utils/tree'
+import * as ProductCategoryApi from '@/api/mall/product/category'
 
 const { push } = useRouter()
 
@@ -117,6 +131,7 @@ const list = ref([]) // 列表的数据
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
+  categoryId: undefined,
   name: undefined,
   createTime: []
 })
@@ -170,8 +185,14 @@ const goValueList = (id: number) => {
   push({ name: 'ProductPropertyValue', params: { propertyId: id } })
 }
 
+/** 获取分类的节点的完整结构 */
+const categoryList = ref() // 分类树
+
 /** 初始化 **/
-onMounted(() => {
-  getList()
+onMounted(async () => {
+  await getList()
+  // 获得分类树
+  const data = await ProductCategoryApi.getCategoryList({})
+  categoryList.value = handleTree(data, 'id', 'parentId')
 })
 </script>

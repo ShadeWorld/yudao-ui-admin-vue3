@@ -31,7 +31,7 @@ const router = useRouter() // 路由
 
 /** 菜单列表 */
 const menuList = [
-  { name: '用户管理', icon: 'ep:user-filled', bgColor: 'bg-red-400', routerName: 'MemberUser' },
+  { name: '会员管理', icon: 'ep:user-filled', bgColor: 'bg-red-400', routerName: 'MemberUser' },
   {
     name: '商品管理',
     icon: 'fluent-mdl2:product',
@@ -45,30 +45,30 @@ const menuList = [
     bgColor: 'bg-green-600',
     routerName: 'TradeAfterSale'
   },
-  {
-    name: '分销管理',
-    icon: 'fa-solid:project-diagram',
-    bgColor: 'bg-cyan-500',
-    routerName: 'TradeBrokerageUser'
-  },
+  // {
+  //   name: '分销管理',
+  //   icon: 'fa-solid:project-diagram',
+  //   bgColor: 'bg-cyan-500',
+  //   routerName: 'TradeBrokerageUser'
+  // },
   {
     name: '优惠券',
     icon: 'ep:ticket',
     bgColor: 'bg-blue-500',
     routerName: 'PromotionCoupon'
-  },
-  {
-    name: '拼团活动',
-    icon: 'fa:group',
-    bgColor: 'bg-purple-500',
-    routerName: 'PromotionBargainActivity'
-  },
-  {
-    name: '佣金提现',
-    icon: 'vaadin:money-withdraw',
-    bgColor: 'bg-rose-500',
-    routerName: 'TradeBrokerageWithdraw'
   }
+  // {
+  //   name: '拼团活动',
+  //   icon: 'fa:group',
+  //   bgColor: 'bg-purple-500',
+  //   routerName: 'PromotionBargainActivity'
+  // }
+  // {
+  //   name: '佣金提现',
+  //   icon: 'vaadin:money-withdraw',
+  //   bgColor: 'bg-rose-500',
+  //   routerName: 'TradeBrokerageWithdraw'
+  // }
 ]
 
 /**
