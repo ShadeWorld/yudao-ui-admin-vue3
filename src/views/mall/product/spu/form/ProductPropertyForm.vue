@@ -68,6 +68,15 @@ console.log(model)
         <span v-else>{{ model.lensProperty.transmittance }}</span>
       </td>
     </tr>
+    <tr class="my-tr">
+      <td class="my-td">是否区分左右眼</td>
+      <td class="my-td">
+        <el-radio-group v-model="model.lensProperty.distinguishEye">
+          <el-radio :label="true" class="radio"> 是 </el-radio>
+          <el-radio :label="false">否</el-radio>
+        </el-radio-group>
+      </td>
+    </tr>
   </table>
 </template>
 <style scoped lang="scss">

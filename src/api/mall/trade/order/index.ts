@@ -1,5 +1,10 @@
 import request from '@/config/axios'
 
+export interface CreateOrderReqVo {
+  userId?: number
+  addressId?: number
+}
+
 export interface OrderVO {
   // ========== 订单基本信息 ==========
   id?: number | null // 订单编号

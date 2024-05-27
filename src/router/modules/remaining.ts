@@ -399,6 +399,19 @@ const remainingRouter: AppRouteRecordRaw[] = [
     },
     children: [
       {
+        path: 'order/add',
+        component: () => import('@/views/mall/trade/order/form/index.vue'),
+        name: 'TradeOrderAdd',
+        meta: {
+          noCache: false,
+          hidden: true,
+          canTo: true,
+          title: '创建订单',
+          icon: 'ep:edit',
+          activeMenu: '/mall/trade/order'
+        }
+      },
+      {
         path: 'order/detail/:id(\\d+)',
         component: () => import('@/views/mall/trade/order/detail/index.vue'),
         name: 'TradeOrderDetail',

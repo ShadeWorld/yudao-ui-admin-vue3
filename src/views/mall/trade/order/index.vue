@@ -21,21 +21,21 @@
           />
         </el-select>
       </el-form-item>
-      <!--      <el-form-item label="支付方式" prop="payChannelCode">-->
-      <!--        <el-select-->
-      <!--          v-model="queryParams.payChannelCode"-->
-      <!--          class="!w-280px"-->
-      <!--          clearable-->
-      <!--          placeholder="全部"-->
-      <!--        >-->
-      <!--          <el-option-->
-      <!--            v-for="dict in getStrDictOptions(DICT_TYPE.PAY_CHANNEL_CODE)"-->
-      <!--            :key="dict.value"-->
-      <!--            :label="dict.label"-->
-      <!--            :value="dict.value"-->
-      <!--          />-->
-      <!--        </el-select>-->
-      <!--      </el-form-item>-->
+      <el-form-item label="支付方式" prop="payChannelCode">
+        <el-select
+          v-model="queryParams.payChannelCode"
+          class="!w-280px"
+          clearable
+          placeholder="全部"
+        >
+          <el-option
+            v-for="dict in getStrDictOptions(DICT_TYPE.PAY_CHANNEL_CODE)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="创建时间" prop="createTime">
         <el-date-picker
           v-model="queryParams.createTime"
@@ -47,16 +47,16 @@
           value-format="YYYY-MM-DD HH:mm:ss"
         />
       </el-form-item>
-      <!--      <el-form-item label="订单来源" prop="terminal">-->
-      <!--        <el-select v-model="queryParams.terminal" class="!w-280px" clearable placeholder="全部">-->
-      <!--          <el-option-->
-      <!--            v-for="dict in getIntDictOptions(DICT_TYPE.TERMINAL)"-->
-      <!--            :key="dict.value"-->
-      <!--            :label="dict.label"-->
-      <!--            :value="dict.value"-->
-      <!--          />-->
-      <!--        </el-select>-->
-      <!--      </el-form-item>-->
+      <el-form-item label="订单来源" prop="terminal">
+        <el-select v-model="queryParams.terminal" class="!w-280px" clearable placeholder="全部">
+          <el-option
+            v-for="dict in getIntDictOptions(DICT_TYPE.TERMINAL)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
       <!--      <el-form-item label="订单类型" prop="type">-->
       <!--        <el-select v-model="queryParams.type" class="!w-280px" clearable placeholder="全部">-->
       <!--          <el-option-->
@@ -160,6 +160,10 @@
           <Icon class="mr-5px" icon="ep:refresh" />
           重置
         </el-button>
+        <el-button @click="createOrder" type="primary" plain>
+          <Icon class="mr-5px" icon="ep:plus" />
+          创建订单
+        </el-button>
       </el-form-item>
     </el-form>
   </ContentWrap>
@@ -232,7 +236,7 @@ import OrderDeliveryForm from '@/views/mall/trade/order/form/OrderDeliveryForm.v
 import OrderUpdateRemarkForm from '@/views/mall/trade/order/form/OrderUpdateRemarkForm.vue'
 import * as TradeOrderApi from '@/api/mall/trade/order'
 import * as PickUpStoreApi from '@/api/mall/trade/delivery/pickUpStore'
-import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
+import { DICT_TYPE, getIntDictOptions, getStrDictOptions } from '@/utils/dict'
 import * as DeliveryExpressApi from '@/api/mall/trade/delivery/express'
 import { DeliveryTypeEnum, TradeOrderStatusEnum } from '@/utils/constants'
 import { OrderTableColumn } from './components'
@@ -322,6 +326,11 @@ const resetQuery = () => {
 /** 查看订单详情 */
 const openDetail = (id: number) => {
   push({ name: 'TradeOrderDetail', params: { id } })
+}
+
+/** 创建订单 */
+const createOrder = () => {
+  push({ name: 'TradeOrderAdd' })
 }
 
 /** 操作分发 */

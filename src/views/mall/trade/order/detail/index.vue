@@ -122,18 +122,18 @@
         <template #label><span style="color: red">优惠劵优惠: </span></template>
         {{ fenToYuan(formData.couponPrice!) }} 元
       </el-descriptions-item>
-      <el-descriptions-item>
-        <template #label><span style="color: red">VIP 优惠: </span></template>
-        {{ fenToYuan(formData.vipPrice!) }} 元
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template #label><span style="color: red">活动优惠: </span></template>
-        {{ fenToYuan(formData.discountPrice!) }} 元
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template #label><span style="color: red">积分抵扣: </span></template>
-        {{ fenToYuan(formData.pointPrice!) }} 元
-      </el-descriptions-item>
+      <!--      <el-descriptions-item>-->
+      <!--        <template #label><span style="color: red">VIP 优惠: </span></template>-->
+      <!--        {{ fenToYuan(formData.vipPrice!) }} 元-->
+      <!--      </el-descriptions-item>-->
+      <!--      <el-descriptions-item>-->
+      <!--        <template #label><span style="color: red">活动优惠: </span></template>-->
+      <!--        {{ fenToYuan(formData.discountPrice!) }} 元-->
+      <!--      </el-descriptions-item>-->
+      <!--      <el-descriptions-item>-->
+      <!--        <template #label><span style="color: red">积分抵扣: </span></template>-->
+      <!--        {{ fenToYuan(formData.pointPrice!) }} 元-->
+      <!--      </el-descriptions-item>-->
       <!-- 第三层 -->
       <el-descriptions-item v-for="item in 3" :key="item" label-class-name="no-colon" />
       <el-descriptions-item label="应付金额: ">

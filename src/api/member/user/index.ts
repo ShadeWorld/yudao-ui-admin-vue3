@@ -56,3 +56,8 @@ export const updateUserPoint = async (data: any) => {
 export const updateUserBalance = async (data: any) => {
   return await request.put({ url: `/member/user/update-balance`, data })
 }
+
+// 获取当前登录业务员简单会员列表
+export const getSimpleMemberList = async (key: string) => {
+  return await request.get({ url: `/member/user/simple-list?key=${key}` })
+}

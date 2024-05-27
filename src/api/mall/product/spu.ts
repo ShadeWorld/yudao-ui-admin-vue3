@@ -25,6 +25,7 @@ export interface LensProperty {
   abbe?: string // 阿贝系数
   color?: string // 颜色
   transmittance?: string // 透射比
+  distinguishEye?: boolean // 是否区分左右眼
 }
 
 export interface Sku {
