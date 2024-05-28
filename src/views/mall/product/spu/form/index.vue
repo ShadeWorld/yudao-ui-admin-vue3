@@ -17,14 +17,14 @@
       <!--          :propFormData="formData"-->
       <!--        />-->
       <!--      </el-tab-pane>-->
-      <el-tab-pane label="物流设置" name="delivery">
-        <DeliveryForm
-          ref="deliveryRef"
-          v-model:activeName="activeName"
-          :is-detail="isDetail"
-          :propFormData="formData"
-        />
-      </el-tab-pane>
+      <!--      <el-tab-pane label="物流设置" name="delivery">-->
+      <!--        <DeliveryForm-->
+      <!--          ref="deliveryRef"-->
+      <!--          v-model:activeName="activeName"-->
+      <!--          :is-detail="isDetail"-->
+      <!--          :propFormData="formData"-->
+      <!--        />-->
+      <!--      </el-tab-pane>-->
       <el-tab-pane label="商品详情" name="description">
         <DescriptionForm
           ref="descriptionRef"
@@ -58,7 +58,6 @@ import { useTagsViewStore } from '@/store/modules/tagsView'
 import * as ProductSpuApi from '@/api/mall/product/spu'
 import InfoForm from './InfoForm.vue'
 import DescriptionForm from './DescriptionForm.vue'
-import DeliveryForm from './DeliveryForm.vue'
 import { convertToInteger, floatToFixed2, formatToFraction } from '@/utils'
 import { onMounted } from 'vue'
 
