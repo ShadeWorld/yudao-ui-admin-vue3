@@ -1,3 +1,4 @@
 import OrderTableColumn from './OrderTableColumn.vue'
+import OrderItemList from './OrderItemList.vue'
 
-export { OrderTableColumn }
+export { OrderTableColumn, OrderItemList }

@@ -1,5 +1,5 @@
 <template>
-  <Dialog :title="dialogTitle" v-model="dialogVisible" width="1300px">
+  <Dialog :title="dialogTitle" v-model="dialogVisible" width="900px">
     <el-form
       ref="formRef"
       :model="formData"
@@ -7,20 +7,30 @@
       label-width="80px"
       v-loading="formLoading"
     >
+      <el-form-item label="快递公司" prop="logisticsId">
+        <el-select v-model="formData.logisticsId" class="!w-280px" clearable placeholder="全部">
+          <el-option
+            v-for="item in deliveryExpressList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="模板名称" prop="name">
         <el-input v-model="formData.name" placeholder="请输入模板名称" />
       </el-form-item>
-      <el-form-item label="计费方式" prop="chargeMode">
-        <el-radio-group v-model="formData.chargeMode" @change="changeChargeMode">
-          <el-radio
-            v-for="dict in getIntDictOptions(DICT_TYPE.EXPRESS_CHARGE_MODE)"
-            :key="dict.value"
-            :label="dict.value"
-          >
-            {{ dict.label }}
-          </el-radio>
-        </el-radio-group>
-      </el-form-item>
+      <!--      <el-form-item label="计费方式" prop="chargeMode">-->
+      <!--        <el-radio-group v-model="formData.chargeMode" @change="changeChargeMode">-->
+      <!--          <el-radio-->
+      <!--            v-for="dict in getIntDictOptions(DICT_TYPE.EXPRESS_CHARGE_MODE)"-->
+      <!--            :key="dict.value"-->
+      <!--            :label="dict.value"-->
+      <!--          >-->
+      <!--            {{ dict.label }}-->
+      <!--          </el-radio>-->
+      <!--        </el-radio-group>-->
+      <!--      </el-form-item>-->
       <el-form-item label="运费" prop="charges">
         <el-table border style="width: 100%" :data="formData.charges">
           <el-table-column align="center" label="区域" width="360">
@@ -37,36 +47,36 @@
               />
             </template>
           </el-table-column>
-          <el-table-column
-            align="center"
-            :label="columnTitle.startCountTitle"
-            width="180"
-            prop="startCount"
-          >
-            <template #default="{ row }">
-              <el-input-number v-model="row.startCount" :min="1" />
-            </template>
-          </el-table-column>
+          <!--          <el-table-column-->
+          <!--            align="center"-->
+          <!--            :label="columnTitle.startCountTitle"-->
+          <!--            width="180"-->
+          <!--            prop="startCount"-->
+          <!--          >-->
+          <!--            <template #default="{ row }">-->
+          <!--              <el-input-number v-model="row.startCount" :min="1" />-->
+          <!--            </template>-->
+          <!--          </el-table-column>-->
           <el-table-column width="180" align="center" label="运费(元)" prop="startPrice">
             <template #default="{ row }">
               <el-input-number v-model="row.startPrice" :min="1" />
             </template>
           </el-table-column>
-          <el-table-column
-            width="180"
-            align="center"
-            :label="columnTitle.extraCountTitle"
-            prop="extraCount"
-          >
-            <template #default="{ row }">
-              <el-input-number v-model="row.extraCount" :min="1" />
-            </template>
-          </el-table-column>
-          <el-table-column width="180" align="center" label="续费(元)" prop="extraPrice">
-            <template #default="{ row }">
-              <el-input-number v-model="row.extraPrice" :min="1" />
-            </template>
-          </el-table-column>
+          <!--          <el-table-column-->
+          <!--            width="180"-->
+          <!--            align="center"-->
+          <!--            :label="columnTitle.extraCountTitle"-->
+          <!--            prop="extraCount"-->
+          <!--          >-->
+          <!--            <template #default="{ row }">-->
+          <!--              <el-input-number v-model="row.extraCount" :min="1" />-->
+          <!--            </template>-->
+          <!--          </el-table-column>-->
+          <!--          <el-table-column width="180" align="center" label="续费(元)" prop="extraPrice">-->
+          <!--            <template #default="{ row }">-->
+          <!--              <el-input-number v-model="row.extraPrice" :min="1" />-->
+          <!--            </template>-->
+          <!--          </el-table-column>-->
           <el-table-column label="操作" align="center">
             <template #default="scope">
               <el-button link type="danger" @click="deleteChargeArea(scope.$index)">
@@ -78,7 +88,8 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" plain @click="addChargeArea()">
-          <Icon icon="ep:plus" class="mr-5px" /> 添加区域
+          <Icon icon="ep:plus" class="mr-5px" />
+          添加区域
         </el-button>
       </el-form-item>
       <el-form-item label="包邮区域" prop="frees">
@@ -97,26 +108,27 @@
               />
             </template>
           </el-table-column>
-          <el-table-column align="center" :label="columnTitle.freeCountTitle" prop="freeCount">
-            <template #default="{ row }">
-              <el-input-number v-model="row.freeCount" :min="1" />
-            </template>
-          </el-table-column>
-          <el-table-column align="center" label="包邮金额（元）" prop="freePrice">
+          <!--          <el-table-column align="center" :label="columnTitle.freeCountTitle" prop="freeCount">-->
+          <!--            <template #default="{ row }">-->
+          <!--              <el-input-number v-model="row.freeCount" :min="1" />-->
+          <!--            </template>-->
+          <!--          </el-table-column>-->
+          <el-table-column align="center" label="包邮金额（元）" prop="freePrice" width="180">
             <template #default="{ row }">
               <el-input-number v-model="row.freePrice" :min="1" />
             </template>
           </el-table-column>
           <el-table-column label="操作" align="center">
             <template #default="scope">
-              <el-button link type="danger" @click="deleteFreeArea(scope.$index)"> 删除 </el-button>
+              <el-button link type="danger" @click="deleteFreeArea(scope.$index)"> 删除</el-button>
             </template>
           </el-table-column>
         </el-table>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" plain @click="addFreeArea()">
-          <Icon icon="ep:plus" class="mr-5px" /> 添加区域
+          <Icon icon="ep:plus" class="mr-5px" />
+          添加区域
         </el-button>
       </el-form-item>
       <el-form-item label="排序" prop="sort">
@@ -130,12 +142,14 @@
   </Dialog>
 </template>
 <script lang="ts" setup>
-import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
+// import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import * as DeliveryExpressTemplateApi from '@/api/mall/trade/delivery/expressTemplate'
 import * as AreaApi from '@/api/system/area'
 import { defaultProps } from '@/utils/tree'
-import { yuanToFen, fenToYuan } from '@/utils'
+import { fenToYuan, yuanToFen } from '@/utils'
 import { cloneDeep } from 'lodash-es'
+import * as DeliveryExpressApi from '@/api/mall/trade/delivery/express'
+
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
 
@@ -150,6 +164,7 @@ const formLoading = ref(false) // 表单的加载中：1）修改时的数据加
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref({
   id: undefined,
+  logisticsId: undefined,
   name: '',
   chargeMode: 1,
   sort: 0,
@@ -163,6 +178,7 @@ const columnTitle = ref({
   freeCountTitle: '包邮件数'
 })
 const formRules = reactive({
+  logisticsId: [{ required: true, message: '请选择快递公司', trigger: 'blur' }],
   name: [{ required: true, message: '模板名称不能为空', trigger: 'blur' }],
   chargeMode: [{ required: true, message: '配送计费方式不能为空', trigger: 'blur' }],
   sort: [{ required: true, message: '分类排序不能为空', trigger: 'blur' }]
@@ -252,10 +268,10 @@ const resetForm = () => {
   formRef.value?.resetFields()
 }
 
-/** 配送计费方法改变 */
-const changeChargeMode = (chargeMode: number) => {
-  columnTitle.value = columnTitleMap.get(chargeMode)
-}
+// /** 配送计费方法改变 */
+// const changeChargeMode = (chargeMode: number) => {
+//   columnTitle.value = columnTitleMap.get(chargeMode)
+// }
 
 /** 初始化数据 */
 const areaTree = ref([])
@@ -314,8 +330,11 @@ const deleteFreeArea = (index) => {
   data.frees.splice(index, 1)
 }
 
+const deliveryExpressList = ref<DeliveryExpressApi.DeliveryExpressVO[]>([]) // 物流公司
+
 /** 初始化 **/
-onMounted(() => {
-  initData()
+onMounted(async () => {
+  await initData()
+  deliveryExpressList.value = await DeliveryExpressApi.getSimpleDeliveryExpressList()
 })
 </script>

@@ -2,6 +2,7 @@ import request from '@/config/axios'
 
 export interface DeliveryExpressTemplateVO {
   id: number
+  logisticsId: number
   name: string
   chargeMode: number
   sort: number

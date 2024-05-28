@@ -19,21 +19,21 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="计费方式" prop="chargeMode">
-        <el-select
-          v-model="queryParams.chargeMode"
-          placeholder="计费方式"
-          clearable
-          class="!w-240px"
-        >
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.EXPRESS_CHARGE_MODE)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
+      <!--      <el-form-item label="计费方式" prop="chargeMode">-->
+      <!--        <el-select-->
+      <!--          v-model="queryParams.chargeMode"-->
+      <!--          placeholder="计费方式"-->
+      <!--          clearable-->
+      <!--          class="!w-240px"-->
+      <!--        >-->
+      <!--          <el-option-->
+      <!--            v-for="dict in getIntDictOptions(DICT_TYPE.EXPRESS_CHARGE_MODE)"-->
+      <!--            :key="dict.value"-->
+      <!--            :label="dict.label"-->
+      <!--            :value="dict.value"-->
+      <!--          />-->
+      <!--        </el-select>-->
+      <!--      </el-form-item>-->
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
@@ -55,11 +55,11 @@
     <el-table v-loading="loading" :data="list">
       <el-table-column label="编号" min-width="60" prop="id" />
       <el-table-column label="模板名称" min-width="100" prop="name" />
-      <el-table-column label="计费方式" prop="chargeMode" min-width="100" align="center">
-        <template #default="scope">
-          <dict-tag :type="DICT_TYPE.EXPRESS_CHARGE_MODE" :value="scope.row.chargeMode" />
-        </template>
-      </el-table-column>
+      <!--      <el-table-column label="计费方式" prop="chargeMode" min-width="100" align="center">-->
+      <!--        <template #default="scope">-->
+      <!--          <dict-tag :type="DICT_TYPE.EXPRESS_CHARGE_MODE" :value="scope.row.chargeMode" />-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
       <el-table-column label="排序" min-width="100" prop="sort" />
       <el-table-column
         label="创建时间"
@@ -95,7 +95,6 @@
   <ExpressTemplateForm ref="formRef" @success="getList" />
 </template>
 <script lang="ts" setup>
-import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { dateFormatter } from '@/utils/formatTime'
 import * as DeliveryExpressTemplateApi from '@/api/mall/trade/delivery/expressTemplate'
 import ExpressTemplateForm from './ExpressTemplateForm.vue'

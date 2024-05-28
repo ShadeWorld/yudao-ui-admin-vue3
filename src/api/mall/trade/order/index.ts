@@ -3,6 +3,25 @@ import request from '@/config/axios'
 export interface CreateOrderReqVo {
   userId?: number
   addressId?: number
+  logisticsId?: number
+  items?: OrderItem[]
+}
+
+export interface OrderItem {
+  spuId?: number
+  spuName?: string
+  skuId?: number
+  price?: number
+  count?: number
+  orderLens?: OrderItemLens
+}
+
+export interface OrderItemLens {
+  sph?: number
+  cyl?: number
+  add?: number
+  leftOrRight?: number
+  axis?: number
 }
 
 export interface OrderVO {
