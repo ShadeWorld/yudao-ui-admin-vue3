@@ -76,8 +76,7 @@ const chooseProductFormRef = ref()
               class="mb-10px mr-15px"
               @click="
                 () => {
-                  console.log(123)
-                  console.log(chooseProductFormRef.value)
+                  chooseProductFormRef.open()
                 }
               "
               >添加商品
