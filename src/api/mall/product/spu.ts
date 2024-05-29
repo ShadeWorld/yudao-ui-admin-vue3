@@ -97,6 +97,15 @@ export interface Spu {
   status?: number // 商品状态
 }
 
+export interface CascadeReqVO {
+  categoryId?: number
+  brandId?: number
+  series?: string
+  kind?: string
+  refractive?: string
+  filmLayer?: string
+}
+
 // 获得 Spu 列表
 export const getSpuPage = (params: PageParam) => {
   return request.get({ url: '/product/spu/page', params })
@@ -127,6 +136,11 @@ export const getSpu = (id: number) => {
   return request.get({ url: `/product/spu/get-detail?id=${id}` })
 }
 
+// 获得商品 Spu
+export const getLensSpu = (params: CascadeReqVO) => {
+  return request.get({ url: `/product/spu/get-detail`, params })
+}
+
 // 获得商品 Spu 详情列表
 export const getSpuDetailList = (ids: number[]) => {
   return request.get({ url: `/product/spu/list?spuIds=${ids}` })
@@ -145,4 +159,34 @@ export const exportSpu = async (params) => {
 // 获得商品 SPU 精简列表
 export const getSpuSimpleList = async () => {
   return request.get({ url: '/product/spu/list-all-simple' })
+}
+
+// 获得商品种类列表
+export const getCategoryList = async () => {
+  return request.get({ url: '/product/spu/categoryList' })
+}
+
+// 获得商品品牌列表
+export const getBrandList = async (params: CascadeReqVO) => {
+  return request.get({ url: '/product/spu/brandList', params })
+}
+
+// 获得镜片系列列表
+export const getLenSeriesList = async (params: CascadeReqVO) => {
+  return request.get({ url: '/product/spu/lensSeriesList', params })
+}
+
+// 获得镜片品种列表
+export const getLenKindList = async (params: CascadeReqVO) => {
+  return request.get({ url: '/product/spu/lensKindList', params })
+}
+
+// 获得镜片折射率列表
+export const getLenRefractiveList = async (params: CascadeReqVO) => {
+  return request.get({ url: '/product/spu/lensRefractiveList', params })
+}
+
+// 获得镜片膜层列表
+export const getLenFilmLayerList = async (params: CascadeReqVO) => {
+  return request.get({ url: '/product/spu/lensFilmLayerList', params })
 }
