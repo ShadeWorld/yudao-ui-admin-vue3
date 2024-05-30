@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { OrderItem } from '@/api/mall/trade/order'
 import * as ProductSpuApi from '@/api/mall/product/spu'
+import { Spu } from '@/api/mall/product/spu'
 import { CascaderProps } from 'element-plus'
+import { BatchSelectLens } from '@/views/mall/trade/order/components'
+import { DegreeRange, Row } from '@/views/mall/trade/order/components/BatchSelectLens.vue'
 
 defineOptions({ name: 'ChooseProductForm' })
+const emit = defineEmits(['confirm'])
 
 const dialogVisible = ref(false) // 弹窗的是否展示
 
-// 商品项
-const items = ref<OrderItem>()
-// 商品检索条件
-const search = ref<any>()
+// 所有行
+const rows = ref<Row[]>([])
 
 /** 打开弹窗 */
 const open = async () => {
@@ -21,7 +22,6 @@ defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 const cascadeProps: CascaderProps = {
   lazy: true,
   async lazyLoad(node, resolve) {
-    console.log('lazyLoad', node)
     const { level } = node
     switch (level) {
       case 0:
@@ -72,9 +72,10 @@ const cascadeProps: CascaderProps = {
   }
 }
 
-const spu = ref()
+const spu = ref<Spu>()
+
+const degreeRange = ref<DegreeRange>()
 const cascadeChange = async (node) => {
-  console.log('cascadeChange', node)
   spu.value = await ProductSpuApi.getLensSpu({
     categoryId: node[0],
     brandId: node[1],
@@ -83,22 +84,97 @@ const cascadeChange = async (node) => {
     refractive: node[4],
     filmLayer: node[5]
   })
-  console.log(spu)
+
+  // 生成光度范围
+  const sphRangeList: number[] = []
+  const cylRangeList: number[] = []
+  const addRangeList: number[] = []
+  spu.value?.skus.map((sku) => {
+    sphRangeList.push(sku.skuLens?.minSph, sku.skuLens?.maxSph)
+    cylRangeList.push(sku.skuLens?.minCyl, sku.skuLens?.maxCyl)
+    addRangeList.push(sku.skuLens?.minAdd, sku.skuLens?.maxAdd)
+  })
+  sphRangeList.sort((a, b) => a - b)
+  cylRangeList.sort((a, b) => a - b)
+  addRangeList.sort((a, b) => a - b)
+  degreeRange.value = {
+    minSph: sphRangeList[0],
+    maxSph: sphRangeList[sphRangeList.length - 1],
+    minCyl: cylRangeList[0],
+    maxCyl: cylRangeList[cylRangeList.length - 1],
+    minAdd: addRangeList[0],
+    maxAdd: addRangeList[addRangeList.length - 1]
+  }
+}
+
+const onClose = () => {
+  spu.value = null
+  rows.value = []
+}
+
+const confirm = () => {
+  let lensList = []
+  rows.value.forEach((row) => {
+    row.cols.forEach((col) => {
+      // 找出每一行有数量的col，转换格式
+      if (col.count > 0) {
+        lensList.push({
+          sph: row.sph,
+          cyl: col.cyl,
+          count: col.count,
+          price: col.price,
+          skuId: col.skuId
+        })
+      }
+    })
+  })
+  emit('confirm', {
+    id: spu.value?.id,
+    name: spu.value?.name,
+    lensList: lensList
+  })
+  dialogVisible.value = false
 }
 </script>
 
 <template>
-  <Dialog v-model="dialogVisible" title="选择商品" width="1500px">
+  <Dialog
+    v-model="dialogVisible"
+    :fullscreen="true"
+    title="选择商品"
+    width="1500px"
+    @close="onClose"
+  >
     <el-row>
-      <el-col :span="24">
+      <el-col :span="18">
         <el-cascader-panel
           style="width: fit-content"
           :props="cascadeProps"
           @change="cascadeChange"
         />
+        <div class="content" v-if="spu">
+          <div class="header">
+            {{ spu.name }}
+          </div>
+          <BatchSelectLens v-model="rows" :sku-list="spu.skus" :degree-range="degreeRange" />
+        </div>
+      </el-col>
+      <el-col :span="6">
+        <el-row justify="end">
+          <el-button type="primary" @click="confirm">保存</el-button>
+        </el-row>
       </el-col>
     </el-row>
   </Dialog>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.content {
+  color: #000;
+  margin-top: 20px;
+}
+.header {
+  color: #000;
+  margin-bottom: 10px;
+}
+</style>

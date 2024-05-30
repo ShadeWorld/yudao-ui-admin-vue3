@@ -44,6 +44,28 @@ onMounted(() => {
   })
 })
 
+const onConfirm = (checkedSpu) => {
+  checkedSpu.lensList.forEach((item) => {
+    let existsList = formData.items?.filter((i) => i.skuId == item.skuId)
+    if (existsList.length > 0) {
+      existsList[0].count += item.count
+    } else {
+      formData.items.push({
+        spuId: checkedSpu.id,
+        spuName: checkedSpu.name,
+        skuId: item.skuId,
+        price: item.price,
+        count: item.count,
+        orderLens: {
+          sph: item.sph,
+          cyl: item.cyl,
+          add: item.add
+        }
+      })
+    }
+  })
+}
+
 const chooseProductFormRef = ref()
 </script>
 
@@ -99,7 +121,7 @@ const chooseProductFormRef = ref()
       </el-row>
     </ContentWrap>
   </el-form>
-  <ChooseProductForm ref="chooseProductFormRef" />
+  <ChooseProductForm ref="chooseProductFormRef" @confirm="onConfirm" />
 </template>
 
 <style scoped lang="scss"></style>

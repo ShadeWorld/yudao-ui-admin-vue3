@@ -49,10 +49,10 @@ export interface Sku {
 
 export interface SkuLens {
   id?: number
-  minSph?: number
+  minSph?: number // 起始球镜
   maxSph?: number
   skipSph: number[]
-  minCyl?: number
+  minCyl?: number // 起始柱镜
   maxCyl?: number
   skipCyl: number[]
   minAdd?: number
