@@ -26,7 +26,6 @@ watch(
           let data: TableOrderItem = tableData.find((i) => i.spuId === item.spuId)
           if (data) {
             data.count += item.count
-            data.price += item.price
           } else {
             data = {
               spuId: undefined,
@@ -45,12 +44,20 @@ watch(
 
 // 所有行
 const rows = ref<Row[]>([])
+// 详情dialog是否展示
 const dialogVisible = ref(false)
+// 当前详情展示spu
+const detailSpu = ref<TableOrderItem>()
+// Dialog宽度
+const detailWidth = ref<number>(800)
 /**
  * 展示已选镜片的详情
  * @param detailItem
  */
 const openDetail = (detailItem) => {
+  detailSpu.value = detailItem
+  let minCyl = model.value[0].orderLens.cyl
+  let maxCyl = minCyl
   model.value?.forEach((item: OrderItem) => {
     if (item.spuId === detailItem.spuId && item.orderLens) {
       // 生成批量选择控件的所有行
@@ -62,50 +69,71 @@ const openDetail = (detailItem) => {
           add: item.orderLens.add,
           count: item.count,
           skuId: item.skuId,
-          price: item.price / item.count,
+          price: item.price,
           selected: false
         })
       } else {
-        rows.value.push({
+        row = {
           sph: item.orderLens.sph,
-          cols: [
-            {
-              row: row,
-              cyl: item.orderLens.cyl,
-              add: item.orderLens.add,
-              count: item.count,
-              skuId: item.skuId,
-              price: item.price / item.count,
-              selected: false
-            }
-          ]
+          cols: []
+        }
+        row.cols.push({
+          row: row,
+          cyl: item.orderLens.cyl,
+          add: item.orderLens.add,
+          count: item.count,
+          skuId: item.skuId,
+          price: item.price,
+          selected: false
         })
+        rows.value.push(row)
       }
+
+      // 计算最大cyl和最小cyl，用于计算dialog宽度
+      minCyl = Math.min(minCyl, item.orderLens.cyl)
+      maxCyl = Math.max(maxCyl, item.orderLens.cyl)
     }
   })
+  detailWidth.value = ((maxCyl - minCyl) / 0.25 + 1) * 51 + 100
   dialogVisible.value = true
 }
 const confirm = () => {
-  let lensList = []
+  if (!detailSpu) return
   rows.value.forEach((row) => {
     row.cols.forEach((col) => {
       // 找出每一行有数量的col，转换格式
       if (col.count > 0) {
-        lensList.push({
-          sph: row.sph,
-          cyl: col.cyl,
-          count: col.count,
+        let orderItem = {
+          spuId: detailSpu.value?.spuId,
+          spuName: detailSpu.value?.spuName,
+          skuId: col.skuId,
           price: col.price,
-          skuId: col.skuId
-        })
+          count: col.count,
+          orderLens: {
+            sph: row.sph,
+            cyl: col.cyl,
+            add: col.add
+          }
+        }
+        let existsItem = model.value?.find(
+          (i) =>
+            i.skuId == col.skuId &&
+            JSON.stringify(i.orderLens) === JSON.stringify(orderItem.orderLens)
+        )
+        if (existsItem) {
+          existsItem.count = col.count
+        } else {
+          model.value.push(orderItem)
+        }
       }
     })
   })
+  dialogVisible.value = false
 }
 
-const canel = () => {
+const onClose = () => {
   rows.value.splice(0, rows.value.length)
-  dialogVisible.value = false
+  detailSpu.value = undefined
 }
 
 // TODO:要不要重新写一个BatchSelectLens专门用于详情展示，不写也可以，动态传spuId和degree-range就行，然后BatchSelectLens里面通过spuId查询sku获取价格信息
@@ -118,6 +146,11 @@ const canel = () => {
         {{ row.spuName }}
       </template>
     </el-table-column>
+    <el-table-column align="center" label="单价" min-width="65">
+      <template #default="{ row }">
+        {{ formatToFraction(row.price) }}
+      </template>
+    </el-table-column>
     <el-table-column align="center" label="数量" min-width="65">
       <template #default="{ row }">
         {{ row.count }}
@@ -125,7 +158,7 @@ const canel = () => {
     </el-table-column>
     <el-table-column align="center" label="总价" min-width="65">
       <template #default="{ row }">
-        {{ formatToFraction(row.price) }}
+        {{ formatToFraction(row.price * row.count) }}
       </template>
     </el-table-column>
     <el-table-column align="center" fixed="right" label="操作" width="80">
@@ -137,11 +170,20 @@ const canel = () => {
       </template>
     </el-table-column>
   </el-table>
-  <ElDialog v-model="dialogVisible" title="详情" width="500" destroy-on-close center>
-    <BatchSelectLens v-model="rows" />
+  <ElDialog
+    v-model="dialogVisible"
+    title="详情"
+    :width="detailWidth"
+    destroy-on-close
+    center
+    @close="onClose"
+  >
+    <el-row justify="center">
+      <BatchSelectLens v-model="rows" />
+    </el-row>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="canel">取消</el-button>
+        <el-button @click="dialogVisible = false">取消</el-button>
         <el-button type="primary" @click="confirm">保存</el-button>
       </div>
     </template>

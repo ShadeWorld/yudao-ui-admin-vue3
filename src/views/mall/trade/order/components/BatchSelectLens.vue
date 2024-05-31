@@ -107,31 +107,36 @@ const renderGrid = () => {
     ) {
       // 先找rows里面有没有这一行
       let row: Row = rows.value?.find((i) => i.sph === sph)
-      // 没有就new一行
-      row = row ? row : { sph: sph, cols: [] }
+      if (!row) {
+        // 没有就new一个，然后push到rows里面
+        row = row ? row : { sph: sph, cols: [] }
+        rows.value.push(row)
+      }
       for (
         let cyl = localDegreeRange.value.maxCyl;
         cyl >= localDegreeRange.value.minCyl;
         cyl -= 0.25
       ) {
-        if (sph === localDegreeRange.value.minSph) {
+        if (sph === localDegreeRange.value.maxSph) {
           // 保存所有柱镜（只用保存一次，用于展示横向表头）
           cylList.value.push(cyl)
         }
         // 如果该行已经有这一列，就不用重新生成了
-        if (row.cols.findIndex((i) => i.cyl === cyl) > 0) continue
+        if (row.cols.findIndex((i) => i.cyl === cyl) > -1) continue
         let col: Col = { row: row, cyl: cyl, add: 0, ...getLensInfo(sph, cyl) }
         row.cols.push(col)
       }
-      rows.value.push(row)
+      row.cols.sort((a, b) => b.cyl - a.cyl)
+      console.log('看看价格', row.cols)
     }
+    rows.value?.sort((a, b) => b.sph - a.sph)
   }
 }
 
 if (rows.value.length > 0) {
   localDegreeRange.value = {
-    minSph: rows.value[0].sph,
-    maxSph: rows.value[rows.value?.length - 1].sph,
+    minSph: rows.value[rows.value?.length - 1].sph,
+    maxSph: rows.value[0].sph,
     minCyl: rows.value[0].cols[0].cyl,
     maxCyl: rows.value[0].cols[0].cyl,
     minAdd: rows.value[0].cols[0].add,
@@ -141,8 +146,8 @@ if (rows.value.length > 0) {
     row.cols.forEach((col) => {
       localDegreeRange.value.minCyl = Math.min(localDegreeRange.value.minCyl, col.cyl)
       localDegreeRange.value.maxCyl = Math.max(localDegreeRange.value.maxCyl, col.cyl)
-      localDegreeRange.value.minAdd = Math.min(localDegreeRange.value.minCyl, col.add)
-      localDegreeRange.value.maxAdd = Math.max(localDegreeRange.value.maxCyl, col.add)
+      localDegreeRange.value.minAdd = Math.min(localDegreeRange.value.minAdd, col.add)
+      localDegreeRange.value.maxAdd = Math.max(localDegreeRange.value.maxAdd, col.add)
     })
   })
   renderGrid()
@@ -152,7 +157,6 @@ if (rows.value.length > 0) {
 watch(
   () => props.skuList,
   async (skuList) => {
-    console.log('skuList变了')
     if (skuList) {
       localSkuList.splice(0, localSkuList.length)
       localSkuList.push(...skuList)
@@ -168,7 +172,6 @@ watch(
   () => props.degreeRange,
   async (degreeRange) => {
     if (degreeRange) {
-      console.log('degreeRange变了')
       copyValueToTarget(localDegreeRange.value, degreeRange)
       // 光度范围发生变化，需要清空rows
       rows.value.splice(0, rows.value.length)
@@ -267,6 +270,7 @@ window.onkeyup = (e) => {
           <input
             v-model="col.count"
             min="0"
+            step="1"
             type="number"
             class="count-input w-45"
             :disabled="!col.skuId"
@@ -279,12 +283,16 @@ window.onkeyup = (e) => {
 
 <style scoped lang="scss">
 table {
+  font-size: 12px;
+  line-height: 18px;
   table-layout: fixed;
   border-left: 1px #ebeef5 solid;
   border-top: 1px #ebeef5 solid;
 
   tr {
     td {
+      width: 50px;
+      height: 25px;
       border-bottom: 1px #ebeef5 solid;
       border-right: 1px #ebeef5 solid;
     }
@@ -292,9 +300,8 @@ table {
 }
 
 .tab-head {
-  text-align: right;
+  text-align: center;
   cursor: pointer;
-  padding: 4px 8px;
 }
 
 .w-45 {
@@ -302,9 +309,7 @@ table {
 }
 
 .count-input {
-  appearance: none;
   -webkit-appearance: none !important;
-  -moz-appearance: textfield !important;
   line-height: 1;
   margin: 0;
   border: none;
@@ -315,10 +320,12 @@ table {
 
 .td-selected {
   background: #29b6f6;
-  capacity: 0.6;
 }
 
 .td-disabled {
   background: #e6e8eb;
+}
+input {
+  -webkit-appearance: none !important;
 }
 </style>

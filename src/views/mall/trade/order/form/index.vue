@@ -58,13 +58,13 @@ const onConfirm = (checkedSpu) => {
         add: item.add
       }
     }
-    let existsList = formData.items?.filter(
+    let existsItem = formData.items?.find(
       (i) =>
         i.skuId == item.skuId && JSON.stringify(i.orderLens) === JSON.stringify(orderItem.orderLens)
     )
-    if (existsList.length > 0) {
-      existsList[0].count += item.count
-      existsList[0].price += item.price
+    if (existsItem) {
+      existsItem.count += item.count
+      existsItem.price += item.price
     } else {
       formData.items.push(orderItem)
     }
