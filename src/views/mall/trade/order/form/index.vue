@@ -46,22 +46,27 @@ onMounted(() => {
 
 const onConfirm = (checkedSpu) => {
   checkedSpu.lensList.forEach((item) => {
-    let existsList = formData.items?.filter((i) => i.skuId == item.skuId)
+    let orderItem = {
+      spuId: checkedSpu.id,
+      spuName: checkedSpu.name,
+      skuId: item.skuId,
+      price: item.price,
+      count: item.count,
+      orderLens: {
+        sph: item.sph,
+        cyl: item.cyl,
+        add: item.add
+      }
+    }
+    let existsList = formData.items?.filter(
+      (i) =>
+        i.skuId == item.skuId && JSON.stringify(i.orderLens) === JSON.stringify(orderItem.orderLens)
+    )
     if (existsList.length > 0) {
       existsList[0].count += item.count
+      existsList[0].price += item.price
     } else {
-      formData.items.push({
-        spuId: checkedSpu.id,
-        spuName: checkedSpu.name,
-        skuId: item.skuId,
-        price: item.price,
-        count: item.count,
-        orderLens: {
-          sph: item.sph,
-          cyl: item.cyl,
-          add: item.add
-        }
-      })
+      formData.items.push(orderItem)
     }
   })
 }

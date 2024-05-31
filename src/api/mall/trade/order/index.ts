@@ -17,9 +17,9 @@ export interface OrderItem {
 }
 
 export interface OrderItemLens {
-  sph?: number
-  cyl?: number
-  add?: number
+  sph: number
+  cyl: number
+  add: number
   leftOrRight?: number
   axis?: number
 }

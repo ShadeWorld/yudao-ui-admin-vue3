@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Sku } from '@/api/mall/product/spu'
+import { copyValueToTarget } from '@/utils'
 
 export interface Row {
   sph: number
@@ -29,7 +30,7 @@ const rows = defineModel<Row[]>()
 const props = defineProps<{
   skuList?: Sku[]
   spuId?: number
-  degreeRange: DegreeRange
+  degreeRange?: DegreeRange
 }>()
 
 const localSkuList: Sku[] = []
@@ -80,24 +81,46 @@ const getLensInfo = (sph: number, cyl: number = 0, add: number = 0) => {
   return lensInfo
 }
 
-// 普通镜片，只有球柱镜
-const isNormal = props.degreeRange.minAdd === 0 && props.degreeRange.maxAdd === 0
+const localDegreeRange = ref<DegreeRange>({
+  minSph: undefined,
+  maxSph: undefined,
+  minCyl: undefined,
+  maxCyl: undefined,
+  minAdd: undefined,
+  maxAdd: undefined
+})
 
-// const rows = reactive<Row[]>([])
+// 普通镜片，只有球柱镜
+const isNormal = computed(() => {
+  localDegreeRange.value.minAdd === 0 && localDegreeRange.value.maxAdd === 0
+})
+
 const cylList = ref<number[]>([])
 
-const renderGrid = (degreeRange: DegreeRange) => {
+const renderGrid = () => {
   if (isNormal) {
     cylList.value.splice(0, cylList.value.length)
-    rows.value.splice(0, rows.value.length)
-    for (let sph = degreeRange.maxSph; sph >= degreeRange.minSph; sph -= 0.25) {
-      let row: Row = { sph: sph, cols: [] }
-      for (let cyl = degreeRange.maxCyl; cyl >= degreeRange.minCyl; cyl -= 0.25) {
-        if (sph === degreeRange.minSph) {
+    for (
+      let sph = localDegreeRange.value.maxSph;
+      sph >= localDegreeRange.value.minSph;
+      sph -= 0.25
+    ) {
+      // 先找rows里面有没有这一行
+      let row: Row = rows.value?.find((i) => i.sph === sph)
+      // 没有就new一行
+      row = row ? row : { sph: sph, cols: [] }
+      for (
+        let cyl = localDegreeRange.value.maxCyl;
+        cyl >= localDegreeRange.value.minCyl;
+        cyl -= 0.25
+      ) {
+        if (sph === localDegreeRange.value.minSph) {
           // 保存所有柱镜（只用保存一次，用于展示横向表头）
           cylList.value.push(cyl)
         }
-        let col: Col = { row: row, cyl: cyl, ...getLensInfo(sph, cyl) }
+        // 如果该行已经有这一列，就不用重新生成了
+        if (row.cols.findIndex((i) => i.cyl === cyl) > 0) continue
+        let col: Col = { row: row, cyl: cyl, add: 0, ...getLensInfo(sph, cyl) }
         row.cols.push(col)
       }
       rows.value.push(row)
@@ -105,12 +128,35 @@ const renderGrid = (degreeRange: DegreeRange) => {
   }
 }
 
+if (rows.value.length > 0) {
+  localDegreeRange.value = {
+    minSph: rows.value[0].sph,
+    maxSph: rows.value[rows.value?.length - 1].sph,
+    minCyl: rows.value[0].cols[0].cyl,
+    maxCyl: rows.value[0].cols[0].cyl,
+    minAdd: rows.value[0].cols[0].add,
+    maxAdd: rows.value[0].cols[0].add
+  }
+  rows.value?.forEach((row) => {
+    row.cols.forEach((col) => {
+      localDegreeRange.value.minCyl = Math.min(localDegreeRange.value.minCyl, col.cyl)
+      localDegreeRange.value.maxCyl = Math.max(localDegreeRange.value.maxCyl, col.cyl)
+      localDegreeRange.value.minAdd = Math.min(localDegreeRange.value.minCyl, col.add)
+      localDegreeRange.value.maxAdd = Math.max(localDegreeRange.value.maxCyl, col.add)
+    })
+  })
+  renderGrid()
+}
+
+// 监听skuList，及时变更价格规则
 watch(
   () => props.skuList,
   async (skuList) => {
     console.log('skuList变了')
-    localSkuList.splice(0, localSkuList.length)
-    localSkuList.push(...skuList)
+    if (skuList) {
+      localSkuList.splice(0, localSkuList.length)
+      localSkuList.push(...skuList)
+    }
   },
   {
     immediate: true
@@ -121,8 +167,13 @@ watch(
 watch(
   () => props.degreeRange,
   async (degreeRange) => {
-    console.log('degreeRange变了')
-    renderGrid(degreeRange)
+    if (degreeRange) {
+      console.log('degreeRange变了')
+      copyValueToTarget(localDegreeRange.value, degreeRange)
+      // 光度范围发生变化，需要清空rows
+      rows.value.splice(0, rows.value.length)
+      renderGrid()
+    }
   },
   {
     immediate: true

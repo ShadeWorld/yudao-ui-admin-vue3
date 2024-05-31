@@ -121,6 +121,7 @@ const confirm = () => {
         lensList.push({
           sph: row.sph,
           cyl: col.cyl,
+          add: col.add,
           count: col.count,
           price: col.price,
           skuId: col.skuId
