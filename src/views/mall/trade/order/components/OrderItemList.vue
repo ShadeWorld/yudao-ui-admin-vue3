@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { OrderItem } from '@/api/mall/trade/order'
 import { ElTable } from 'element-plus'
-import { DegreeRange, Row } from '@/views/mall/trade/order/components/BatchSelectLens.vue'
+import { Row } from '@/views/mall/trade/order/components/BatchSelectLens.vue'
 import { copyValueToTarget, formatToFraction } from '@/utils'
 import { BatchSelectLens } from '@/views/mall/trade/order/components'
 
@@ -23,7 +23,7 @@ watch(
     tableData.value = !value
       ? []
       : value?.reduce((tableData: TableOrderItem[], item: OrderItem) => {
-          let data: TableOrderItem = tableData.find((i) => i.spuId === item.spuId)
+          let data: TableOrderItem | undefined = tableData.find((i) => i.spuId === item.spuId)
           if (data) {
             data.count += item.count
           } else {
@@ -61,7 +61,7 @@ const openDetail = (detailItem) => {
   model.value?.forEach((item: OrderItem) => {
     if (item.spuId === detailItem.spuId && item.orderLens) {
       // 生成批量选择控件的所有行
-      let row = rows.value.find((i) => i.sph === item.orderLens.sph)
+      let row = rows.value.find((i) => i.sph === item.orderLens?.sph)
       if (row) {
         row.cols.push({
           row: row,
@@ -102,7 +102,7 @@ const confirm = () => {
   rows.value.forEach((row) => {
     row.cols.forEach((col) => {
       // 找出每一行有数量的col，转换格式
-      if (col.count > 0) {
+      if (col.skuId) {
         let orderItem = {
           spuId: detailSpu.value?.spuId,
           spuName: detailSpu.value?.spuName,
@@ -123,7 +123,7 @@ const confirm = () => {
         if (existsItem) {
           existsItem.count = col.count
         } else {
-          model.value.push(orderItem)
+          model.value?.push(orderItem)
         }
       }
     })

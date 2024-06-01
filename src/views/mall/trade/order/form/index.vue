@@ -2,9 +2,10 @@
 import MemberSelect from '@/components/MemberSelect/src/MemberSelect.vue'
 import { CreateOrderReqVo } from '@/api/mall/trade/order'
 import { getAddressList } from '@/api/member/address'
-import { getSimpleTemplateList } from '@/api/mall/trade/delivery/expressTemplate'
+import { getDeliveryPrice, getSimpleTemplateList } from '@/api/mall/trade/delivery/expressTemplate'
 import { OrderItemList } from '@/views/mall/trade/order/components'
 import ChooseProductForm from './ChooseProductForm.vue'
+import { formatToFraction } from '@/utils'
 
 defineOptions({ name: 'TradeOrderAdd' })
 
@@ -13,6 +14,7 @@ const formData = reactive<CreateOrderReqVo>({
   userId: undefined,
   addressId: undefined,
   logisticsId: undefined,
+  remark: undefined,
   items: []
 })
 const rules = reactive({
@@ -66,10 +68,22 @@ const onConfirm = (checkedSpu) => {
       existsItem.count += item.count
       existsItem.price += item.price
     } else {
-      formData.items.push(orderItem)
+      formData.items?.push(orderItem)
     }
   })
 }
+
+const deliveryPrice = ref<number>(0)
+const onChangeDelivery = (value: number) => {
+  getDeliveryPrice(value, formData.addressId as number).then(
+    (value) => (deliveryPrice.value = value)
+  )
+}
+
+// TODO这里不回显
+const allProductPrice = computed(() => {
+  formData.items?.reduce((acc, item) => acc + item.price, 0)
+})
 
 const chooseProductFormRef = ref()
 </script>
@@ -77,51 +91,76 @@ const chooseProductFormRef = ref()
 <template>
   <el-form ref="formRef" :model="formData" :rules="rules" label-width="120px">
     <ContentWrap v-loading="formLoading">
-      <el-row>
-        <el-col :span="12">
-          <el-form-item label="客户" prop="userId">
-            <MemberSelect v-model="formData.userId" class="w-100%!" @select="selectUser" />
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="收货地址" prop="userId">
-            <el-select v-model="formData.addressId" placeholder="请选择收货地址">
-              <el-option
-                v-for="item in addressList"
-                :key="item.id"
-                :label="
-                  item.name + ' ' + item.areaName + ' ' + item.detailAddress + ' ' + item.mobile
+      <el-row justify="center">
+        <el-col :span="18">
+          <el-col :span="18">
+            <el-form-item label="客户" prop="userId">
+              <MemberSelect v-model="formData.userId" class="w-100%!" @select="selectUser" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="18">
+            <el-form-item label="收货地址" prop="userId">
+              <el-select v-model="formData.addressId" placeholder="请选择收货地址">
+                <el-option
+                  v-for="item in addressList"
+                  :key="item.id"
+                  :label="
+                    item.name + ' ' + item.areaName + ' ' + item.detailAddress + ' ' + item.mobile
+                  "
+                  :value="item.id as number"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="18">
+            <el-form-item label="商品列表">
+              <el-button
+                :disabled="!formData.userId"
+                class="mb-10px mr-15px"
+                @click="
+                  () => {
+                    chooseProductFormRef.open()
+                  }
                 "
-                :value="item.id as number"
-              />
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="24">
-          <el-form-item label="商品列表">
-            <el-button
-              class="mb-10px mr-15px"
-              @click="
-                () => {
-                  chooseProductFormRef.open()
-                }
-              "
-              >添加商品
-            </el-button>
-            <OrderItemList v-model="formData.items" />
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="配送方式">
-            <el-select v-model="formData.logisticsId" placeholder="请选择配送方式">
-              <el-option
-                v-for="item in expressList"
-                :key="item.id"
-                :label="item.name"
-                :value="item.logisticsId as number"
-              />
-            </el-select>
-          </el-form-item>
+                >添加商品
+              </el-button>
+              <OrderItemList v-model="formData.items" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6" />
+          <el-col :span="6">
+            <el-form-item label="配送方式">
+              <el-select
+                v-model="formData.logisticsId"
+                placeholder="请选择配送方式"
+                :disabled="!formData.userId"
+                @change="onChangeDelivery"
+              >
+                <el-option
+                  v-for="item in expressList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.logisticsId as number"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="18" />
+          <el-col :span="6">
+            <el-form-item label="备注">
+              <el-input v-model="formData.remark" type="textarea" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="运费" class="bold-label">
+              {{ formatToFraction(deliveryPrice) }} 元
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="商品总价" class="bold-label">
+              {{ formatToFraction(allProductPrice) }} 元
+            </el-form-item>
+          </el-col>
         </el-col>
       </el-row>
     </ContentWrap>
@@ -129,4 +168,9 @@ const chooseProductFormRef = ref()
   <ChooseProductForm ref="chooseProductFormRef" @confirm="onConfirm" />
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.bold-label {
+  color: #29b6f6;
+  font-weight: bold;
+}
+</style>

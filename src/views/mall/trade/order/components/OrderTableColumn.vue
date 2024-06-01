@@ -17,9 +17,6 @@
         <div :style="{ width: orderTableHeadWidthList[4] + 'px' }" class="flex justify-center">
           买家/收货人
         </div>
-        <div :style="{ width: orderTableHeadWidthList[5] + 'px' }" class="flex justify-center">
-          配送方式
-        </div>
         <div :style="{ width: orderTableHeadWidthList[6] + 'px' }" class="flex justify-center">
           订单状态
         </div>
@@ -116,39 +113,13 @@
         <el-table-column label="买家/收货人" min-width="160">
           <template #default>
             <!-- 快递发货  -->
-            <div
-              v-if="scope.row.deliveryType === DeliveryTypeEnum.EXPRESS.type"
-              class="flex flex-col"
-            >
+            <div class="flex flex-col">
               <span>买家：{{ scope.row.user.nickname }}</span>
               <span>
                 收货人：{{ scope.row.receiverName }} {{ scope.row.receiverMobile }}
                 {{ scope.row.receiverAreaName }} {{ scope.row.receiverDetailAddress }}
               </span>
             </div>
-            <!-- 自提  -->
-            <div
-              v-if="scope.row.deliveryType === DeliveryTypeEnum.PICK_UP.type"
-              class="flex flex-col"
-            >
-              <span>
-                门店名称：
-                {{ pickUpStoreList.find((p) => p.id === scope.row.pickUpStoreId)?.name }}
-              </span>
-              <span>
-                门店手机：
-                {{ pickUpStoreList.find((p) => p.id === scope.row.pickUpStoreId)?.phone }}
-              </span>
-              <span>
-                自提门店:
-                {{ pickUpStoreList.find((p) => p.id === scope.row.pickUpStoreId)?.detailAddress }}
-              </span>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="配送方式" width="120">
-          <template #default>
-            <dict-tag :type="DICT_TYPE.TRADE_DELIVERY_TYPE" :value="scope.row.deliveryType" />
           </template>
         </el-table-column>
         <el-table-column align="center" label="订单状态" width="120">
@@ -167,20 +138,17 @@
 </template>
 <script lang="ts" setup>
 import { DICT_TYPE } from '@/utils/dict'
-import { DeliveryTypeEnum } from '@/utils/constants'
 import { formatDate } from '@/utils/formatTime'
 import { floatToFixed2 } from '@/utils'
 import * as TradeOrderApi from '@/api/mall/trade/order'
 import { OrderVO } from '@/api/mall/trade/order'
 import type { TableColumnCtx, TableInstance } from 'element-plus'
 import { createImageViewer } from '@/components/ImageViewer'
-import type { DeliveryPickUpStoreVO } from '@/api/mall/trade/delivery/pickUpStore'
 
 defineOptions({ name: 'OrderTableColumn' })
 
 const props = defineProps<{
   list: OrderVO[]
-  pickUpStoreList: DeliveryPickUpStoreVO[]
 }>()
 
 const headerStyle = ({ row, columnIndex }: any) => {

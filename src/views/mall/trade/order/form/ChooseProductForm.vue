@@ -89,7 +89,7 @@ const cascadeChange = async (node) => {
   const sphRangeList: number[] = []
   const cylRangeList: number[] = []
   const addRangeList: number[] = []
-  spu.value?.skus.map((sku) => {
+  spu.value?.skus?.map((sku) => {
     sphRangeList.push(sku.skuLens?.minSph, sku.skuLens?.maxSph)
     cylRangeList.push(sku.skuLens?.minCyl, sku.skuLens?.maxCyl)
     addRangeList.push(sku.skuLens?.minAdd, sku.skuLens?.maxAdd)
@@ -108,7 +108,7 @@ const cascadeChange = async (node) => {
 }
 
 const onClose = () => {
-  spu.value = null
+  spu.value = undefined
   rows.value = []
 }
 

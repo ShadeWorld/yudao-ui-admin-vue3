@@ -4,6 +4,7 @@ export interface CreateOrderReqVo {
   userId?: number
   addressId?: number
   logisticsId?: number
+  remark?: string
   items?: OrderItem[]
 }
 
@@ -11,7 +12,7 @@ export interface OrderItem {
   spuId?: number
   spuName?: string
   skuId?: number
-  price?: number
+  price: number
   count?: number
   orderLens?: OrderItemLens
 }

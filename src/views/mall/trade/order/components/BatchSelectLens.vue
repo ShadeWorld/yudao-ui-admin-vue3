@@ -11,10 +11,10 @@ export interface Col {
   row: Row
   cyl: number
   add: number
-  price: number | undefined
-  skuId: number | undefined
-  count: number
-  selected: boolean
+  price?: number
+  skuId?: number
+  count?: number
+  selected?: boolean
 }
 
 export interface DegreeRange {
@@ -106,11 +106,11 @@ const renderGrid = () => {
       sph -= 0.25
     ) {
       // 先找rows里面有没有这一行
-      let row: Row = rows.value?.find((i) => i.sph === sph)
+      let row: Row | undefined = rows.value?.find((i) => i.sph === sph)
       if (!row) {
         // 没有就new一个，然后push到rows里面
         row = row ? row : { sph: sph, cols: [] }
-        rows.value.push(row)
+        rows.value?.push(row)
       }
       for (
         let cyl = localDegreeRange.value.maxCyl;
@@ -133,7 +133,7 @@ const renderGrid = () => {
   }
 }
 
-if (rows.value.length > 0) {
+if (rows.value?.length) {
   localDegreeRange.value = {
     minSph: rows.value[rows.value?.length - 1].sph,
     maxSph: rows.value[0].sph,
@@ -174,7 +174,7 @@ watch(
     if (degreeRange) {
       copyValueToTarget(localDegreeRange.value, degreeRange)
       // 光度范围发生变化，需要清空rows
-      rows.value.splice(0, rows.value.length)
+      rows.value?.splice(0, rows.value?.length)
       renderGrid()
     }
   },
@@ -204,7 +204,7 @@ const onMouseEnter = (col: Col) => {
     rows.value?.forEach((row) => {
       if (between(row.sph, [firstPosition.row, col.row.sph])) {
         row.cols.forEach((i) => {
-          if (between(i.cyl, [firstPosition.col, col.cyl])) {
+          if (between(i.cyl, [firstPosition.col, col.cyl]) && i.skuId) {
             i.selected = true
           }
         })

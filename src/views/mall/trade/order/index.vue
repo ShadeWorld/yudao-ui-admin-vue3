@@ -129,7 +129,7 @@
   <ContentWrap>
     <!-- 添加 row-key="id" 解决列数据中的 table#header 数据不刷新的问题  -->
     <el-table v-loading="loading" :data="list" row-key="id">
-      <OrderTableColumn :list="list" :pick-up-store-list="pickUpStoreList">
+      <OrderTableColumn :list="list">
         <template #default="{ row }">
           <div class="flex items-center justify-center">
             <el-button
@@ -192,7 +192,6 @@ import type { FormInstance } from 'element-plus'
 import OrderDeliveryForm from '@/views/mall/trade/order/form/OrderDeliveryForm.vue'
 import OrderUpdateRemarkForm from '@/views/mall/trade/order/form/OrderUpdateRemarkForm.vue'
 import * as TradeOrderApi from '@/api/mall/trade/order'
-import * as PickUpStoreApi from '@/api/mall/trade/delivery/pickUpStore'
 import { DICT_TYPE, getIntDictOptions, getStrDictOptions } from '@/utils/dict'
 import * as DeliveryExpressApi from '@/api/mall/trade/delivery/express'
 import { DeliveryTypeEnum, TradeOrderStatusEnum } from '@/utils/constants'
@@ -310,12 +309,10 @@ watch(
   }
 )
 
-const pickUpStoreList = ref<PickUpStoreApi.DeliveryPickUpStoreVO[]>([]) // 自提门店精简列表
 const deliveryExpressList = ref<DeliveryExpressApi.DeliveryExpressVO[]>([]) // 物流公司
 /** 初始化 **/
 onMounted(async () => {
   await getList()
-  pickUpStoreList.value = await PickUpStoreApi.getListAllSimple()
   deliveryExpressList.value = await DeliveryExpressApi.getSimpleDeliveryExpressList()
 })
 </script>

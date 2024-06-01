@@ -48,18 +48,18 @@ export interface Sku {
 }
 
 export interface SkuLens {
-  id?: number
-  minSph?: number // 起始球镜
-  maxSph?: number
+  id: number
+  minSph: number // 起始球镜
+  maxSph: number
   skipSph: number[]
-  minCyl?: number // 起始柱镜
-  maxCyl?: number
+  minCyl: number // 起始柱镜
+  maxCyl: number
   skipCyl: number[]
-  minAdd?: number
-  maxAdd?: number
+  minAdd: number
+  maxAdd: number
   skipAdd: number[]
-  minUnion?: number
-  maxUnion?: number
+  minUnion: number
+  maxUnion: number
 }
 
 export interface GiveCouponTemplate {
