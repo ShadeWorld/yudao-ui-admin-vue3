@@ -2,14 +2,15 @@
 import { OrderItem } from '@/api/mall/trade/order'
 import { ElTable } from 'element-plus'
 import { Row } from '@/views/mall/trade/order/components/BatchSelectLens.vue'
-import { copyValueToTarget, formatToFraction } from '@/utils'
+import { formatToFraction } from '@/utils'
 import { BatchSelectLens } from '@/views/mall/trade/order/components'
 
 interface TableOrderItem {
-  spuId?: number
-  spuName?: string
-  price?: number
-  count?: number
+  spuId: number
+  skuId: number
+  spuName: string
+  price: number
+  count: number
 }
 
 const model = defineModel<OrderItem[]>()
@@ -19,21 +20,22 @@ const tableData = ref<TableOrderItem[]>([])
 watch(
   () => model.value,
   (value) => {
-    console.log('items变了', value)
     tableData.value = !value
       ? []
       : value?.reduce((tableData: TableOrderItem[], item: OrderItem) => {
-          let data: TableOrderItem | undefined = tableData.find((i) => i.spuId === item.spuId)
+          let data: TableOrderItem | undefined = tableData.find(
+            (i) => i.spuId === item.spuId && i.skuId == item.skuId
+          )
           if (data) {
             data.count += item.count
           } else {
             data = {
-              spuId: undefined,
-              spuName: undefined,
-              price: undefined,
-              count: undefined
+              spuId: item.spuId,
+              skuId: item.skuId,
+              spuName: item.spuName,
+              price: item.price,
+              count: item.count
             }
-            copyValueToTarget(data, item)
             tableData.push(data)
           }
           return tableData
@@ -56,42 +58,44 @@ const detailWidth = ref<number>(800)
  */
 const openDetail = (detailItem) => {
   detailSpu.value = detailItem
-  let minCyl = model.value[0].orderLens.cyl
+  let minCyl = model.value[0].orderLensList[0].cyl
   let maxCyl = minCyl
   model.value?.forEach((item: OrderItem) => {
-    if (item.spuId === detailItem.spuId && item.orderLens) {
-      // 生成批量选择控件的所有行
-      let row = rows.value.find((i) => i.sph === item.orderLens?.sph)
-      if (row) {
-        row.cols.push({
-          row: row,
-          cyl: item.orderLens.cyl,
-          add: item.orderLens.add,
-          count: item.count,
-          skuId: item.skuId,
-          price: item.price,
-          selected: false
-        })
-      } else {
-        row = {
-          sph: item.orderLens.sph,
-          cols: []
+    if (item.skuId === detailItem.skuId && item.orderLensList?.length) {
+      item.orderLensList.forEach((orderLens) => {
+        // 生成批量选择控件的所有行
+        let row = rows.value.find((i) => orderLens.sph === i.sph)
+        if (row) {
+          row.cols.push({
+            row: row,
+            cyl: orderLens.cyl,
+            add: orderLens.add,
+            count: orderLens.count,
+            skuId: item.skuId,
+            price: item.price,
+            selected: false
+          })
+        } else {
+          row = {
+            sph: orderLens.sph,
+            cols: []
+          }
+          row.cols.push({
+            row: row,
+            cyl: orderLens.cyl,
+            add: orderLens.add,
+            count: orderLens.count,
+            skuId: item.skuId,
+            price: item.price,
+            selected: false
+          })
+          rows.value.push(row)
         }
-        row.cols.push({
-          row: row,
-          cyl: item.orderLens.cyl,
-          add: item.orderLens.add,
-          count: item.count,
-          skuId: item.skuId,
-          price: item.price,
-          selected: false
-        })
-        rows.value.push(row)
-      }
 
-      // 计算最大cyl和最小cyl，用于计算dialog宽度
-      minCyl = Math.min(minCyl, item.orderLens.cyl)
-      maxCyl = Math.max(maxCyl, item.orderLens.cyl)
+        // 计算最大cyl和最小cyl，用于计算dialog宽度
+        minCyl = Math.min(minCyl, orderLens.cyl)
+        maxCyl = Math.max(maxCyl, orderLens.cyl)
+      })
     }
   })
   detailWidth.value = ((maxCyl - minCyl) / 0.25 + 1) * 51 + 100
@@ -103,26 +107,48 @@ const confirm = () => {
     row.cols.forEach((col) => {
       // 找出每一行有数量的col，转换格式
       if (col.skuId) {
-        let orderItem = {
-          spuId: detailSpu.value?.spuId,
-          spuName: detailSpu.value?.spuName,
-          skuId: col.skuId,
-          price: col.price,
-          count: col.count,
-          orderLens: {
-            sph: row.sph,
-            cyl: col.cyl,
-            add: col.add
-          }
-        }
-        let existsItem = model.value?.find(
-          (i) =>
-            i.skuId == col.skuId &&
-            JSON.stringify(i.orderLens) === JSON.stringify(orderItem.orderLens)
-        )
+        let existsItem = model.value?.find((i) => i.skuId == col.skuId)
         if (existsItem) {
-          existsItem.count = col.count
+          let existsLens = existsItem.orderLensList?.find(
+            (i) => i.sph === row.sph && i.cyl === col.cyl && i.add === col.add
+          )
+          if (existsLens) {
+            if (!col.count) {
+              // 新的数据没有数量，则把原来存在的也删掉
+              existsItem.orderLensList = existsItem.orderLensList?.filter((i) => i !== existsLens)
+              // 对应item数量也减少
+              existsItem.count -= existsLens.count
+              return
+            }
+            existsItem.count += col.count - existsLens.count
+            existsLens.count = col.count
+          } else {
+            // 没有数量，就不要加了
+            if (!col.count) return
+            existsItem.count += col.count
+            existsItem.orderLensList?.push({
+              sph: row.sph,
+              cyl: col.cyl,
+              add: col.add,
+              count: col.count
+            })
+          }
         } else {
+          // 没有数量，就不要加了
+          if (!col.count) return
+          let orderItem = {
+            spuId: detailSpu.value?.spuId,
+            spuName: detailSpu.value?.spuName,
+            skuId: col.skuId,
+            price: col.price,
+            count: col.count,
+            orderLensList: {
+              sph: row.sph,
+              cyl: col.cyl,
+              add: col.add,
+              count: col.count
+            }
+          }
           model.value?.push(orderItem)
         }
       }
@@ -135,8 +161,6 @@ const onClose = () => {
   rows.value.splice(0, rows.value.length)
   detailSpu.value = undefined
 }
-
-// TODO:要不要重新写一个BatchSelectLens专门用于详情展示，不写也可以，动态传spuId和degree-range就行，然后BatchSelectLens里面通过spuId查询sku获取价格信息
 </script>
 
 <template>
@@ -177,6 +201,8 @@ const onClose = () => {
     destroy-on-close
     center
     @close="onClose"
+    maxHeight="980px"
+    class="lens-dialog"
   >
     <el-row justify="center">
       <BatchSelectLens v-model="rows" />
@@ -190,4 +216,8 @@ const onClose = () => {
   </ElDialog>
 </template>
 
-<style scoped lang="scss"></style>
+<style lang="scss">
+.lens-dialog {
+  --el-dialog-margin-top: 20px;
+}
+</style>

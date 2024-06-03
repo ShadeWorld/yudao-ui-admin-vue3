@@ -11,115 +11,142 @@
       class="-mb-15px"
       label-width="68px"
     >
-      <el-form-item label="订单状态" prop="status">
-        <el-select v-model="queryParams.status" class="!w-280px" clearable placeholder="全部">
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.TRADE_ORDER_STATUS)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
+      <el-row>
+        <el-form-item label="订单状态" prop="status">
+          <el-select v-model="queryParams.status" class="!w-280px" clearable placeholder="全部">
+            <el-option
+              v-for="dict in getIntDictOptions(DICT_TYPE.TRADE_ORDER_STATUS)"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="支付方式" prop="payChannelCode">
+          <el-select
+            v-model="queryParams.payChannelCode"
+            class="!w-280px"
+            clearable
+            placeholder="全部"
+          >
+            <el-option
+              v-for="dict in getStrDictOptions(DICT_TYPE.PAY_CHANNEL_CODE)"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="创建时间" prop="createTime">
+          <el-date-picker
+            v-model="queryParams.createTime"
+            :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
+            class="!w-280px"
+            end-placeholder="自定义时间"
+            start-placeholder="自定义时间"
+            type="daterange"
+            value-format="YYYY-MM-DD HH:mm:ss"
           />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="支付方式" prop="payChannelCode">
-        <el-select
-          v-model="queryParams.payChannelCode"
-          class="!w-280px"
-          clearable
-          placeholder="全部"
-        >
-          <el-option
-            v-for="dict in getStrDictOptions(DICT_TYPE.PAY_CHANNEL_CODE)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
-        <el-date-picker
-          v-model="queryParams.createTime"
-          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-          class="!w-280px"
-          end-placeholder="自定义时间"
-          start-placeholder="自定义时间"
-          type="daterange"
-          value-format="YYYY-MM-DD HH:mm:ss"
-        />
-      </el-form-item>
-      <el-form-item label="订单来源" prop="terminal">
-        <el-select v-model="queryParams.orderSource" class="!w-280px" clearable placeholder="全部">
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.TRADE_ORDER_SOURCE)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <!--      <el-form-item label="订单类型" prop="type">-->
-      <!--        <el-select v-model="queryParams.type" class="!w-280px" clearable placeholder="全部">-->
-      <!--          <el-option-->
-      <!--            v-for="dict in getIntDictOptions(DICT_TYPE.TRADE_ORDER_TYPE)"-->
-      <!--            :key="dict.value"-->
-      <!--            :label="dict.label"-->
-      <!--            :value="dict.value"-->
-      <!--          />-->
-      <!--        </el-select>-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item-->
-      <!--        v-if="queryParams.deliveryType === DeliveryTypeEnum.EXPRESS.type"-->
-      <!--        label="快递公司"-->
-      <!--        prop="logisticsId"-->
-      <!--      >-->
-      <!--        <el-select v-model="queryParams.logisticsId" class="!w-280px" clearable placeholder="全部">-->
-      <!--          <el-option-->
-      <!--            v-for="item in deliveryExpressList"-->
-      <!--            :key="item.id"-->
-      <!--            :label="item.name"-->
-      <!--            :value="item.id"-->
-      <!--          />-->
-      <!--        </el-select>-->
-      <!--      </el-form-item>-->
-      <el-form-item label="聚合搜索">
-        <el-input
-          v-show="true"
-          v-model="queryParams[queryType.queryParam]"
-          :type="queryType.queryParam === 'userId' ? 'number' : 'text'"
-          class="!w-280px"
-          clearable
-          placeholder="请输入"
-        >
-          <template #prepend>
-            <el-select
-              v-model="queryType.queryParam"
-              class="!w-110px"
-              clearable
-              placeholder="全部"
-              @change="inputChangeSelect"
-            >
-              <el-option
-                v-for="dict in dynamicSearchList"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
-          </template>
-        </el-input>
-      </el-form-item>
+        </el-form-item>
+        <el-form-item label="订单来源" prop="terminal">
+          <el-select
+            v-model="queryParams.orderSource"
+            class="!w-280px"
+            clearable
+            placeholder="全部"
+          >
+            <el-option
+              v-for="dict in getIntDictOptions(DICT_TYPE.TRADE_ORDER_SOURCE)"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
+        </el-form-item>
+        <!--      <el-form-item label="订单类型" prop="type">-->
+        <!--        <el-select v-model="queryParams.type" class="!w-280px" clearable placeholder="全部">-->
+        <!--          <el-option-->
+        <!--            v-for="dict in getIntDictOptions(DICT_TYPE.TRADE_ORDER_TYPE)"-->
+        <!--            :key="dict.value"-->
+        <!--            :label="dict.label"-->
+        <!--            :value="dict.value"-->
+        <!--          />-->
+        <!--        </el-select>-->
+        <!--      </el-form-item>-->
+        <!--      <el-form-item-->
+        <!--        v-if="queryParams.deliveryType === DeliveryTypeEnum.EXPRESS.type"-->
+        <!--        label="快递公司"-->
+        <!--        prop="logisticsId"-->
+        <!--      >-->
+        <!--        <el-select v-model="queryParams.logisticsId" class="!w-280px" clearable placeholder="全部">-->
+        <!--          <el-option-->
+        <!--            v-for="item in deliveryExpressList"-->
+        <!--            :key="item.id"-->
+        <!--            :label="item.name"-->
+        <!--            :value="item.id"-->
+        <!--          />-->
+        <!--        </el-select>-->
+        <!--      </el-form-item>-->
+        <el-form-item label="聚合搜索">
+          <el-input
+            v-show="true"
+            v-model="queryParams[queryType.queryParam]"
+            :type="queryType.queryParam === 'userId' ? 'number' : 'text'"
+            class="!w-280px"
+            clearable
+            placeholder="请输入"
+          >
+            <template #prepend>
+              <el-select
+                v-model="queryType.queryParam"
+                class="!w-110px"
+                clearable
+                placeholder="全部"
+                @change="inputChangeSelect"
+              >
+                <el-option
+                  v-for="dict in dynamicSearchList"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                />
+              </el-select>
+            </template>
+          </el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button @click="handleQuery">
+            <Icon class="mr-5px" icon="ep:search" />
+            搜索
+          </el-button>
+          <el-button @click="resetQuery">
+            <Icon class="mr-5px" icon="ep:refresh" />
+            重置
+          </el-button>
+          <el-button @click="createOrder" type="primary" plain>
+            <Icon class="mr-5px" icon="ep:plus" />
+            添加订单
+          </el-button>
+        </el-form-item>
+      </el-row>
       <el-form-item>
-        <el-button @click="handleQuery">
-          <Icon class="mr-5px" icon="ep:search" />
-          搜索
+        <el-button
+          @click="() => printShipRef.open(currentRow)"
+          type="primary"
+          plain
+          :disabled="!currentRow"
+        >
+          <Icon class="mr-5px" icon="ep:printer" />
+          打印配货单
         </el-button>
-        <el-button @click="resetQuery">
-          <Icon class="mr-5px" icon="ep:refresh" />
-          重置
-        </el-button>
-        <el-button @click="createOrder" type="primary" plain>
-          <Icon class="mr-5px" icon="ep:plus" />
-          创建订单
+        <el-button
+          @click="() => printTagRef.open(currentRow)"
+          type="primary"
+          plain
+          :disabled="!currentRow"
+        >
+          <Icon class="mr-5px" icon="ep:printer" />
+          打印标签
         </el-button>
       </el-form-item>
     </el-form>
@@ -128,10 +155,67 @@
   <!-- 列表 -->
   <ContentWrap>
     <!-- 添加 row-key="id" 解决列数据中的 table#header 数据不刷新的问题  -->
-    <el-table v-loading="loading" :data="list" row-key="id">
-      <OrderTableColumn :list="list">
+    <el-table
+      ref="orderTableRef"
+      v-loading="loading"
+      :data="list"
+      row-key="id"
+      show-overflow-tooltip
+      highlight-current-row
+      @row-click="handleRowClick"
+    >
+      <el-table-column prop="no" label="订单号" min-width="60" />
+      <el-table-column prop="payPrice" label="实际支付" min-width="40">
         <template #default="{ row }">
-          <div class="flex items-center justify-center">
+          {{ floatToFixed2(row.payPrice) + '元' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="订单类型" min-width="50">
+        <template #default="{ row }">
+          <dict-tag :type="DICT_TYPE.TRADE_ORDER_TYPE" :value="row.type" />
+        </template>
+      </el-table-column>
+      <el-table-column label="订单来源" min-width="50">
+        <template #default="{ row }">
+          <dict-tag :type="DICT_TYPE.TRADE_ORDER_SOURCE" :value="row.orderSource" />
+        </template>
+      </el-table-column>
+      <el-table-column label="支付方式" min-width="50">
+        <template #default="{ row }">
+          <dict-tag
+            v-if="row.payChannelCode"
+            :type="DICT_TYPE.PAY_CHANNEL_CODE"
+            :value="row.payChannelCode"
+            class="mr-20px"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column label="支付时间" min-width="68">
+        <template #default="{ row }">
+          <span v-if="row.payTime" class="mr-20px"> {{ formatDate(row.payTime) }} </span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        :formatter="dateFormatter"
+        align="center"
+        label="创建时间"
+        prop="createTime"
+        width="180"
+      />
+      <el-table-column label="收货信息" min-width="200">
+        <template #default="{ row }">
+          <!-- 快递发货  -->
+          <div class="flex flex-col">
+            <span>
+              {{ row.receiverName }} {{ row.receiverMobile }} {{ row.receiverAreaName }}
+              {{ row.receiverDetailAddress }}
+            </span>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作">
+        <template #default="{ row }">
+          <div class="flex items-center">
             <el-button
               v-hasPermi="['trade:order:query']"
               link
@@ -153,10 +237,7 @@
                 <el-dropdown-menu>
                   <!-- 如果是【快递】，并且【未发货】，则展示【发货】按钮 -->
                   <el-dropdown-item
-                    v-if="
-                      row.deliveryType === DeliveryTypeEnum.EXPRESS.type &&
-                      row.status === TradeOrderStatusEnum.UNDELIVERED.status
-                    "
+                    v-if="row.status === TradeOrderStatusEnum.UNDELIVERED.status"
                     command="delivery"
                   >
                     <Icon icon="ep:takeaway-box" />
@@ -171,7 +252,8 @@
             </el-dropdown>
           </div>
         </template>
-      </OrderTableColumn>
+      </el-table-column>
+      <!--      <OrderTableColumn :list="list">123 </OrderTableColumn>-->
     </el-table>
     <!-- 分页 -->
     <Pagination
@@ -185,6 +267,8 @@
   <!-- 各种操作的弹窗 -->
   <OrderDeliveryForm ref="deliveryFormRef" @success="getList" />
   <OrderUpdateRemarkForm ref="updateRemarkForm" @success="getList" />
+  <PrintShipList ref="printShipRef" />
+  <PrintTagList ref="printTagRef" />
 </template>
 
 <script lang="ts" setup>
@@ -194,8 +278,10 @@ import OrderUpdateRemarkForm from '@/views/mall/trade/order/form/OrderUpdateRema
 import * as TradeOrderApi from '@/api/mall/trade/order'
 import { DICT_TYPE, getIntDictOptions, getStrDictOptions } from '@/utils/dict'
 import * as DeliveryExpressApi from '@/api/mall/trade/delivery/express'
-import { DeliveryTypeEnum, TradeOrderStatusEnum } from '@/utils/constants'
-import { OrderTableColumn } from './components'
+import { TradeOrderStatusEnum } from '@/utils/constants'
+import { PrintShipList, PrintTagList } from './components'
+import { floatToFixed2 } from '@/utils'
+import { dateFormatter, formatDate } from '@/utils/formatTime'
 
 defineOptions({ name: 'TradeOrder' })
 
@@ -204,6 +290,7 @@ const loading = ref(true) // 列表的加载中
 const total = ref(2) // 列表的总页数
 const list = ref<TradeOrderApi.OrderVO[]>([]) // 列表的数据
 const queryFormRef = ref<FormInstance>() // 搜索的表单
+const orderTableRef = ref()
 // 表单搜索
 const queryParams = ref({
   pageNo: 1, // 页数
@@ -213,8 +300,7 @@ const queryParams = ref({
   createTime: undefined, // 创建时间
   orderSource: undefined, // 订单来源
   type: undefined, // 订单类型
-  deliveryType: undefined, // 配送方式
-  logisticsId: undefined // 快递公司
+  deliveryTemplateId: undefined // 快递公司
 })
 const queryType = reactive({ queryParam: '' }) // 订单搜索类型 queryParam
 
@@ -267,12 +353,9 @@ const resetQuery = () => {
     status: undefined, // 订单状态
     payChannelCode: undefined, // 支付方式
     createTime: undefined, // 创建时间
-    terminal: undefined, // 订单来源
+    orderSource: undefined, // 订单来源
     type: undefined, // 订单类型
-    deliveryType: undefined, // 配送方式
-    logisticsId: undefined, // 快递公司
-    pickUpStoreId: undefined, // 自提门店
-    pickUpVerifyCode: undefined // 自提核销码
+    deliveryTemplateId: undefined // 快递公司
   }
   handleQuery()
 }
@@ -315,4 +398,22 @@ onMounted(async () => {
   await getList()
   deliveryExpressList.value = await DeliveryExpressApi.getSimpleDeliveryExpressList()
 })
+
+// 当前选中行
+const currentRow = ref<TradeOrderApi.OrderVO>()
+
+const handleRowClick = (row) => {
+  if (row === currentRow.value) {
+    orderTableRef.value.setCurrentRow()
+    currentRow.value = undefined
+  } else {
+    orderTableRef.value.setCurrentRow(row)
+    currentRow.value = row
+  }
+}
+
+// 打印配货单弹窗
+const printShipRef = ref()
+// 打印标签弹窗
+const printTagRef = ref()
 </script>

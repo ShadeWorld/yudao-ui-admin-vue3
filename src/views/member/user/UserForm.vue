@@ -34,9 +34,9 @@
       <el-form-item label="用户昵称" prop="nickname">
         <el-input v-model="formData.nickname" placeholder="请输入用户昵称" />
       </el-form-item>
-      <el-form-item label="头像" prop="avatar">
-        <UploadImg v-model="formData.avatar" :limit="1" :is-show-tip="false" />
-      </el-form-item>
+      <!--      <el-form-item label="头像" prop="avatar">-->
+      <!--        <UploadImg v-model="formData.avatar" :limit="1" :is-show-tip="false" />-->
+      <!--      </el-form-item>-->
       <el-form-item label="公司（店名）" prop="companyName">
         <el-input v-model="formData.companyName" placeholder="请输入公司（店名）" />
       </el-form-item>

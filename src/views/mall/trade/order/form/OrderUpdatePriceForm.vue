@@ -6,7 +6,7 @@
       </el-form-item>
       <el-form-item label="订单调价">
         <el-input-number v-model="formData.adjustPrice" :precision="2" :step="0.1" class="w-100%" />
-        <el-tag class="mt-10px" type="warning">订单调价。 正数，加价；负数，减价</el-tag>
+        <el-tag class="ml-5" type="warning">订单调价。 正数，加价；负数，减价</el-tag>
       </el-form-item>
       <el-form-item label="调价后">
         <el-input v-model="formData.newPayPrice" disabled />
@@ -20,7 +20,7 @@
 </template>
 <script lang="ts" setup>
 import * as TradeOrderApi from '@/api/mall/trade/order'
-import { convertToInteger, floatToFixed2, formatToFraction } from '@/utils'
+import { convertToInteger, floatToFixed2 } from '@/utils'
 import { cloneDeep } from 'lodash-es'
 
 defineOptions({ name: 'OrderUpdatePriceForm' })
@@ -50,9 +50,9 @@ const formRef = ref() // 表单 Ref
 /** 打开弹窗 */
 const open = async (row: TradeOrderApi.OrderVO) => {
   resetForm()
-  formData.value.id = row.id!
+  formData.value.id = row.payOrderId!
   // 设置数据
-  formData.value.adjustPrice = formatToFraction(row.adjustPrice!)
+  formData.value.adjustPrice = row.adjustPrice! / 100
   formData.value.payPrice = floatToFixed2(row.payPrice!) + '元'
   formData.value.newPayPrice = formData.value.payPrice
   dialogVisible.value = true

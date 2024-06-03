@@ -91,9 +91,9 @@ const localDegreeRange = ref<DegreeRange>({
 })
 
 // 普通镜片，只有球柱镜
-const isNormal = computed(() => {
-  localDegreeRange.value.minAdd === 0 && localDegreeRange.value.maxAdd === 0
-})
+const isNormal = computed(
+  () => localDegreeRange.value.minAdd === 0 && localDegreeRange.value.maxAdd === 0
+)
 
 const cylList = ref<number[]>([])
 
@@ -127,7 +127,6 @@ const renderGrid = () => {
         row.cols.push(col)
       }
       row.cols.sort((a, b) => b.cyl - a.cyl)
-      console.log('看看价格', row.cols)
     }
     rows.value?.sort((a, b) => b.sph - a.sph)
   }
@@ -143,6 +142,8 @@ if (rows.value?.length) {
     maxAdd: rows.value[0].cols[0].add
   }
   rows.value?.forEach((row) => {
+    localDegreeRange.value.minSph = Math.min(localDegreeRange.value.minSph, row.sph)
+    localDegreeRange.value.maxSph = Math.max(localDegreeRange.value.maxSph, row.sph)
     row.cols.forEach((col) => {
       localDegreeRange.value.minCyl = Math.min(localDegreeRange.value.minCyl, col.cyl)
       localDegreeRange.value.maxCyl = Math.max(localDegreeRange.value.maxCyl, col.cyl)
@@ -224,9 +225,12 @@ window.onmouseup = () => {
 }
 
 const numberKeyCodeRange = [
+  // 数字1-9
   [48, 57],
+  // 小键盘1-9
   [96, 105]
 ]
+const backspaceCode = 8
 window.onkeyup = (e) => {
   if (between(e.keyCode, numberKeyCodeRange[0])) {
     rows.value?.forEach((row) => {
@@ -242,6 +246,15 @@ window.onkeyup = (e) => {
       row.cols.forEach((col) => {
         if (col.selected) {
           col.count = e.keyCode - 96
+        }
+      })
+    })
+  }
+  if (e.keyCode === backspaceCode) {
+    rows.value?.forEach((row) => {
+      row.cols.forEach((col) => {
+        if (col.selected) {
+          col.count = undefined
         }
       })
     })
@@ -283,6 +296,7 @@ window.onkeyup = (e) => {
 
 <style scoped lang="scss">
 table {
+  user-select: none;
   font-size: 12px;
   line-height: 18px;
   table-layout: fixed;
@@ -325,6 +339,7 @@ table {
 .td-disabled {
   background: #e6e8eb;
 }
+
 input {
   -webkit-appearance: none !important;
 }

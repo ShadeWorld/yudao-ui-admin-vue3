@@ -1,20 +1,21 @@
 import request from '@/config/axios'
 
 export interface CreateOrderReqVo {
-  userId?: number
+  memberId?: number
   addressId?: number
-  logisticsId?: number
+  deliveryTemplateId?: number
   remark?: string
   items?: OrderItem[]
+  orderSource: number
 }
 
 export interface OrderItem {
-  spuId?: number
-  spuName?: string
-  skuId?: number
+  spuId: number
+  spuName: string
+  skuId: number
   price: number
-  count?: number
-  orderLens?: OrderItemLens
+  count: number
+  orderLensList?: OrderItemLens[]
 }
 
 export interface OrderItemLens {
@@ -23,6 +24,7 @@ export interface OrderItemLens {
   add: number
   leftOrRight?: number
   axis?: number
+  count: number
 }
 
 export interface OrderVO {
@@ -31,7 +33,7 @@ export interface OrderVO {
   no?: string // 订单流水号
   createTime?: Date | null // 下单时间
   type?: number | null // 订单类型
-  terminal?: number | null // 订单来源
+  orderSource?: number | null // 订单来源
   userId?: number | null // 用户编号
   userIp?: string // 用户 IP
   userRemark?: string // 用户备注
@@ -54,8 +56,6 @@ export interface OrderVO {
   payPrice?: number | null // 应付金额（总）
   // ========== 收件 + 物流基本信息 ==========
   deliveryType?: number | null // 发货方式
-  pickUpStoreId?: number // 自提门店编号
-  pickUpVerifyCode?: string // 自提核销码
   deliveryTemplateId?: number | null // 配送模板编号
   logisticsId?: number | null // 发货物流公司编号
   logisticsNo?: string // 发货物流单号
@@ -75,18 +75,10 @@ export interface OrderVO {
   // ========== 营销基本信息 ==========
   couponId?: number | null // 优惠劵编号
   couponPrice?: number | null // 优惠劵减免金额
-  pointPrice?: number | null // 积分抵扣的金额
-  vipPrice?: number | null // VIP 减免金额
 
   items?: OrderItemRespVO[] // 订单项列表
   // 下单用户信息
   user?: {
-    id?: number | null
-    nickname?: string
-    avatar?: string
-  }
-  // 推广用户信息
-  brokerageUser?: {
     id?: number | null
     nickname?: string
     avatar?: string
@@ -146,6 +138,11 @@ export interface TradeOrderSummaryRespVO {
 }
 
 // 查询交易订单列表
+export const createOrder = async (data: any) => {
+  return await request.post({ url: `/trade/order/create`, data })
+}
+
+// 查询交易订单列表
 export const getOrderPage = async (params: any) => {
   return await request.get({ url: `/trade/order/page`, params })
 }
@@ -167,7 +164,6 @@ export const getExpressTrackList = async (id: number | null) => {
 
 export interface DeliveryVO {
   id: number // 订单编号
-  logisticsId: number | null // 物流公司编号
   logisticsNo: string // 物流编号
 }
 
@@ -209,5 +205,13 @@ export const getOrderByPickUpVerifyCode = async (pickUpVerifyCode: string) => {
   return await request.get<OrderVO>({
     url: `/trade/order/get-by-pick-up-verify-code`,
     params: { pickUpVerifyCode }
+  })
+}
+
+// 查询打印列表
+export const getPrintDetail = async (id: number, no: string) => {
+  return await request.get({
+    url: `/trade/order/get-print-detail`,
+    params: { id: id, no: no }
   })
 }

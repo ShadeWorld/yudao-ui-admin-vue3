@@ -8,16 +8,6 @@
         </el-radio-group>
       </el-form-item>
       <template v-if="expressType === 'express'">
-        <el-form-item label="物流公司">
-          <el-select v-model="formData.logisticsId" placeholder="请选择" style="width: 100%">
-            <el-option
-              v-for="item in deliveryExpressList"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
-        </el-form-item>
         <el-form-item label="物流单号">
           <el-input v-model="formData.logisticsNo" />
         </el-form-item>
@@ -44,7 +34,6 @@ const formLoading = ref(false) // 表单的加载中：1）修改时的数据加
 const expressType = ref('express') // 如果值是 express，则是快递；none 则是无；未来做同城配送；
 const formData = ref<TradeOrderApi.DeliveryVO>({
   id: 0, // 订单编号
-  logisticsId: null, // 物流公司编号
   logisticsNo: '' // 物流编号
 })
 const formRef = ref() // 表单 Ref
@@ -54,9 +43,6 @@ const open = async (row: TradeOrderApi.OrderVO) => {
   resetForm()
   // 设置数据
   copyValueToTarget(formData.value, row)
-  if (row.logisticsId === 0) {
-    expressType.value = 'none'
-  }
   dialogVisible.value = true
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
@@ -70,7 +56,6 @@ const submitForm = async () => {
     const data = unref(formData)
     if (expressType.value === 'none') {
       // 无需发货的情况
-      data.logisticsId = 0
       data.logisticsNo = ''
     }
     await TradeOrderApi.deliveryOrder(data)
@@ -87,7 +72,6 @@ const submitForm = async () => {
 const resetForm = () => {
   formData.value = {
     id: 0, // 订单编号
-    logisticsId: null, // 物流公司编号
     logisticsNo: '' // 物流编号
   }
   formRef.value?.resetFields()

@@ -74,7 +74,9 @@ const cascadeProps: CascaderProps = {
 
 const spu = ref<Spu>()
 
+// 当前光度范围
 const degreeRange = ref<DegreeRange>()
+// 分类变动的回调
 const cascadeChange = async (node) => {
   spu.value = await ProductSpuApi.getLensSpu({
     categoryId: node[0],
@@ -105,19 +107,22 @@ const cascadeChange = async (node) => {
     minAdd: addRangeList[0],
     maxAdd: addRangeList[addRangeList.length - 1]
   }
+
+  rows.value.splice(0, rows.value.length)
 }
 
 const onClose = () => {
   spu.value = undefined
-  rows.value = []
+  rows.value.splice(0, rows.value.length)
 }
 
+// 确认按钮事件，重组rows，返回给父级
 const confirm = () => {
   let lensList = []
   rows.value.forEach((row) => {
     row.cols.forEach((col) => {
       // 找出每一行有数量的col，转换格式
-      if (col.count > 0) {
+      if (col.count) {
         lensList.push({
           sph: row.sph,
           cyl: col.cyl,
@@ -145,6 +150,9 @@ const confirm = () => {
     title="选择商品"
     width="1500px"
     @close="onClose"
+    :scroll="true"
+    maxHeight="980px"
+    class="lens-dialog"
   >
     <el-row>
       <el-col :span="18">
@@ -153,29 +161,34 @@ const confirm = () => {
           :props="cascadeProps"
           @change="cascadeChange"
         />
-        <div class="content" v-if="spu">
-          <div class="header">
+        <div class="choose-content" v-if="spu">
+          <div class="choose-header">
             {{ spu.name }}
           </div>
           <BatchSelectLens v-model="rows" :sku-list="spu.skus" :degree-range="degreeRange" />
         </div>
       </el-col>
-      <el-col :span="6">
-        <el-row justify="end">
-          <el-button type="primary" @click="confirm">保存</el-button>
-        </el-row>
-      </el-col>
     </el-row>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button type="primary" @click="confirm">保存</el-button>
+      </div>
+    </template>
   </Dialog>
 </template>
 
-<style scoped lang="scss">
-.content {
+<style lang="scss">
+.choose-content {
   color: #000;
   margin-top: 20px;
 }
-.header {
+
+.choose-header {
   color: #000;
   margin-bottom: 10px;
+}
+
+.lens-dialog {
+  --el-dialog-margin-top: 20px;
 }
 </style>

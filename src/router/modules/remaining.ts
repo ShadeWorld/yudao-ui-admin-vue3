@@ -406,7 +406,7 @@ const remainingRouter: AppRouteRecordRaw[] = [
           noCache: false,
           hidden: true,
           canTo: true,
-          title: '创建订单',
+          title: '添加订单',
           icon: 'ep:edit',
           activeMenu: '/mall/trade/order'
         }

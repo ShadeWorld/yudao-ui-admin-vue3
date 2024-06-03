@@ -8,16 +8,13 @@
         <dict-tag :type="DICT_TYPE.TRADE_ORDER_TYPE" :value="formData.type!" />
       </el-descriptions-item>
       <el-descriptions-item label="订单来源: ">
-        <dict-tag :type="DICT_TYPE.TERMINAL" :value="formData.terminal!" />
+        <dict-tag :type="DICT_TYPE.TRADE_ORDER_SOURCE" :value="formData.orderSource!" />
       </el-descriptions-item>
       <el-descriptions-item label="买家留言: ">{{ formData.userRemark }}</el-descriptions-item>
       <el-descriptions-item label="商家备注: ">{{ formData.remark }}</el-descriptions-item>
       <el-descriptions-item label="支付单号: ">{{ formData.payOrderId }}</el-descriptions-item>
       <el-descriptions-item label="付款方式: ">
         <dict-tag :type="DICT_TYPE.PAY_CHANNEL_CODE" :value="formData.payChannelCode!" />
-      </el-descriptions-item>
-      <el-descriptions-item v-if="formData.brokerageUser" label="推广用户: ">
-        {{ formData.brokerageUser?.nickname }}
       </el-descriptions-item>
     </el-descriptions>
 
@@ -45,28 +42,8 @@
           >
             发货
           </el-button>
-          <el-button
-            v-if="formData.deliveryType === DeliveryTypeEnum.EXPRESS.type"
-            type="primary"
-            @click="updateAddress"
-          >
-            修改地址
-          </el-button>
-          <!-- 到店自提 -->
-          <el-button
-            v-if="formData.deliveryType === DeliveryTypeEnum.PICK_UP.type && showPickUp"
-            type="primary"
-            @click="handlePickUp"
-          >
-            核销
-          </el-button>
+          <el-button type="primary" @click="updateAddress"> 修改地址 </el-button>
         </template>
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template #label><span style="color: red">提醒: </span></template>
-        买家付款成功后，货款将直接进入您的商户号（微信、支付宝）<br />
-        请及时关注你发出的包裹状态，确保可以配送至买家手中 <br />
-        如果买家表示没收到货或货物有问题，请及时联系买家处理，友好协商
       </el-descriptions-item>
     </el-descriptions>
 
@@ -234,7 +211,6 @@ import OrderUpdatePriceForm from '@/views/mall/trade/order/form/OrderUpdatePrice
 import * as DeliveryExpressApi from '@/api/mall/trade/delivery/express'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import { DeliveryTypeEnum, TradeOrderStatusEnum } from '@/utils/constants'
-import * as DeliveryPickUpStoreApi from '@/api/mall/trade/delivery/pickUpStore'
 import { propTypes } from '@/utils/propTypes'
 
 defineOptions({ name: 'TradeOrderDetail' })
@@ -280,19 +256,6 @@ const updatePrice = () => {
   updatePriceFormRef.value?.open(formData.value)
 }
 
-/** 核销 */
-const handlePickUp = async () => {
-  try {
-    // 二次确认
-    await message.confirm('确认核销订单吗？')
-    // 提交
-    await TradeOrderApi.pickUpOrder(formData.value.id!)
-    message.success('核销成功')
-    // 刷新列表
-    await getDetail()
-  } catch {}
-}
-
 /** 获得详情 */
 const { params } = useRoute() // 查询参数
 const props = defineProps({
@@ -331,16 +294,9 @@ const expressTrackList = ref([]) // 物流详情
 const pickUpStore = ref({}) // 自提门店
 onMounted(async () => {
   await getDetail()
-  // 如果配送方式为快递，则查询物流公司
-  if (formData.value.deliveryType === DeliveryTypeEnum.EXPRESS.type) {
-    deliveryExpressList.value = await DeliveryExpressApi.getSimpleDeliveryExpressList()
-    if (form.value.logisticsId) {
-      expressTrackList.value = await TradeOrderApi.getExpressTrackList(formData.value.id!)
-    }
-  } else if (formData.value.deliveryType === DeliveryTypeEnum.PICK_UP.type) {
-    pickUpStore.value = await DeliveryPickUpStoreApi.getDeliveryPickUpStore(
-      formData.value.pickUpStoreId
-    )
+  deliveryExpressList.value = await DeliveryExpressApi.getSimpleDeliveryExpressList()
+  if (formData.value.logisticsId) {
+    expressTrackList.value = await TradeOrderApi.getExpressTrackList(formData.value.id!)
   }
 })
 </script>

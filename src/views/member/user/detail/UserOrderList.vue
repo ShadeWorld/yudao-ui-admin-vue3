@@ -54,73 +54,6 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="订单类型" prop="type">
-        <el-select v-model="queryParams.type" class="!w-280px" clearable placeholder="全部">
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.TRADE_ORDER_TYPE)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="配送方式" prop="deliveryType">
-        <el-select v-model="queryParams.deliveryType" class="!w-280px" clearable placeholder="全部">
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.TRADE_DELIVERY_TYPE)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item
-        v-if="queryParams.deliveryType === DeliveryTypeEnum.EXPRESS.type"
-        label="快递公司"
-        prop="logisticsId"
-      >
-        <el-select v-model="queryParams.logisticsId" class="!w-280px" clearable placeholder="全部">
-          <el-option
-            v-for="item in deliveryExpressList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item
-        v-if="queryParams.deliveryType === DeliveryTypeEnum.PICK_UP.type"
-        label="自提门店"
-        prop="pickUpStoreId"
-      >
-        <el-select
-          v-model="queryParams.pickUpStoreId"
-          class="!w-280px"
-          clearable
-          multiple
-          placeholder="全部"
-        >
-          <el-option
-            v-for="item in pickUpStoreList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item
-        v-if="queryParams.deliveryType === DeliveryTypeEnum.PICK_UP.type"
-        label="核销码"
-        prop="pickUpVerifyCode"
-      >
-        <el-input
-          v-model="queryParams.pickUpVerifyCode"
-          class="!w-280px"
-          clearable
-          placeholder="请输入自提核销码"
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="聚合搜索">
         <el-input
           v-show="true"
@@ -185,11 +118,9 @@
 <script lang="ts" setup>
 import * as OrderApi from '@/api/mall/trade/order/index'
 import { DICT_TYPE, getIntDictOptions, getStrDictOptions } from '@/utils/dict'
-import * as PickUpStoreApi from '@/api/mall/trade/delivery/pickUpStore'
 import * as DeliveryExpressApi from '@/api/mall/trade/delivery/express'
 import { FormInstance } from 'element-plus'
 import { OrderTableColumn } from '@/views/mall/trade/order/components'
-import { DeliveryTypeEnum } from '@/utils/constants'
 
 const { push } = useRouter() // 路由跳转
 
@@ -200,7 +131,6 @@ const { userId } = defineProps<{
 const loading = ref(true) // 列表的加载中
 const total = ref(0) // 列表的总页数
 const list = ref([]) // 列表的数据
-const pickUpStoreList = ref<PickUpStoreApi.DeliveryPickUpStoreVO[]>([]) // 自提门店精简列表
 const deliveryExpressList = ref<DeliveryExpressApi.DeliveryExpressVO[]>([]) // 物流公司
 const queryFormRef = ref<FormInstance>() // 搜索的表单
 // 表单搜索
@@ -273,7 +203,6 @@ const openDetail = (id: number) => {
 /** 初始化 **/
 onMounted(async () => {
   await getList()
-  pickUpStoreList.value = await PickUpStoreApi.getListAllSimple()
   deliveryExpressList.value = await DeliveryExpressApi.getSimpleDeliveryExpressList()
 })
 </script>

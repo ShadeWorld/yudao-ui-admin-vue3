@@ -34,7 +34,7 @@
         :span-method="spanMethod"
         style="width: 100%"
       >
-        <el-table-column min-width="300" prop="spuName">
+        <el-table-column min-width="150" prop="spuName">
           <template #header>
             <div
               class="mr-[20px] h-[35px] flex items-center pl-[10px] pr-[10px]"
@@ -62,20 +62,6 @@
           <template #default="{ row }">
             <div class="flex flex-wrap">
               <div class="mb-[10px] mr-[10px] flex items-start">
-                <div class="mr-[10px]">
-                  <el-image
-                    :src="row.picUrl"
-                    class="!h-[45px] !w-[45px]"
-                    fit="contain"
-                    @click="imagePreview(row.picUrl)"
-                  >
-                    <template #error>
-                      <div class="image-slot">
-                        <icon icon="ep:picture" />
-                      </div>
-                    </template>
-                  </el-image>
-                </div>
                 <ElTooltip :content="row.spuName" placement="top">
                   <span class="overflow-ellipsis max-h-[45px] overflow-hidden">
                     {{ row.spuName }}
@@ -114,7 +100,6 @@
           <template #default>
             <!-- 快递发货  -->
             <div class="flex flex-col">
-              <span>买家：{{ scope.row.user.nickname }}</span>
               <span>
                 收货人：{{ scope.row.receiverName }} {{ scope.row.receiverMobile }}
                 {{ scope.row.receiverAreaName }} {{ scope.row.receiverDetailAddress }}
@@ -204,7 +189,7 @@ const setOrderTableRef = (el: TableInstance) => {
   tableHeadWidthAuto(el)
 }
 // 头部 col 宽度初始化
-const orderTableHeadWidthList = ref([300, 150, 120, 120, 160, 120, 120, 160])
+const orderTableHeadWidthList = ref([150, 150, 120, 120, 160, 120, 120, 160])
 // 头部宽度自适应
 const tableHeadWidthAuto = (el: TableInstance) => {
   const columns = el.store.states.columns.value

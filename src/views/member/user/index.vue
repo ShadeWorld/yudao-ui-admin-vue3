@@ -93,6 +93,10 @@
           重置
         </el-button>
         <el-button v-hasPermi="['promotion:coupon:send']" @click="openCoupon">发送优惠券</el-button>
+        <el-button @click="createMember" type="primary" plain>
+          <Icon class="mr-5px" icon="ep:plus" />
+          添加会员
+        </el-button>
       </el-form-item>
     </el-form>
   </ContentWrap>
@@ -338,6 +342,10 @@ const handleCommand = (command: string, row: UserApi.UserVO) => {
     default:
       break
   }
+}
+
+const createMember = () => {
+  openForm('create')
 }
 
 /** 初始化 **/

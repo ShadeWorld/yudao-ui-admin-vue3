@@ -35,9 +35,9 @@ export const getDeliveryExpressTemplate = async (id: number) => {
 }
 
 // 查询运费
-export const getDeliveryPrice = async (id: number, addressId: number): Promise<number> => {
+export const getDeliveryPrice = async (id: number, areaId: number): Promise<number> => {
   return await request.get({
-    url: `/trade/delivery/express-template/get?id=${id}&addressId=${addressId}`
+    url: `/trade/delivery/express-template/getDeliveryPrice?id=${id}&areaId=${areaId}`
   })
 }
 

@@ -1,28 +1,57 @@
 <script setup lang="ts">
 import MemberSelect from '@/components/MemberSelect/src/MemberSelect.vue'
-import { CreateOrderReqVo } from '@/api/mall/trade/order'
 import { getAddressList } from '@/api/member/address'
 import { getDeliveryPrice, getSimpleTemplateList } from '@/api/mall/trade/delivery/expressTemplate'
 import { OrderItemList } from '@/views/mall/trade/order/components'
 import ChooseProductForm from './ChooseProductForm.vue'
 import { formatToFraction } from '@/utils'
+import { useTagsViewStore } from '@/store/modules/tagsView'
+import * as TradeOrderApi from '@/api/mall/trade/order'
+import { FormInstance } from 'element-plus'
 
 defineOptions({ name: 'TradeOrderAdd' })
 
+const { t } = useI18n() // 国际化
+const message = useMessage() // 消息弹窗
+const { push, currentRoute } = useRouter() // 路由
+const { delView } = useTagsViewStore() // 标签页操作
+
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
-const formData = reactive<CreateOrderReqVo>({
-  userId: undefined,
+const formData = reactive<TradeOrderApi.CreateOrderReqVo>({
+  memberId: undefined,
   addressId: undefined,
-  logisticsId: undefined,
+  deliveryTemplateId: undefined,
   remark: undefined,
-  items: []
+  items: [],
+  orderSource: 2 // 1-微信小程序、2-手工录入
 })
 const rules = reactive({
-  userId: [required]
+  memberId: [
+    {
+      required: true,
+      trigger: 'change',
+      message: '请选择客户'
+    }
+  ],
+  addressId: [
+    {
+      required: true,
+      trigger: 'change',
+      message: '请选择收货地址'
+    }
+  ],
+  deliveryTemplateId: [
+    {
+      required: true,
+      trigger: 'change',
+      message: '请选择配送方式'
+    }
+  ]
 })
-const formRef = ref()
+const formRef = ref<FormInstance>()
 
 const addressList = ref<any>()
+const areaId = ref<number | undefined>()
 
 const selectUser = (item) => {
   getAddressList({ userId: item.id }).then((response) => {
@@ -32,6 +61,7 @@ const selectUser = (item) => {
       response.forEach((item) => {
         if (item.defaultStatus) {
           formData.addressId = item.id
+          areaId.value = item.areaId
         }
       })
     }
@@ -46,44 +76,79 @@ onMounted(() => {
   })
 })
 
+// 选中商品的回调
 const onConfirm = (checkedSpu) => {
   checkedSpu.lensList.forEach((item) => {
-    let orderItem = {
-      spuId: checkedSpu.id,
-      spuName: checkedSpu.name,
-      skuId: item.skuId,
-      price: item.price,
-      count: item.count,
-      orderLens: {
-        sph: item.sph,
-        cyl: item.cyl,
-        add: item.add
-      }
-    }
-    let existsItem = formData.items?.find(
-      (i) =>
-        i.skuId == item.skuId && JSON.stringify(i.orderLens) === JSON.stringify(orderItem.orderLens)
-    )
+    let existsItem = formData.items?.find((i) => i.skuId == item.skuId)
     if (existsItem) {
       existsItem.count += item.count
-      existsItem.price += item.price
+      let existsLens = existsItem.orderLensList?.find(
+        (i) => i.sph === item.sph && i.cyl === item.cyl && i.add === item.add
+      )
+      if (existsLens) {
+        existsLens.count += item.count
+      } else {
+        existsItem.orderLensList?.push({
+          sph: item.sph,
+          cyl: item.cyl,
+          add: item.add,
+          count: item.count
+        })
+      }
     } else {
-      formData.items?.push(orderItem)
+      formData.items?.push({
+        spuId: checkedSpu.id,
+        spuName: checkedSpu.name,
+        skuId: item.skuId,
+        price: item.price,
+        count: item.count,
+        orderLensList: [
+          {
+            sph: item.sph,
+            cyl: item.cyl,
+            add: item.add,
+            count: item.count
+          }
+        ]
+      })
     }
   })
 }
 
+// 计算运费
 const deliveryPrice = ref<number>(0)
 const onChangeDelivery = (value: number) => {
-  getDeliveryPrice(value, formData.addressId as number).then(
-    (value) => (deliveryPrice.value = value)
-  )
+  getDeliveryPrice(value, areaId.value as number).then((value) => (deliveryPrice.value = value))
 }
 
-// TODO这里不回显
-const allProductPrice = computed(() => {
-  formData.items?.reduce((acc, item) => acc + item.price, 0)
-})
+// 提交订单
+const submitForm = async () => {
+  console.log(formData)
+  // 提交请求
+  formLoading.value = true
+  try {
+    await formRef.value?.validate()
+    if (!formData.items?.length) {
+      message.error('至少选择一个商品！')
+      return
+    }
+    await TradeOrderApi.createOrder(formData)
+    message.success(t('common.createSuccess'))
+    close()
+  } finally {
+    formLoading.value = false
+  }
+}
+
+const close = () => {
+  delView(unref(currentRoute))
+  push({ name: 'TradeOrder' })
+}
+
+// 所有商品总价
+const allProductPrice = computed(() =>
+  formData.items?.reduce((acc, item) => acc + item.price * item.count, 0)
+)
 
 const chooseProductFormRef = ref()
 </script>
@@ -91,16 +156,24 @@ const chooseProductFormRef = ref()
 <template>
   <el-form ref="formRef" :model="formData" :rules="rules" label-width="120px">
     <ContentWrap v-loading="formLoading">
-      <el-row justify="center">
-        <el-col :span="18">
-          <el-col :span="18">
-            <el-form-item label="客户" prop="userId">
-              <MemberSelect v-model="formData.userId" class="w-100%!" @select="selectUser" />
+      <el-row justify="end">
+        <el-col :span="12">
+          <el-col :span="24">
+            <el-form-item label="客户" prop="memberId">
+              <MemberSelect v-model="formData.memberId" class="w-100%!" @select="selectUser" />
             </el-form-item>
           </el-col>
-          <el-col :span="18">
-            <el-form-item label="收货地址" prop="userId">
-              <el-select v-model="formData.addressId" placeholder="请选择收货地址">
+          <el-col :span="24">
+            <el-form-item label="收货地址" prop="addressId">
+              <el-select
+                v-model="formData.addressId"
+                placeholder="请选择收货地址"
+                @change="
+                  (value) => {
+                    areaId = value.areaId
+                  }
+                "
+              >
                 <el-option
                   v-for="item in addressList"
                   :key="item.id"
@@ -112,10 +185,44 @@ const chooseProductFormRef = ref()
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="18">
-            <el-form-item label="商品列表">
+          <el-col :span="24">
+            <el-form-item label="配送方式" prop="deliveryTemplateId">
+              <el-select
+                v-model="formData.deliveryTemplateId"
+                placeholder="请选择配送方式"
+                :disabled="!formData.memberId"
+                @change="onChangeDelivery"
+              >
+                <el-option
+                  v-for="item in expressList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id as number"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="备注" prop="remark">
+              <el-input v-model="formData.remark" type="textarea" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="运费" class="bold-label">
+              {{ formatToFraction(deliveryPrice) }} 元
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="商品总价" class="bold-label">
+              {{ formatToFraction(allProductPrice) }} 元
+            </el-form-item>
+          </el-col>
+        </el-col>
+        <el-col :span="12">
+          <el-col :span="24">
+            <el-form-item label="商品列表" prop="items">
               <el-button
-                :disabled="!formData.userId"
+                :disabled="!formData.memberId"
                 class="mb-10px mr-15px"
                 @click="
                   () => {
@@ -127,41 +234,11 @@ const chooseProductFormRef = ref()
               <OrderItemList v-model="formData.items" />
             </el-form-item>
           </el-col>
-          <el-col :span="6" />
-          <el-col :span="6">
-            <el-form-item label="配送方式">
-              <el-select
-                v-model="formData.logisticsId"
-                placeholder="请选择配送方式"
-                :disabled="!formData.userId"
-                @change="onChangeDelivery"
-              >
-                <el-option
-                  v-for="item in expressList"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.logisticsId as number"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="18" />
-          <el-col :span="6">
-            <el-form-item label="备注">
-              <el-input v-model="formData.remark" type="textarea" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="运费" class="bold-label">
-              {{ formatToFraction(deliveryPrice) }} 元
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="商品总价" class="bold-label">
-              {{ formatToFraction(allProductPrice) }} 元
-            </el-form-item>
-          </el-col>
         </el-col>
+      </el-row>
+      <el-row justify="end">
+        <el-button :loading="formLoading" type="primary" @click="submitForm"> 保存</el-button>
+        <el-button @click="close">返回</el-button>
       </el-row>
     </ContentWrap>
   </el-form>

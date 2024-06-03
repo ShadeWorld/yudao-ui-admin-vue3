@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { propTypes } from '@/utils/propTypes'
 import { isNumber } from '@/utils/is'
+
 defineOptions({ name: 'Dialog' })
 
 const slots = useSlots()
@@ -70,7 +71,10 @@ const dialogStyle = computed(() => {
     :show-close="false"
   >
     <template #header="{ close }">
-      <div class="relative h-54px flex items-center justify-between pl-15px pr-15px">
+      <div
+        class="relative h-54px flex items-center justify-between pl-15px pr-15px"
+        :style="`background: ${background}`"
+      >
         <slot name="title">
           {{ title }}
         </slot>

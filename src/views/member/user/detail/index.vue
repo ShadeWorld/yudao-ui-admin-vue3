@@ -40,14 +40,14 @@
           <!--            <UserExperienceRecordList :user-id="id" />-->
           <!--          </el-tab-pane>-->
           <!-- TODO @jason：增加一个余额变化； -->
-          <el-tab-pane label="余额" lazy>余额(WIP)</el-tab-pane>
+          <!--          <el-tab-pane label="余额" lazy>余额(WIP)</el-tab-pane>-->
           <el-tab-pane label="收货地址" lazy>
             <UserAddressList :user-id="id" />
           </el-tab-pane>
-          <el-tab-pane label="订单管理" lazy>
-            <UserOrderList :user-id="id" />
-          </el-tab-pane>
-          <el-tab-pane label="售后管理" lazy>售后管理(WIP)</el-tab-pane>
+          <!--          <el-tab-pane label="订单管理" lazy>-->
+          <!--            <UserOrderList :user-id="id" />-->
+          <!--          </el-tab-pane>-->
+          <!--          <el-tab-pane label="售后管理" lazy>售后管理(WIP)</el-tab-pane>-->
           <el-tab-pane label="收藏记录" lazy>
             <UserFavoriteList :user-id="id" />
           </el-tab-pane>
@@ -73,7 +73,6 @@ import UserAccountInfo from './UserAccountInfo.vue'
 import UserAddressList from './UserAddressList.vue'
 import UserBasicInfo from './UserBasicInfo.vue'
 import UserCouponList from './UserCouponList.vue'
-import UserOrderList from './UserOrderList.vue'
 import UserFavoriteList from './UserFavoriteList.vue'
 import { CardTitle } from '@/components/Card/index'
 import { ElMessage } from 'element-plus'
