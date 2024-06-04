@@ -42,7 +42,7 @@
           >
             发货
           </el-button>
-          <el-button type="primary" @click="updateAddress"> 修改地址 </el-button>
+          <el-button type="primary" @click="updateAddress"> 修改地址</el-button>
         </template>
       </el-descriptions-item>
     </el-descriptions>
@@ -74,6 +74,14 @@
                     :type="DICT_TYPE.TRADE_ORDER_ITEM_AFTER_SALE_STATUS"
                     :value="row.afterSaleStatus"
                   />
+                </template>
+              </el-table-column>
+              <el-table-column align="center" fixed="right" label="操作" width="80">
+                <template #default="{ row }">
+                  <el-button link type="primary" @click="openDetail(row)">
+                    <Icon icon="ep:notification" />
+                    详情
+                  </el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -198,9 +206,29 @@
   <OrderUpdateRemarkForm ref="updateRemarkForm" @success="getDetail" />
   <OrderUpdateAddressForm ref="updateAddressFormRef" @success="getDetail" />
   <OrderUpdatePriceForm ref="updatePriceFormRef" @success="getDetail" />
+  <ElDialog
+    v-model="dialogVisible"
+    title="详情"
+    :width="detailWidth"
+    destroy-on-close
+    center
+    maxHeight="980px"
+    class="lens-dialog"
+    v-if="currentDetailItem"
+  >
+    <el-row justify="center">
+      <BatchSelectLens v-model="rows" v-if="currentDetailItem.categoryId === 1" :is-detail="true" />
+      <SingleSelectLens
+        v-model="lensList"
+        v-if="currentDetailItem.categoryId === 2"
+        :is-detail="true"
+      />
+    </el-row>
+  </ElDialog>
 </template>
 <script lang="ts" setup>
 import * as TradeOrderApi from '@/api/mall/trade/order'
+import { OrderItemLens, OrderItemRespVO } from '@/api/mall/trade/order'
 import { fenToYuan } from '@/utils'
 import { formatDate } from '@/utils/formatTime'
 import { DICT_TYPE, getDictLabel, getDictObj } from '@/utils/dict'
@@ -212,6 +240,9 @@ import * as DeliveryExpressApi from '@/api/mall/trade/delivery/express'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import { DeliveryTypeEnum, TradeOrderStatusEnum } from '@/utils/constants'
 import { propTypes } from '@/utils/propTypes'
+import { BatchSelectLens, Row } from '@/views/mall/trade/order/components'
+import SingleSelectLens from '../components/SingleSelectLens.vue'
+import { OrderLens } from '@/views/mall/trade/order/components/SingleSelectLens.vue'
 
 defineOptions({ name: 'TradeOrderDetail' })
 
@@ -299,6 +330,81 @@ onMounted(async () => {
     expressTrackList.value = await TradeOrderApi.getExpressTrackList(formData.value.id!)
   }
 })
+
+// 详情dialog是否展示
+const dialogVisible = ref(false)
+// 当前详情展示spu
+const currentDetailItem = ref<OrderItemRespVO>()
+// Dialog宽度
+const detailWidth = ref<number>(800)
+
+/**
+ * 展示已选镜片的详情
+ * @param detailItem
+ */
+const openDetail = (detailItem: OrderItemRespVO) => {
+  currentDetailItem.value = detailItem
+  if (detailItem.categoryId === 1) {
+    batchLensDetail()
+  } else if (detailItem.categoryId === 2) {
+    singleLensDetail()
+  }
+  dialogVisible.value = true
+}
+
+// 批量选择镜片的所有行
+const rows = ref<Row[]>([])
+const batchLensDetail = () => {
+  let minCyl: number = currentDetailItem.value?.orderLensList[0].cyl
+  let maxCyl: number = minCyl
+  currentDetailItem.value?.orderLensList.forEach((orderLens: OrderItemLens) => {
+    // 生成批量选择控件的所有行
+    let row = rows.value.find((i) => orderLens.sph === i.sph)
+    if (row) {
+      row.cols.push({
+        row: row,
+        cyl: orderLens.cyl,
+        add: orderLens.add,
+        count: orderLens.count,
+        selected: false
+      })
+    } else {
+      row = {
+        sph: orderLens.sph,
+        cols: []
+      }
+      row.cols.push({
+        row: row,
+        cyl: orderLens.cyl,
+        add: orderLens.add,
+        count: orderLens.count,
+        selected: false
+      })
+      rows.value.push(row)
+    }
+    // 计算最大cyl和最小cyl，用于计算dialog宽度
+    minCyl = Math.min(minCyl, orderLens.cyl)
+    maxCyl = Math.max(maxCyl, orderLens.cyl)
+  })
+  detailWidth.value = ((maxCyl - minCyl) / 0.25 + 1) * 51 + 100
+}
+
+// 单独选择镜片的所有行
+const lensList = ref<OrderLens[]>([])
+const singleLensDetail = () => {
+  lensList.value.splice(0, lensList.value.length)
+  detailWidth.value = 1000
+  currentDetailItem.value?.orderLensList.forEach((item: OrderItemLens) => {
+    // 回显
+    const orderLens: OrderLens = {
+      sph: item.sph,
+      cyl: item.cyl,
+      add: item.add,
+      count: item.count
+    }
+    lensList.value.push(orderLens)
+  })
+}
 </script>
 <style lang="scss" scoped>
 :deep(.el-descriptions) {

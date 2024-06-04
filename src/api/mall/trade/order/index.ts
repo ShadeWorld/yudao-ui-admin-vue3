@@ -1,4 +1,5 @@
 import request from '@/config/axios'
+import { Sku } from '@/api/mall/product/spu'
 
 export interface CreateOrderReqVo {
   memberId?: number
@@ -10,6 +11,8 @@ export interface CreateOrderReqVo {
 }
 
 export interface OrderItem {
+  skus?: Sku[] // sku数组，组件中传递，防止重复调用查询接口。请求保存接口时删除该字段
+  categoryId: number
   spuId: number
   spuName: string
   skuId: number
@@ -99,6 +102,7 @@ export interface OrderItemRespVO {
   userId?: number | null // 用户编号
   orderId?: number | null // 订单编号
   // ========== 商品基本信息 ==========
+  categoryId?: number
   spuId?: number | null // 商品 SPU 编号
   spuName?: string //商品 SPU 名称
   skuId?: number | null // 商品 SKU 编号
@@ -116,6 +120,7 @@ export interface OrderItemRespVO {
   // ========== 售后基本信息 ==========
   afterSaleStatus?: number | null // 售后状态
   properties?: ProductPropertiesVO[] //属性数组
+  orderLensList: OrderItemLens[]
 }
 
 export interface ProductPropertiesVO {

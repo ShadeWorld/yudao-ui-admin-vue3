@@ -78,8 +78,15 @@ const treeProps = {
 
 const spu = ref<Spu>()
 
-// 当前光度范围
-const degreeRange = ref<DegreeRange>()
+/**
+ * 镜片是否支持多选
+ * 现片如果区分左右眼，则不能多选
+ * 车房统一使用单选模板
+ */
+const isBatchLens = computed(
+  () => spu.value?.categoryId === 1 && !spu.value?.lensProperty?.distinguishEye
+)
+
 // 分类变动的回调
 const nodeClick = async (data, node) => {
   if (!data.leaf) return
@@ -91,9 +98,19 @@ const nodeClick = async (data, node) => {
     refractive: node.parent.data.value,
     filmLayer: node.data.value
   })
-  showBatchSelectLens(spu.value!)
+  resetLensSelect()
 }
 
+const resetLensSelect = () => {
+  if (isBatchLens.value) {
+    showBatchSelectLens(spu.value!)
+  } else {
+    showSingleSelectLens(spu.value!)
+  }
+}
+
+// 当前光度范围
+const degreeRange = ref<DegreeRange>()
 /**
  * 批量选择镜片
  * @param spu
@@ -119,30 +136,30 @@ const showBatchSelectLens = (spu: Spu) => {
     minAdd: addRangeList[0],
     maxAdd: addRangeList[addRangeList.length - 1]
   }
-
+  // 清除上一个spu的数据
   rows.value.splice(0, rows.value.length)
 }
 
+// 单个镜片选择时球镜范围
+const sphRange = ref<number[]>([])
 const showSingleSelectLens = (spu: Spu) => {
+  // 生成光度范围
   const sphRangeList: number[] = []
-}
-
-const onClose = () => {
-  spu.value = undefined
-  rows.value.splice(0, rows.value.length)
+  spu?.skus?.map((sku) => {
+    sphRangeList.push(sku.skuLens?.minSph, sku.skuLens?.maxSph)
+  })
+  sphRangeList.sort((a, b) => a - b)
+  sphRange.value[0] = sphRangeList[0]
+  sphRange.value[1] = sphRangeList[sphRangeList.length - 1]
+  // 清除上一个spu的数据
+  lensList.value.splice(0, lensList.value.length)
 }
 
 const maxHeight = () => window.innerHeight * 0.78
 
 /**
- * 镜片是否支持多选
- * 现片如果区分左右眼，则不能多选
- * 车房统一使用单选模板
+ *
  */
-const isBatchLens = computed(
-  () => spu.value?.categoryId === 1 && !spu.value?.lensProperty?.distinguishEye
-)
-
 const transformRows = () => {
   rows.value.forEach((row) => {
     row.cols.forEach((col) => {
@@ -161,19 +178,33 @@ const transformRows = () => {
   })
 }
 
-// 确认按钮事件，重组rows，返回给父级
+/**
+ * 确认按钮事件，重组rows，返回给父级
+ */
 const confirm = () => {
-  if (isBatchLens) {
+  if (isBatchLens.value) {
     // 如果是多选，需要把rows转成lensList
     transformRows()
   }
   emit('confirm', {
     id: spu.value?.id,
+    categoryId: spu.value?.categoryId,
+    skus: spu.value?.skus,
     name: spu.value?.name,
     lensList: lensList.value
   })
-  showBatchSelectLens(spu.value!)
-  // dialogVisible.value = false
+
+  // 保存之后要重置，选择镜片的组件
+  resetLensSelect()
+}
+
+/**
+ * 关闭窗口
+ */
+const onClose = () => {
+  spu.value = undefined
+  rows.value.splice(0, rows.value.length)
+  lensList.value.splice(0, lensList.value.length)
 }
 </script>
 
@@ -182,7 +213,7 @@ const confirm = () => {
     v-model="dialogVisible"
     :fullscreen="true"
     title="选择商品"
-    width="1200px"
+    width="1500px"
     @close="onClose"
     class="lens-dialog"
   >
@@ -211,7 +242,12 @@ const confirm = () => {
                 :sku-list="spu.skus"
                 :degree-range="degreeRange"
               />
-              <SingleSelectLens v-else v-model="lensList" :sph-range="[-10, 10]" />
+              <SingleSelectLens
+                v-else
+                v-model="lensList"
+                :sku-list="spu.skus!"
+                :sph-range="sphRange"
+              />
             </template>
             <template v-else> 其他商品</template>
           </div>

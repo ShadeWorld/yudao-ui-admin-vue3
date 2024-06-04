@@ -27,11 +27,17 @@ export interface DegreeRange {
 }
 
 const rows = defineModel<Row[]>()
-const props = defineProps<{
-  skuList?: Sku[]
-  spuId?: number
-  degreeRange?: DegreeRange
-}>()
+const props = withDefaults(
+  defineProps<{
+    skuList?: Sku[]
+    spuId?: number
+    degreeRange?: DegreeRange
+    isDetail?: boolean
+  }>(),
+  {
+    isDetail: false
+  }
+)
 
 const localSkuList: Sku[] = []
 
@@ -286,7 +292,7 @@ window.onkeyup = (e) => {
             step="1"
             type="number"
             class="count-input w-45"
-            :disabled="!col.skuId"
+            :disabled="!col.skuId || isDetail"
           />
         </div>
       </td>

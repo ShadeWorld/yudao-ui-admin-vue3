@@ -1,11 +1,17 @@
 <script setup lang="ts">
-import { OrderItem } from '@/api/mall/trade/order'
+import { OrderItem, OrderItemLens } from '@/api/mall/trade/order'
 import { ElTable } from 'element-plus'
 import { Row } from '@/views/mall/trade/order/components/BatchSelectLens.vue'
 import { formatToFraction } from '@/utils'
-import { BatchSelectLens } from '@/views/mall/trade/order/components'
+import { BatchSelectLens, calcDegreeRange } from '@/views/mall/trade/order/components'
+import SingleSelectLens, {
+  OrderLens
+} from '@/views/mall/trade/order/components/SingleSelectLens.vue'
+import { Sku } from '@/api/mall/product/spu'
 
 interface TableOrderItem {
+  skus: Sku[]
+  categoryId: number
   spuId: number
   skuId: number
   spuName: string
@@ -30,6 +36,8 @@ watch(
             data.count += item.count
           } else {
             data = {
+              skus: item.skus,
+              categoryId: item.categoryId,
               spuId: item.spuId,
               skuId: item.skuId,
               spuName: item.spuName,
@@ -44,24 +52,20 @@ watch(
   { deep: true }
 )
 
-// 所有行
-const rows = ref<Row[]>([])
 // 详情dialog是否展示
 const dialogVisible = ref(false)
 // 当前详情展示spu
 const detailSpu = ref<TableOrderItem>()
 // Dialog宽度
 const detailWidth = ref<number>(800)
-/**
- * 展示已选镜片的详情
- * @param detailItem
- */
-const openDetail = (detailItem) => {
-  detailSpu.value = detailItem
+
+// 批量选择镜片的所有行
+const rows = ref<Row[]>([])
+const batchLensDetail = () => {
   let minCyl = model.value[0].orderLensList[0].cyl
   let maxCyl = minCyl
   model.value?.forEach((item: OrderItem) => {
-    if (item.skuId === detailItem.skuId && item.orderLensList?.length) {
+    if (item.skuId === detailSpu.value?.skuId && item.orderLensList?.length) {
       item.orderLensList.forEach((orderLens) => {
         // 生成批量选择控件的所有行
         let row = rows.value.find((i) => orderLens.sph === i.sph)
@@ -99,10 +103,56 @@ const openDetail = (detailItem) => {
     }
   })
   detailWidth.value = ((maxCyl - minCyl) / 0.25 + 1) * 51 + 100
+}
+
+// 单独选择镜片的所有行
+const lensList = ref<OrderLens[]>([])
+// 单独选择镜片时sph的范围
+const sphRange = ref<number[]>([])
+// 单独选择镜片时spu对应的skuList
+const skuList = ref<Sku[]>()
+const singleLensDetail = () => {
+  detailWidth.value = 1000
+  const detailItem = model.value?.find((i) => i.skuId === detailSpu.value?.skuId)
+  if (detailItem?.orderLensList?.length) {
+    skuList.value = detailItem.skus
+    detailItem.orderLensList.forEach((item: OrderItemLens) => {
+      // 回显
+      const orderLens: OrderLens = {
+        sph: item.sph,
+        cyl: item.cyl,
+        add: item.add,
+        count: item.count,
+        price: detailItem.price,
+        skuId: detailItem.skuId
+      }
+      // 计算柱镜和加光的范围
+      calcDegreeRange(orderLens.sph, orderLens, 'sph', skuList.value)
+      lensList.value.push(orderLens)
+    })
+    // 计算球镜范围
+    let sku = detailItem.skus.find((i) => i.id === detailSpu.value?.skuId)
+
+    sphRange.value[0] = sku?.skuLens.minSph
+    sphRange.value[1] = sku?.skuLens.maxSph
+    sphRange.value?.sort((a, b) => a - b)
+  }
+}
+/**
+ * 展示已选镜片的详情
+ * @param detailItem
+ */
+const openDetail = (detailItem: TableOrderItem) => {
+  detailSpu.value = detailItem
+  if (detailItem.categoryId === 1) {
+    batchLensDetail()
+  } else if (detailItem.categoryId === 2) {
+    singleLensDetail()
+  }
   dialogVisible.value = true
 }
-const confirm = () => {
-  if (!detailSpu) return
+
+const batchLensConfirm = () => {
   rows.value.forEach((row) => {
     row.cols.forEach((col) => {
       // 找出每一行有数量的col，转换格式
@@ -137,6 +187,7 @@ const confirm = () => {
           // 没有数量，就不要加了
           if (!col.count) return
           let orderItem = {
+            categoryId: detailSpu.value?.categoryId,
             spuId: detailSpu.value?.spuId,
             spuName: detailSpu.value?.spuName,
             skuId: col.skuId,
@@ -154,12 +205,68 @@ const confirm = () => {
       }
     })
   })
+}
+
+const singleLensConfirm = () => {
+  let existsItem = model.value?.find((i) => i.skuId === detailSpu.value?.skuId)
+  existsItem?.orderLensList?.splice(0, existsItem.orderLensList?.length)
+  existsItem.count = 0
+  lensList.value.forEach((item) => {
+    if (existsItem) {
+      existsItem.count += item.count
+      let existsLens = existsItem.orderLensList?.find(
+        (i) => i.sph === item.sph && i.cyl === item.cyl && i.add === item.add
+      )
+      if (existsLens) {
+        existsLens.count += item.count
+      } else {
+        existsItem.orderLensList?.push({
+          sph: item.sph,
+          cyl: item.cyl,
+          add: item.add,
+          count: item.count,
+          leftOrRight: item.leftOrRight,
+          axis: item.axis
+        })
+      }
+    } else {
+      model.value?.push({
+        skus: detailSpu.value?.skus,
+        spuId: detailSpu.value?.spuId,
+        categoryId: detailSpu.value?.categoryId,
+        spuName: detailSpu.value?.spuName,
+        skuId: item.skuId,
+        price: item.price,
+        count: item.count,
+        orderLensList: [
+          {
+            sph: item.sph,
+            cyl: item.cyl,
+            add: item.add,
+            count: item.count,
+            leftOrRight: item.leftOrRight,
+            axis: item.axis
+          }
+        ]
+      })
+    }
+  })
+}
+
+const confirm = () => {
+  if (!detailSpu.value) return
+  if (detailSpu.value.categoryId === 1) {
+    batchLensConfirm()
+  } else if (detailSpu.value.categoryId === 2) {
+    singleLensConfirm()
+  }
   dialogVisible.value = false
 }
 
 const onClose = () => {
   rows.value.splice(0, rows.value.length)
   detailSpu.value = undefined
+  lensList.value.splice(0, lensList.value.length)
 }
 </script>
 
@@ -203,9 +310,16 @@ const onClose = () => {
     @close="onClose"
     maxHeight="980px"
     class="lens-dialog"
+    v-if="detailSpu"
   >
     <el-row justify="center">
-      <BatchSelectLens v-model="rows" />
+      <BatchSelectLens v-model="rows" v-if="detailSpu.categoryId === 1" />
+      <SingleSelectLens
+        v-model="lensList"
+        v-if="detailSpu.categoryId === 2"
+        :sku-list="skuList!"
+        :sph-range="sphRange"
+      />
     </el-row>
     <template #footer>
       <div class="dialog-footer">

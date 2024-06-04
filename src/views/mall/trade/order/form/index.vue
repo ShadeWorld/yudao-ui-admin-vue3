@@ -50,6 +50,13 @@ const rules = reactive({
 })
 const formRef = ref<FormInstance>()
 
+// 所有商品总价
+const allProductPrice = computed(() =>
+  formData.items?.reduce((acc, item) => acc + item.price * item.count, 0)
+)
+
+const chooseProductFormRef = ref()
+
 const addressList = ref<any>()
 const areaId = ref<number | undefined>()
 
@@ -76,7 +83,10 @@ onMounted(() => {
   })
 })
 
-// 选中商品的回调
+/**
+ * 添加商品的回调
+ * @param checkedSpu
+ */
 const onConfirm = (checkedSpu) => {
   checkedSpu.lensList.forEach((item) => {
     let existsItem = formData.items?.find((i) => i.skuId === item.skuId)
@@ -97,7 +107,9 @@ const onConfirm = (checkedSpu) => {
       }
     } else {
       formData.items?.push({
+        skus: checkedSpu.skus,
         spuId: checkedSpu.id,
+        categoryId: checkedSpu.categoryId,
         spuName: checkedSpu.name,
         skuId: item.skuId,
         price: item.price,
@@ -144,13 +156,6 @@ const close = () => {
   delView(unref(currentRoute))
   push({ name: 'TradeOrder' })
 }
-
-// 所有商品总价
-const allProductPrice = computed(() =>
-  formData.items?.reduce((acc, item) => acc + item.price * item.count, 0)
-)
-
-const chooseProductFormRef = ref()
 </script>
 
 <template>

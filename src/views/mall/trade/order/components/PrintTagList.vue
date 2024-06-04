@@ -57,12 +57,12 @@ const printTag = () => {
             height: e.getAttribute('data-size')
     });
   })
+  window.print()
+  window.close()
 `
 
   newBlankWindow?.document.write(qrcodeScript.outerHTML + style + html! + script.outerHTML)
   newBlankWindow?.document.close()
-  newBlankWindow?.print()
-  newBlankWindow?.close()
 }
 
 const cancel = () => {
