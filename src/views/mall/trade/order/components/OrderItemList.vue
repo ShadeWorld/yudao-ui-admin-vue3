@@ -165,7 +165,7 @@ const onClose = () => {
 
 <template>
   <el-table :data="tableData" border class="tabNumWidth" size="small">
-    <el-table-column align="center" label="商品名称" min-width="65">
+    <el-table-column align="center" label="商品名称" min-width="150">
       <template #default="{ row }">
         {{ row.spuName }}
       </template>

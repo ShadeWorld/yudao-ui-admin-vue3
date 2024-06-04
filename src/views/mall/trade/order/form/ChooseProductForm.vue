@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import * as ProductSpuApi from '@/api/mall/product/spu'
 import { Spu } from '@/api/mall/product/spu'
-import { CascaderProps } from 'element-plus'
-import { BatchSelectLens } from '@/views/mall/trade/order/components'
+import { BatchSelectLens, SingleSelectLens } from '@/views/mall/trade/order/components'
 import { DegreeRange, Row } from '@/views/mall/trade/order/components/BatchSelectLens.vue'
+import { OrderLens } from '@/views/mall/trade/order/components/SingleSelectLens.vue'
 
 defineOptions({ name: 'ChooseProductForm' })
 const emit = defineEmits(['confirm'])
 
 const dialogVisible = ref(false) // 弹窗的是否展示
 
-// 所有行
+// 多选时所有行，传给父组件时，会把rows转为lensList
 const rows = ref<Row[]>([])
+// 单选时所有的行，也是传给父组件时用的结构
+const lensList = ref<OrderLens[]>([])
 
 /** 打开弹窗 */
 const open = async () => {
@@ -19,57 +21,59 @@ const open = async () => {
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
-const cascadeProps: CascaderProps = {
-  lazy: true,
-  async lazyLoad(node, resolve) {
-    const { level } = node
-    switch (level) {
-      case 0:
-        resolve(await ProductSpuApi.getCategoryList())
-        break
-      case 1:
-        resolve(await ProductSpuApi.getBrandList({ categoryId: node.value }))
-        break
-      case 2:
-        resolve(
-          await ProductSpuApi.getLenSeriesList({
-            categoryId: node.pathValues[0],
-            brandId: node.pathValues[1]
-          })
-        )
-        break
-      case 3:
-        resolve(
-          await ProductSpuApi.getLenKindList({
-            categoryId: node.pathValues[0],
-            brandId: node.pathValues[1],
-            series: node.pathValues[2]
-          })
-        )
-        break
-      case 4:
-        resolve(
-          await ProductSpuApi.getLenRefractiveList({
-            categoryId: node.pathValues[0],
-            brandId: node.pathValues[1],
-            series: node.pathValues[2],
-            kind: node.pathValues[3]
-          })
-        )
-        break
-      case 5:
-        resolve(
-          await ProductSpuApi.getLenFilmLayerList({
-            categoryId: node.pathValues[0],
-            brandId: node.pathValues[1],
-            series: node.pathValues[2],
-            kind: node.pathValues[3],
-            refractive: node.pathValues[4]
-          })
-        )
-        break
-    }
+const lazyLoad = async (node, resolve) => {
+  const { level } = node
+  switch (level) {
+    case 0:
+      resolve(await ProductSpuApi.getCategoryList())
+      break
+    case 1:
+      resolve(await ProductSpuApi.getBrandList({ categoryId: node.data.value }))
+      break
+    case 2:
+      resolve(
+        await ProductSpuApi.getLenSeriesList({
+          categoryId: node.parent.data.value,
+          brandId: node.data.value
+        })
+      )
+      break
+    case 3:
+      resolve(
+        await ProductSpuApi.getLenKindList({
+          categoryId: node.parent.parent.data.value,
+          brandId: node.parent.data.value,
+          series: node.data.value
+        })
+      )
+      break
+    case 4:
+      resolve(
+        await ProductSpuApi.getLenRefractiveList({
+          categoryId: node.parent.parent.parent.data.value,
+          brandId: node.parent.parent.data.value,
+          series: node.parent.data.value,
+          kind: node.data.value
+        })
+      )
+      break
+    case 5:
+      resolve(
+        await ProductSpuApi.getLenFilmLayerList({
+          categoryId: node.parent.parent.parent.parent.data.value,
+          brandId: node.parent.parent.parent.data.value,
+          series: node.parent.parent.data.value,
+          kind: node.parent.data.value,
+          refractive: node.data.value
+        })
+      )
+      break
   }
+}
+
+const treeProps = {
+  label: 'label',
+  isLeaf: 'leaf'
 }
 
 const spu = ref<Spu>()
@@ -77,21 +81,29 @@ const spu = ref<Spu>()
 // 当前光度范围
 const degreeRange = ref<DegreeRange>()
 // 分类变动的回调
-const cascadeChange = async (node) => {
+const nodeClick = async (data, node) => {
+  if (!data.leaf) return
   spu.value = await ProductSpuApi.getLensSpu({
-    categoryId: node[0],
-    brandId: node[1],
-    series: node[2],
-    kind: node[3],
-    refractive: node[4],
-    filmLayer: node[5]
+    categoryId: node.parent.parent.parent.parent.parent.data.value,
+    brandId: node.parent.parent.parent.parent.data.value,
+    series: node.parent.parent.parent.data.value,
+    kind: node.parent.parent.data.value,
+    refractive: node.parent.data.value,
+    filmLayer: node.data.value
   })
+  showBatchSelectLens(spu.value!)
+}
 
+/**
+ * 批量选择镜片
+ * @param spu
+ */
+const showBatchSelectLens = (spu: Spu) => {
   // 生成光度范围
   const sphRangeList: number[] = []
   const cylRangeList: number[] = []
   const addRangeList: number[] = []
-  spu.value?.skus?.map((sku) => {
+  spu?.skus?.map((sku) => {
     sphRangeList.push(sku.skuLens?.minSph, sku.skuLens?.maxSph)
     cylRangeList.push(sku.skuLens?.minCyl, sku.skuLens?.maxCyl)
     addRangeList.push(sku.skuLens?.minAdd, sku.skuLens?.maxAdd)
@@ -111,35 +123,57 @@ const cascadeChange = async (node) => {
   rows.value.splice(0, rows.value.length)
 }
 
+const showSingleSelectLens = (spu: Spu) => {
+  const sphRangeList: number[] = []
+}
+
 const onClose = () => {
   spu.value = undefined
   rows.value.splice(0, rows.value.length)
 }
 
-// 确认按钮事件，重组rows，返回给父级
-const confirm = () => {
-  let lensList = []
+const maxHeight = () => window.innerHeight * 0.78
+
+/**
+ * 镜片是否支持多选
+ * 现片如果区分左右眼，则不能多选
+ * 车房统一使用单选模板
+ */
+const isBatchLens = computed(
+  () => spu.value?.categoryId === 1 && !spu.value?.lensProperty?.distinguishEye
+)
+
+const transformRows = () => {
   rows.value.forEach((row) => {
     row.cols.forEach((col) => {
       // 找出每一行有数量的col，转换格式
       if (col.count) {
-        lensList.push({
+        lensList.value?.push({
           sph: row.sph,
           cyl: col.cyl,
           add: col.add,
           count: col.count,
-          price: col.price,
-          skuId: col.skuId
+          price: col.price!,
+          skuId: col.skuId!
         })
       }
     })
   })
+}
+
+// 确认按钮事件，重组rows，返回给父级
+const confirm = () => {
+  if (isBatchLens) {
+    // 如果是多选，需要把rows转成lensList
+    transformRows()
+  }
   emit('confirm', {
     id: spu.value?.id,
     name: spu.value?.name,
-    lensList: lensList
+    lensList: lensList.value
   })
-  dialogVisible.value = false
+  showBatchSelectLens(spu.value!)
+  // dialogVisible.value = false
 }
 </script>
 
@@ -148,47 +182,82 @@ const confirm = () => {
     v-model="dialogVisible"
     :fullscreen="true"
     title="选择商品"
-    width="1500px"
+    width="1200px"
     @close="onClose"
-    :scroll="true"
-    maxHeight="980px"
     class="lens-dialog"
   >
     <el-row>
-      <el-col :span="18">
-        <el-cascader-panel
-          style="width: fit-content"
-          :props="cascadeProps"
-          @change="cascadeChange"
+      <el-col :span="6">
+        <el-tree
+          class="choose-header"
+          highlight-current
+          style="max-width: 200px"
+          lazy
+          :load="lazyLoad"
+          :props="treeProps"
+          @node-click="nodeClick"
         />
-        <div class="choose-content" v-if="spu">
-          <div class="choose-header">
-            {{ spu.name }}
+      </el-col>
+      <el-col :span="18">
+        <el-scrollbar :height="maxHeight()" v-if="spu">
+          <div class="choose-content">
+            <div class="product-name">
+              {{ spu.name }}
+            </div>
+            <template v-if="spu.categoryId != 3">
+              <BatchSelectLens
+                v-if="isBatchLens"
+                v-model="rows"
+                :sku-list="spu.skus"
+                :degree-range="degreeRange"
+              />
+              <SingleSelectLens v-else v-model="lensList" :sph-range="[-10, 10]" />
+            </template>
+            <template v-else> 其他商品</template>
           </div>
-          <BatchSelectLens v-model="rows" :sku-list="spu.skus" :degree-range="degreeRange" />
-        </div>
+        </el-scrollbar>
       </el-col>
     </el-row>
     <template #footer>
       <div class="dialog-footer">
-        <el-button type="primary" @click="confirm">保存</el-button>
+        <el-button
+          type="primary"
+          @click="
+            () => {
+              dialogVisible = false
+            }
+          "
+          >完成
+        </el-button>
+        <el-button type="primary" @click="confirm">添加</el-button>
       </div>
     </template>
   </Dialog>
 </template>
 
 <style lang="scss">
-.choose-content {
-  color: #000;
-  margin-top: 20px;
+.choose-header {
+  padding: 1px;
+  height: 100%;
+  border: 1px solid var(--el-border-color-light);
+  border-radius: var(--el-border-radius-base);
 }
 
-.choose-header {
+.choose-content {
+  color: #000;
+}
+
+.product-name {
   color: #000;
   margin-bottom: 10px;
 }
 
 .lens-dialog {
   --el-dialog-margin-top: 20px;
+  margin-bottom: 10px !important;
+}
+
+.is-fullscreen.lens-dialog {
+  margin-bottom: 0 !important;
 }
 </style>

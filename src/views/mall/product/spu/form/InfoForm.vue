@@ -107,6 +107,7 @@
             :rule-config="ruleConfig"
           />
         </el-form-item>
+        <!-- 多规格添加-->
         <el-form-item
           v-if="!isDetail && formData.specType && !lensCategory.includes(formData.categoryId)"
           label="规格"

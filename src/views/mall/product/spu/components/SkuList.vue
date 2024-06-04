@@ -29,7 +29,7 @@
         </template>
       </el-table-column>
     </template>
-    <template v-if="formData!.categoryId === 1">
+    <template v-if="formData!.categoryId !== 3">
       <!-- 批量添加镜片规格 -->
       <el-table-column align="center" label="球镜范围" min-width="168">
         <template #default="{ row }">

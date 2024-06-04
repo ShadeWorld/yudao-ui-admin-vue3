@@ -79,7 +79,7 @@ onMounted(() => {
 // 选中商品的回调
 const onConfirm = (checkedSpu) => {
   checkedSpu.lensList.forEach((item) => {
-    let existsItem = formData.items?.find((i) => i.skuId == item.skuId)
+    let existsItem = formData.items?.find((i) => i.skuId === item.skuId)
     if (existsItem) {
       existsItem.count += item.count
       let existsLens = existsItem.orderLensList?.find(
@@ -157,7 +157,7 @@ const chooseProductFormRef = ref()
   <el-form ref="formRef" :model="formData" :rules="rules" label-width="120px">
     <ContentWrap v-loading="formLoading">
       <el-row justify="end">
-        <el-col :span="12">
+        <el-col :span="10">
           <el-col :span="24">
             <el-form-item label="客户" prop="memberId">
               <MemberSelect v-model="formData.memberId" class="w-100%!" @select="selectUser" />
@@ -218,7 +218,7 @@ const chooseProductFormRef = ref()
             </el-form-item>
           </el-col>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="14">
           <el-col :span="24">
             <el-form-item label="商品列表" prop="items">
               <el-button
