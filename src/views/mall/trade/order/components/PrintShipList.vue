@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { getPrintDetail, OrderVO } from '@/api/mall/trade/order'
-import { formatDate } from '@/utils/formatTime'
 
 defineOptions({ name: 'PrintShipList' })
 const dialogVisible = ref(false) // 弹窗的是否展示
@@ -31,17 +30,35 @@ const printTag = () => {
         .first-tr {
             font-size: 21px;
         }
+        .print-item-header {
+            margin: 5px 0;
+        }
+        .print-item-header:after {
+            clear: both;
+            display: table;
+            content: '';
+        }
         table {
+            clear: both;
+            table-layout: auto;
+            border-collapse: collapse;
+            border: 1px solid #000000;
             font-size: 18px;
         }
-        .print-content-top td {
-            padding-top: 2mm;
+        .tr-border td {
+            border: 1px solid #000000;
+            padding: 2px 0;
+            text-align: center;
         }
-        .print-content-top {
-            transform: rotate(180deg);
+        .fl {
+            float: left;
         }
-        .print-content-bottom table{
-            font-size: 26px;
+        .fr {
+            float: right;
+        }
+        .print-ship-footer {
+            margin-top: 5px;
+            border-top: 1px solid #000000;
         }
     }
 </style>`
@@ -57,12 +74,12 @@ const printTag = () => {
             height: e.getAttribute('data-size')
     });
   })
+  // window.print()
+  // window.close()
 `
 
   newBlankWindow?.document.write(qrcodeScript.outerHTML + style + html! + script.outerHTML)
   newBlankWindow?.document.close()
-  newBlankWindow?.print()
-  newBlankWindow?.close()
 }
 
 const cancel = () => {
@@ -75,75 +92,65 @@ const cancel = () => {
     <el-row justify="center">
       请确认是否打印该订单的配货单？
       <div class="print-wrap" id="print-wrap">
-        <div v-for="item in orderPrintDetail.spuItems" :key="item.id">
-          <div class="print-content" v-for="lensItem in item.lensItems" :key="lensItem.orderItemId">
-            <div class="print-content-top">
-              <table border="0" cellpadding="0" cellspacing="0" style="width: 100%">
-                <tr class="first-tr">
-                  <td>[折射率]ne={{ item.refractive }}</td>
-                  <td colspan="2">[色散系数]Vd={{ item.abbe }}</td>
-                </tr>
-                <tr>
-                  <td>[中心厚度]{{ lensItem.centerThickness }}mm</td>
-                  <td colspan="2">[直径]Vd=Φ {{ lensItem.diameter }}mm</td>
-                </tr>
-                <tr>
-                  <td>[颜色]{{ item.color }}</td>
-                  <td>[镜片分类]眼镜类</td>
-                  <td rowspan="3">
-                    <div class="qrcode" data-size="70" :data-qrcode="orderPrintDetail.no"></div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>[膜层情况]{{ item.filmLayer }}</td>
-                  <td>[等级]合格</td>
-                </tr>
-                <tr>
-                  <td colspan="2">[透射比分类]{{ item.transmittance }}</td>
-                </tr>
-                <tr>
-                  <td colspan="2">执行标准：{{ item.standard }}</td>
-                  <td>
-                    生产日期<br />
-                    {{ formatDate(orderPrintDetail.createTime, 'YYYY/MM/DD') }}
-                  </td>
-                </tr>
-              </table>
-            </div>
-            <div class="print-content-bottom">
-              <table border="0" cellpadding="0" cellspacing="0" style="width: 100%">
-                <tr>
-                  <td colspan="5">品名：{{ item.spuName }}</td>
-                </tr>
-                <tr>
-                  <td rowspan="4">
-                    <div class="qrcode" data-size="80" :data-qrcode="item.id"></div>
-                  </td>
-                  <td rowspan="2">S</td>
-                  <td style="text-decoration: underline">{{ lensItem.sph.toFixed(2) }}D</td>
-                  <td rowspan="2">C</td>
-                  <td style="text-decoration: underline"
-                    >{{ (lensItem.sph + lensItem.cyl).toFixed(2) }}D
-                  </td>
-                </tr>
-                <tr>
-                  <td style="text-decoration: underline">{{ lensItem.cyl.toFixed(2) }}D</td>
-                  <td style="text-decoration: underline">{{ (-lensItem.sph).toFixed(2) }}D</td>
-                </tr>
-                <tr>
-                  <td colspan="2"></td>
-                  <td colspan="2">ADD {{ lensItem.add?.toFixed(2) }}</td>
-                </tr>
-                <tr>
-                  <td colspan="2">CT {{ lensItem.centerThickness }}mm</td>
-                  <td colspan="2">Φ {{ lensItem.diameter }}mm</td>
-                </tr>
-                <tr>
-                  <td colspan="5">工艺：</td>
-                </tr>
-              </table>
-            </div>
+        <div class="print-ship-header">
+          <div class="fl">{{ `备注：${orderPrintDetail.remark!}` }}</div>
+          <div class="qrcode fr" data-size="70" :data-qrcode="orderPrintDetail.no"></div>
+          <div style="clear: both">
+            <table
+              style="border: none; border-top: 1px solid #000; padding-top: 5px; margin-top: 5px"
+            >
+              <tr>
+                <td>单号：{{ orderPrintDetail.no }}</td>
+                <td>联系人：{{ orderPrintDetail.receiverName }}</td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  地址：{{
+                    orderPrintDetail.receiverAreaName + orderPrintDetail.receiverDetailAddress
+                  }}
+                </td>
+              </tr>
+            </table>
           </div>
+        </div>
+        <div v-for="item in orderPrintDetail.spuItems" :key="item.id">
+          <div class="print-item-header">
+            <div style="float: left">产品：{{ item.spuName }}</div>
+            <div style="float: right">{{ item.categoryId === 1 ? '镜片' : '车房' }}</div>
+          </div>
+          <table>
+            <tr class="tr-border">
+              <td style="min-width: 50px"></td>
+              <td style="min-width: 100px">球镜</td>
+              <td style="min-width: 100px">柱镜</td>
+              <td style="min-width: 100px">加光</td>
+              <td style="min-width: 50px">轴位</td>
+              <td style="min-width: 50px">数量</td>
+            </tr>
+            <tr v-for="lensItem in item.lensItems" :key="lensItem.orderItemId" class="tr-border">
+              <td>{{ lensItem.leftOrRight === 1 ? 'L' : 'R' }}</td>
+              <td>{{ lensItem.sph.toFixed(2) }}</td>
+              <td>{{ lensItem.cyl ? lensItem.cyl.toFixed(2) : '' }}</td>
+              <td>{{ lensItem.add ? lensItem.add.toFixed(2) : '' }}</td>
+              <td>{{ lensItem['axis'] }}</td>
+              <td>{{ lensItem.count }}</td>
+            </tr>
+          </table>
+        </div>
+        <div class="print-ship-footer">
+          <table>
+            <tr>
+              <td>发货方式：{{ orderPrintDetail.deliveryTemplate }}</td>
+              <td>{{ orderPrintDetail.receiverAreaName }}</td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                总数量：{{
+                  orderPrintDetail.lensItems.reduce((prev, curr) => prev.count + curr.count)
+                }}
+              </td>
+            </tr>
+          </table>
         </div>
       </div>
     </el-row>

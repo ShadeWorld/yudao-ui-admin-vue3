@@ -163,7 +163,7 @@ const cancel = () => {
 }
 
 .print-wrap {
-  display: none;
-  position: absolute;
+  //display: none;
+  //position: absolute;
 }
 </style>
