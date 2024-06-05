@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { getPrintDetail, OrderVO } from '@/api/mall/trade/order'
 import { formatDate } from '@/utils/formatTime'
+import { formatDegree } from '@/utils/lens'
 
 defineOptions({ name: 'PrintTagList' })
 const dialogVisible = ref(false) // 弹窗的是否展示
@@ -85,7 +86,7 @@ const cancel = () => {
                 </tr>
                 <tr>
                   <td>[中心厚度]{{ lensItem.centerThickness }}mm</td>
-                  <td colspan="2">[直径]Vd=Φ {{ lensItem.diameter }}mm</td>
+                  <td colspan="2">[直径] {{ lensItem.diameter }}mm</td>
                 </tr>
                 <tr>
                   <td>[颜色]{{ item.color }}</td>
@@ -120,19 +121,22 @@ const cancel = () => {
                     <div class="qrcode" data-size="80" :data-qrcode="item.id"></div>
                   </td>
                   <td rowspan="2">S</td>
-                  <td style="text-decoration: underline">{{ lensItem.sph.toFixed(2) }}D</td>
+                  <td style="text-decoration: underline">{{ formatDegree(lensItem.sph) }}D</td>
                   <td rowspan="2">C</td>
                   <td style="text-decoration: underline"
-                    >{{ (lensItem.sph + lensItem.cyl).toFixed(2) }}D
+                    >{{ formatDegree(lensItem.sph + lensItem.cyl) }}D
                   </td>
                 </tr>
                 <tr>
-                  <td style="text-decoration: underline">{{ lensItem.cyl.toFixed(2) }}D</td>
-                  <td style="text-decoration: underline">{{ (-lensItem.sph).toFixed(2) }}D</td>
+                  <td style="text-decoration: underline">{{ formatDegree(lensItem.cyl) }}D</td>
+                  <td style="text-decoration: underline">{{ formatDegree(-lensItem.sph) }}D</td>
                 </tr>
                 <tr>
                   <td colspan="2"></td>
-                  <td colspan="2">ADD {{ lensItem.add?.toFixed(2) }}</td>
+                  <td colspan="2">
+                    ADD {{ formatDegree(lensItem.add) }}
+                    {{ lensItem.leftOrRight ? (lensItem.leftOrRight === 1 ? 'L' : 'R') : '' }}
+                  </td>
                 </tr>
                 <tr>
                   <td colspan="2">CT {{ lensItem.centerThickness }}mm</td>
@@ -163,7 +167,7 @@ const cancel = () => {
 }
 
 .print-wrap {
-  //display: none;
-  //position: absolute;
+  display: none;
+  position: absolute;
 }
 </style>

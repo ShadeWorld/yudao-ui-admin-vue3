@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getPrintDetail, OrderVO } from '@/api/mall/trade/order'
+import { formatDegree } from '@/utils/lens'
 
 defineOptions({ name: 'PrintShipList' })
 const dialogVisible = ref(false) // 弹窗的是否展示
@@ -15,22 +16,23 @@ defineExpose({ open })
 
 // 标签 宽70mm 高60mm 间距 3mm
 const printTag = () => {
-  const dom = document.querySelector(`[class="print-wrap"]`)
+  const dom = document.querySelector(`[class="print-ship-wrap"]`)
   // debugger;
-  const html = dom?.innerHTML
+  const html = dom?.outerHTML
   // about:blank
   const newBlankWindow = window.open('', '_blank')
   const style = `
 <style type="text/css">
     @page {
         margin: 0;
-        size: 70mm 60mm;
+        size: portrait;
     }
     @media print {
         .first-tr {
             font-size: 21px;
         }
         .print-item-header {
+            border-top: 1px solid #000;
             margin: 5px 0;
         }
         .print-item-header:after {
@@ -57,8 +59,11 @@ const printTag = () => {
             float: right;
         }
         .print-ship-footer {
-            margin-top: 5px;
+            margin-top: 10px;
             border-top: 1px solid #000000;
+        }
+        .print-ship-wrap {
+            margin: 0mm 2mm;
         }
     }
 </style>`
@@ -91,14 +96,12 @@ const cancel = () => {
   <Dialog v-model="dialogVisible" title="配货单打印" width="25%" class="print-dialog">
     <el-row justify="center">
       请确认是否打印该订单的配货单？
-      <div class="print-wrap" id="print-wrap">
+      <div class="print-ship-wrap" id="print-wrap">
         <div class="print-ship-header">
           <div class="fl">{{ `备注：${orderPrintDetail.remark!}` }}</div>
           <div class="qrcode fr" data-size="70" :data-qrcode="orderPrintDetail.no"></div>
           <div style="clear: both">
-            <table
-              style="border: none; border-top: 1px solid #000; padding-top: 5px; margin-top: 5px"
-            >
+            <table style="border: none; padding-top: 5px; margin-top: 5px; width: 100%">
               <tr>
                 <td>单号：{{ orderPrintDetail.no }}</td>
                 <td>联系人：{{ orderPrintDetail.receiverName }}</td>
@@ -118,7 +121,7 @@ const cancel = () => {
             <div style="float: left">产品：{{ item.spuName }}</div>
             <div style="float: right">{{ item.categoryId === 1 ? '镜片' : '车房' }}</div>
           </div>
-          <table>
+          <table style="width: 100%">
             <tr class="tr-border">
               <td style="min-width: 50px"></td>
               <td style="min-width: 100px">球镜</td>
@@ -128,27 +131,23 @@ const cancel = () => {
               <td style="min-width: 50px">数量</td>
             </tr>
             <tr v-for="lensItem in item.lensItems" :key="lensItem.orderItemId" class="tr-border">
-              <td>{{ lensItem.leftOrRight === 1 ? 'L' : 'R' }}</td>
-              <td>{{ lensItem.sph.toFixed(2) }}</td>
-              <td>{{ lensItem.cyl ? lensItem.cyl.toFixed(2) : '' }}</td>
-              <td>{{ lensItem.add ? lensItem.add.toFixed(2) : '' }}</td>
+              <td>{{ lensItem.leftOrRight ? (lensItem.leftOrRight === 1 ? 'L' : 'R') : '' }}</td>
+              <td>{{ formatDegree(lensItem.sph) }}</td>
+              <td>{{ formatDegree(lensItem.cyl) }}</td>
+              <td>{{ formatDegree(lensItem.add) }} </td>
               <td>{{ lensItem['axis'] }}</td>
               <td>{{ lensItem.count }}</td>
             </tr>
           </table>
         </div>
         <div class="print-ship-footer">
-          <table>
+          <table style="border: none; width: 100%">
             <tr>
               <td>发货方式：{{ orderPrintDetail.deliveryTemplate }}</td>
               <td>{{ orderPrintDetail.receiverAreaName }}</td>
             </tr>
             <tr>
-              <td colspan="2">
-                总数量：{{
-                  orderPrintDetail.lensItems.reduce((prev, curr) => prev.count + curr.count)
-                }}
-              </td>
+              <td colspan="2"> 总数量：{{ orderPrintDetail.count }}</td>
             </tr>
           </table>
         </div>
@@ -167,5 +166,10 @@ const cancel = () => {
 .print-dialog {
   --el-dialog-bg-color: var(--app-content-bg-color);
   --el-dialog-margin-top: 20px;
+}
+
+.print-ship-wrap {
+  display: none;
+  position: absolute;
 }
 </style>

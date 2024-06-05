@@ -102,13 +102,16 @@ const onConfirm = (checkedSpu) => {
           sph: item.sph,
           cyl: item.cyl,
           add: item.add,
-          count: item.count
+          count: item.count,
+          leftOrRight: item.leftOrRight,
+          axis: item.axis
         })
       }
     } else {
       formData.items?.push({
         skus: checkedSpu.skus,
         spuId: checkedSpu.id,
+        distinguishEye: checkedSpu.distinguishEye,
         categoryId: checkedSpu.categoryId,
         spuName: checkedSpu.name,
         skuId: item.skuId,
@@ -119,7 +122,9 @@ const onConfirm = (checkedSpu) => {
             sph: item.sph,
             cyl: item.cyl,
             add: item.add,
-            count: item.count
+            count: item.count,
+            leftOrRight: item.leftOrRight,
+            axis: item.axis
           }
         ]
       })

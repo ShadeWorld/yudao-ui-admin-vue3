@@ -188,6 +188,7 @@ const confirm = () => {
   }
   emit('confirm', {
     id: spu.value?.id,
+    distinguishEye: spu.value?.lensProperty?.distinguishEye,
     categoryId: spu.value?.categoryId,
     skus: spu.value?.skus,
     name: spu.value?.name,
@@ -236,12 +237,14 @@ const onClose = () => {
               {{ spu.name }}
             </div>
             <template v-if="spu.categoryId != 3">
+              <!-- 镜片批量选择 -->
               <BatchSelectLens
                 v-if="isBatchLens"
                 v-model="rows"
                 :sku-list="spu.skus"
                 :degree-range="degreeRange"
               />
+              <!-- 镜片普通选择 -->
               <SingleSelectLens
                 v-else
                 v-model="lensList"

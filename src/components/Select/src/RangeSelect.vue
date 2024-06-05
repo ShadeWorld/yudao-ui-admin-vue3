@@ -7,7 +7,8 @@
 <script setup lang="ts">
 const props = defineProps({
   maxValue: Number,
-  minValue: Number
+  minValue: Number,
+  minWidth: Number
 })
 // eslint-disable-next-line vue/require-prop-types
 const selected = defineModel()

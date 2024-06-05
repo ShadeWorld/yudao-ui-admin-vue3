@@ -18,6 +18,7 @@ export interface OrderItem {
   skuId: number
   price: number
   count: number
+  distinguishEye: boolean
   orderLensList?: OrderItemLens[]
 }
 

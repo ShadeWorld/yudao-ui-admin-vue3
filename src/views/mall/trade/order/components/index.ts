@@ -46,6 +46,13 @@ export const calcDegreeRange = (
       addRangeList.sort((a, b) => a - b)
       row.cylRange = [cylRangeList[0], cylRangeList[cylRangeList.length - 1]]
       row.addRange = [addRangeList[0], addRangeList[addRangeList.length - 1]]
+
+      if (!between(row.cyl, row.cylRange)) {
+        row.cyl = row.cylRange[0]
+      }
+      if (!between(row.add, row.addRange)) {
+        row.add = row.addRange[0]
+      }
       break
     case 'cyl':
       skuList.forEach(({ skuLens }) => {
@@ -58,6 +65,10 @@ export const calcDegreeRange = (
       })
       addRangeList.sort((a, b) => a - b)
       row.addRange = [addRangeList[0], addRangeList[addRangeList.length - 1]]
+
+      if (!between(row.add, row.addRange)) {
+        row.add = row.addRange[0]
+      }
       break
     case 'add':
       skuList.forEach(({ skuLens }) => {
@@ -69,7 +80,20 @@ export const calcDegreeRange = (
         }
       })
       cylRangeList.sort((a, b) => a - b)
-      row.addRange = [cylRangeList[0], cylRangeList[cylRangeList.length - 1]]
+      row.cylRange = [cylRangeList[0], cylRangeList[cylRangeList.length - 1]]
+
+      if (!between(row.cyl, row.cylRange)) {
+        row.cyl = row.cylRange[0]
+      }
       break
   }
+
+  const skuLensPrice = skuList.find(
+    ({ skuLens }) =>
+      between(row.sph, [skuLens?.minSph, skuLens?.maxSph]) &&
+      between(row.cyl, [skuLens?.minCyl, skuLens?.maxCyl]) &&
+      between(row.add, [skuLens?.minAdd, skuLens?.maxAdd])
+  )
+  row.price = skuLensPrice?.price
+  row.skuId = skuLensPrice?.id
 }

@@ -17,6 +17,7 @@ interface TableOrderItem {
   spuName: string
   price: number
   count: number
+  distinguishEye: boolean
 }
 
 const model = defineModel<OrderItem[]>()
@@ -36,6 +37,7 @@ watch(
             data.count += item.count
           } else {
             data = {
+              distinguishEye: item.distinguishEye,
               skus: item.skus,
               categoryId: item.categoryId,
               spuId: item.spuId,
@@ -58,6 +60,14 @@ const dialogVisible = ref(false)
 const detailSpu = ref<TableOrderItem>()
 // Dialog宽度
 const detailWidth = ref<number>(800)
+/**
+ * 镜片是否支持多选
+ * 现片如果区分左右眼，则不能多选
+ * 车房统一使用单选模板
+ */
+const isBatchLens = computed(
+  () => detailSpu.value?.categoryId === 1 && !detailSpu.value?.distinguishEye
+)
 
 // 批量选择镜片的所有行
 const rows = ref<Row[]>([])
@@ -124,7 +134,9 @@ const singleLensDetail = () => {
         add: item.add,
         count: item.count,
         price: detailItem.price,
-        skuId: detailItem.skuId
+        skuId: detailItem.skuId,
+        leftOrRight: item.leftOrRight,
+        axis: item.axis
       }
       // 计算柱镜和加光的范围
       calcDegreeRange(orderLens.sph, orderLens, 'sph', skuList.value)
@@ -144,10 +156,16 @@ const singleLensDetail = () => {
  */
 const openDetail = (detailItem: TableOrderItem) => {
   detailSpu.value = detailItem
-  if (detailItem.categoryId === 1) {
+  if (isBatchLens.value) {
+    // 普通镜片
     batchLensDetail()
-  } else if (detailItem.categoryId === 2) {
-    singleLensDetail()
+  } else {
+    if (detailSpu.value.categoryId !== 3) {
+      // 车房或渐进
+      singleLensDetail()
+    } else {
+      // 镜架
+    }
   }
   dialogVisible.value = true
 }
@@ -232,6 +250,7 @@ const singleLensConfirm = () => {
     } else {
       model.value?.push({
         skus: detailSpu.value?.skus,
+        distinguishEye: detailSpu.value?.distinguishEye,
         spuId: detailSpu.value?.spuId,
         categoryId: detailSpu.value?.categoryId,
         spuName: detailSpu.value?.spuName,
@@ -255,10 +274,16 @@ const singleLensConfirm = () => {
 
 const confirm = () => {
   if (!detailSpu.value) return
-  if (detailSpu.value.categoryId === 1) {
+  if (isBatchLens.value) {
+    // 普通镜片
     batchLensConfirm()
-  } else if (detailSpu.value.categoryId === 2) {
-    singleLensConfirm()
+  } else {
+    if (detailSpu.value.categoryId !== 3) {
+      // 车房或渐进
+      singleLensConfirm()
+    } else {
+      // 镜架
+    }
   }
   dialogVisible.value = false
 }
@@ -313,12 +338,13 @@ const onClose = () => {
     v-if="detailSpu"
   >
     <el-row justify="center">
-      <BatchSelectLens v-model="rows" v-if="detailSpu.categoryId === 1" />
+      <BatchSelectLens v-model="rows" v-if="isBatchLens" />
       <SingleSelectLens
+        v-else
         v-model="lensList"
-        v-if="detailSpu.categoryId === 2"
         :sku-list="skuList!"
         :sph-range="sphRange"
+        :is-detail="false"
       />
     </el-row>
     <template #footer>
