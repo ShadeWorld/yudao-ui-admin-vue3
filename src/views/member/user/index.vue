@@ -77,9 +77,9 @@
       <el-form-item label="用户标签" prop="tagIds">
         <MemberTagSelect v-model="queryParams.tagIds" />
       </el-form-item>
-      <el-form-item label="用户等级" prop="levelId" label-width="98px">
-        <MemberLevelSelect v-model="queryParams.levelId" />
-      </el-form-item>
+      <!--      <el-form-item label="用户等级" prop="levelId" label-width="98px">-->
+      <!--        <MemberLevelSelect v-model="queryParams.levelId" />-->
+      <!--      </el-form-item>-->
       <el-form-item label="用户分组" prop="groupId">
         <MemberGroupSelect v-model="queryParams.groupId" />
       </el-form-item>
@@ -238,7 +238,6 @@ import * as UserApi from '@/api/member/user'
 import { DICT_TYPE } from '@/utils/dict'
 import UserForm from './UserForm.vue'
 import MemberTagSelect from '@/views/member/tag/components/MemberTagSelect.vue'
-import MemberLevelSelect from '@/views/member/level/components/MemberLevelSelect.vue'
 import MemberGroupSelect from '@/views/member/group/components/MemberGroupSelect.vue'
 import UserLevelUpdateForm from './UserLevelUpdateForm.vue'
 import UserPointUpdateForm from './UserPointUpdateForm.vue'

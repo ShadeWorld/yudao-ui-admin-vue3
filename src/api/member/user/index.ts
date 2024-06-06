@@ -38,6 +38,11 @@ export const getUser = async (id: number) => {
 }
 
 // 修改会员用户
+export const createUser = async (data: UserVO) => {
+  return await request.post({ url: `/member/user/create`, data })
+}
+
+// 修改会员用户
 export const updateUser = async (data: UserVO) => {
   return await request.put({ url: `/member/user/update`, data })
 }
