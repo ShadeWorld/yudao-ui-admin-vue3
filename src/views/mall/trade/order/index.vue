@@ -170,9 +170,10 @@
           {{ floatToFixed2(row.payPrice) + '元' }}
         </template>
       </el-table-column>
-      <el-table-column label="订单类型" min-width="50">
+      <el-table-column label="订单状态" min-width="50">
         <template #default="{ row }">
-          <dict-tag :type="DICT_TYPE.TRADE_ORDER_TYPE" :value="row.type" />
+          <dict-tag :type="DICT_TYPE.TRADE_ORDER_STATUS" :value="row.status!" />
+          <!--          <dict-tag :type="DICT_TYPE.TRADE_ORDER_TYPE" :value="row.type" />-->
         </template>
       </el-table-column>
       <el-table-column label="订单来源" min-width="50">
@@ -243,6 +244,13 @@
                     <Icon icon="ep:takeaway-box" />
                     发货
                   </el-dropdown-item>
+                  <el-dropdown-item
+                    command="payOrder"
+                    v-if="row.status === TradeOrderStatusEnum.UNPAID.status"
+                  >
+                    <Icon icon="ep:chat-line-square" />
+                    支付订单
+                  </el-dropdown-item>
                   <el-dropdown-item command="remark">
                     <Icon icon="ep:chat-line-square" />
                     备注
@@ -278,10 +286,12 @@ import OrderUpdateRemarkForm from '@/views/mall/trade/order/form/OrderUpdateRema
 import * as TradeOrderApi from '@/api/mall/trade/order'
 import { DICT_TYPE, getIntDictOptions, getStrDictOptions } from '@/utils/dict'
 import * as DeliveryExpressApi from '@/api/mall/trade/delivery/express'
-import { TradeOrderStatusEnum } from '@/utils/constants'
+import { PayChannelEnum, PayOrderStatusEnum, TradeOrderStatusEnum } from '@/utils/constants'
 import { PrintShipList, PrintTagList } from './components'
 import { floatToFixed2 } from '@/utils'
 import { dateFormatter, formatDate } from '@/utils/formatTime'
+import * as PayOrderApi from '@/api/pay/order'
+import { Message as message } from '@/layout/components/Message'
 
 defineOptions({ name: 'TradeOrder' })
 
@@ -381,6 +391,9 @@ const handleCommand = (command: string, row: TradeOrderApi.OrderVO) => {
     case 'delivery':
       deliveryFormRef.value?.open(row)
       break
+    case 'payOrder':
+      payOrder(row.payOrderId)
+      break
   }
 }
 
@@ -409,6 +422,23 @@ const handleRowClick = (row) => {
   } else {
     orderTableRef.value.setCurrentRow(row)
     currentRow.value = row
+  }
+}
+
+const payOrder = async (id) => {
+  try {
+    const formData = {
+      id: id,
+      channelCode: PayChannelEnum.MOCK.code
+    }
+    const data = await PayOrderApi.submitOrder(formData)
+    // 直接返回已支付的情况，例如说扫码支付
+    if (data.status === PayOrderStatusEnum.SUCCESS.status) {
+      message.success('支付成功！')
+      await getList()
+      return
+    }
+  } finally {
   }
 }
 

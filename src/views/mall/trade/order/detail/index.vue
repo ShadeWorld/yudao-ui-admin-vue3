@@ -129,49 +129,38 @@
     <!-- 物流信息 -->
     <el-descriptions :column="4" title="收货信息">
       <el-descriptions-item label="配送方式: ">
-        <dict-tag :type="DICT_TYPE.TRADE_DELIVERY_TYPE" :value="formData.deliveryType!" />
+        {{ formData.deliveryTemplateName }}
       </el-descriptions-item>
       <el-descriptions-item label="收货人: ">{{ formData.receiverName }}</el-descriptions-item>
       <el-descriptions-item label="联系电话: ">{{ formData.receiverMobile }}</el-descriptions-item>
       <!-- 快递配送 -->
-      <div v-if="formData.deliveryType === DeliveryTypeEnum.EXPRESS.type">
-        <el-descriptions-item v-if="formData.receiverDetailAddress" label="收货地址: ">
-          {{ formData.receiverAreaName }} {{ formData.receiverDetailAddress }}
-          <el-link
-            v-clipboard:copy="formData.receiverAreaName + ' ' + formData.receiverDetailAddress"
-            v-clipboard:success="clipboardSuccess"
-            icon="ep:document-copy"
-            type="primary"
-          />
-        </el-descriptions-item>
-        <el-descriptions-item v-if="formData.logisticsId" label="物流公司: ">
-          {{ deliveryExpressList.find((item) => item.id === formData.logisticsId)?.name }}
-        </el-descriptions-item>
-        <el-descriptions-item v-if="formData.logisticsId" label="运单号: ">
-          {{ formData.logisticsNo }}
-        </el-descriptions-item>
-        <el-descriptions-item v-if="formatDate.deliveryTime" label="发货时间: ">
-          {{ formatDate(formData.deliveryTime) }}
-        </el-descriptions-item>
-        <el-descriptions-item v-for="item in 2" :key="item" label-class-name="no-colon" />
-        <el-descriptions-item v-if="expressTrackList.length > 0" label="物流详情: ">
-          <el-timeline>
-            <el-timeline-item
-              v-for="(express, index) in expressTrackList"
-              :key="index"
-              :timestamp="formatDate(express.time)"
-            >
-              {{ express.content }}
-            </el-timeline-item>
-          </el-timeline>
-        </el-descriptions-item>
-      </div>
-      <!-- 自提门店 -->
-      <div v-if="formData.deliveryType === DeliveryTypeEnum.PICK_UP.type">
-        <el-descriptions-item v-if="formData.pickUpStoreId" label="自提门店: ">
-          {{ pickUpStore?.name }}
-        </el-descriptions-item>
-      </div>
+      <el-descriptions-item v-if="formData.receiverDetailAddress" label="收货地址: ">
+        {{ formData.receiverAreaName }} {{ formData.receiverDetailAddress }}
+        <el-link
+          v-clipboard:copy="formData.receiverAreaName + ' ' + formData.receiverDetailAddress"
+          v-clipboard:success="clipboardSuccess"
+          icon="ep:document-copy"
+          type="primary"
+        />
+      </el-descriptions-item>
+      <el-descriptions-item v-if="formData.logisticsNo" label="运单号: ">
+        {{ formData.logisticsNo }}
+      </el-descriptions-item>
+      <el-descriptions-item v-if="formatDate.deliveryTime" label="发货时间: ">
+        {{ formatDate(formData.deliveryTime) }}
+      </el-descriptions-item>
+      <el-descriptions-item v-for="item in 2" :key="item" label-class-name="no-colon" />
+      <el-descriptions-item v-if="expressTrackList.length > 0" label="物流详情: ">
+        <el-timeline>
+          <el-timeline-item
+            v-for="(express, index) in expressTrackList"
+            :key="index"
+            :timestamp="formatDate(express.time)"
+          >
+            {{ express.content }}
+          </el-timeline-item>
+        </el-timeline>
+      </el-descriptions-item>
     </el-descriptions>
 
     <!-- 订单日志 -->
@@ -236,11 +225,10 @@ import OrderUpdateRemarkForm from '@/views/mall/trade/order/form/OrderUpdateRema
 import OrderDeliveryForm from '@/views/mall/trade/order/form/OrderDeliveryForm.vue'
 import OrderUpdateAddressForm from '@/views/mall/trade/order/form/OrderUpdateAddressForm.vue'
 import OrderUpdatePriceForm from '@/views/mall/trade/order/form/OrderUpdatePriceForm.vue'
-import * as DeliveryExpressApi from '@/api/mall/trade/delivery/express'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import { DeliveryTypeEnum, TradeOrderStatusEnum } from '@/utils/constants'
 import { propTypes } from '@/utils/propTypes'
-import { BatchSelectLens, Row } from '@/views/mall/trade/order/components'
+import { BatchSelectLens } from '@/views/mall/trade/order/components'
 import SingleSelectLens from '../components/SingleSelectLens.vue'
 import { OrderLens } from '@/views/mall/trade/order/components/SingleSelectLens.vue'
 
@@ -320,12 +308,10 @@ const clipboardSuccess = () => {
 }
 
 /** 初始化 **/
-const deliveryExpressList = ref([]) // 物流公司
 const expressTrackList = ref([]) // 物流详情
 const pickUpStore = ref({}) // 自提门店
 onMounted(async () => {
   await getDetail()
-  deliveryExpressList.value = await DeliveryExpressApi.getSimpleDeliveryExpressList()
   if (formData.value.logisticsId) {
     expressTrackList.value = await TradeOrderApi.getExpressTrackList(formData.value.id!)
   }
@@ -355,6 +341,7 @@ const openDetail = (detailItem: OrderItemRespVO) => {
 // 批量选择镜片的所有行
 const rows = ref<Row[]>([])
 const batchLensDetail = () => {
+  rows.value.splice(0, rows.value.length)
   let minCyl: number = currentDetailItem.value?.orderLensList[0].cyl
   let maxCyl: number = minCyl
   currentDetailItem.value?.orderLensList.forEach((orderLens: OrderItemLens) => {
