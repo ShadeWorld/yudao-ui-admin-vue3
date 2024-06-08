@@ -86,7 +86,7 @@ const cancel = () => {
                 </tr>
                 <tr>
                   <td>[中心厚度]{{ lensItem.centerThickness }}mm</td>
-                  <td colspan="2">[直径] {{ lensItem.diameter }}mm</td>
+                  <td colspan="2">[直径]Φ {{ lensItem.diameter }}mm</td>
                 </tr>
                 <tr>
                   <td>[颜色]{{ item.color }}</td>
