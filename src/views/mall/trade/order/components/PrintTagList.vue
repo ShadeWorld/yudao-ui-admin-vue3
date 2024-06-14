@@ -47,7 +47,7 @@ const printTag = () => {
     }
 </style>`
   const qrcodeScript = document.createElement('script')
-  if (import.meta.env.VITE_DEV) {
+  if (import.meta.env.VITE_DEV === 'true') {
     qrcodeScript.src = '/src/assets/js/qrcode.js'
   } else {
     qrcodeScript.src = 'https://www.zhaomingyanjing.store/glass-manage/qrcode.js'
