@@ -399,21 +399,21 @@
         </template>
       </el-table-column>
     </template>
-    <el-table-column align="center" label="商品条码" min-width="100">
-      <template #default="{ row }">
-        {{ row.barCode }}
-      </template>
-    </el-table-column>
+    <!--    <el-table-column align="center" label="商品条码" min-width="100">-->
+    <!--      <template #default="{ row }">-->
+    <!--        {{ row.barCode }}-->
+    <!--      </template>-->
+    <!--    </el-table-column>-->
     <el-table-column align="center" label="销售价(元)" min-width="80">
       <template #default="{ row }">
         {{ row.price }}
       </template>
     </el-table-column>
-    <el-table-column align="center" label="市场价(元)" min-width="80">
-      <template #default="{ row }">
-        {{ row.marketPrice }}
-      </template>
-    </el-table-column>
+    <!--    <el-table-column align="center" label="市场价(元)" min-width="80">-->
+    <!--      <template #default="{ row }">-->
+    <!--        {{ row.marketPrice }}-->
+    <!--      </template>-->
+    <!--    </el-table-column>-->
     <el-table-column align="center" label="成本价(元)" min-width="80">
       <template #default="{ row }">
         {{ row.costPrice }}
@@ -479,21 +479,21 @@
         </template>
       </el-table-column>
     </template>
-    <el-table-column align="center" label="商品条码" min-width="100">
-      <template #default="{ row }">
-        {{ row.barCode }}
-      </template>
-    </el-table-column>
+    <!--    <el-table-column align="center" label="商品条码" min-width="100">-->
+    <!--      <template #default="{ row }">-->
+    <!--        {{ row.barCode }}-->
+    <!--      </template>-->
+    <!--    </el-table-column>-->
     <el-table-column align="center" label="销售价(元)" min-width="80">
       <template #default="{ row }">
         {{ row.price }}
       </template>
     </el-table-column>
-    <el-table-column align="center" label="市场价(元)" min-width="80">
-      <template #default="{ row }">
-        {{ row.marketPrice }}
-      </template>
-    </el-table-column>
+    <!--    <el-table-column align="center" label="市场价(元)" min-width="80">-->
+    <!--      <template #default="{ row }">-->
+    <!--        {{ row.marketPrice }}-->
+    <!--      </template>-->
+    <!--    </el-table-column>-->
     <el-table-column align="center" label="成本价(元)" min-width="80">
       <template #default="{ row }">
         {{ row.costPrice }}

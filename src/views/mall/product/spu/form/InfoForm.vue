@@ -234,11 +234,6 @@ const ruleConfig: RuleConfig[] = [
     message: '商品销售价格必须大于等于 0.01 元！！！'
   },
   {
-    name: 'marketPrice',
-    rule: (arg) => arg >= 0.01,
-    message: '商品市场价格必须大于等于 0.01 元！！！'
-  },
-  {
     name: 'costPrice',
     rule: (arg) => arg >= 0.01,
     message: '商品成本价格必须大于等于 0.00 元！！！'
