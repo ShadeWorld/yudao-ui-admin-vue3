@@ -26,6 +26,12 @@
             <!--            </div>-->
           </TransitionGroup>
         </div>
+        <div class="footer flex items-center justify-center">
+          <span class="text-14px">
+            <a href="https://beian.miit.gov.cn/" target="_blank">苏ICP备2024108348号</a>
+            <a href="https://beian.miit.gov.cn/" target="_blank">苏ICP备2024108348号-1</a>
+          </span>
+        </div>
       </div>
       <div class="relative flex-1 p-30px dark:bg-[var(--login-bg-color)] lt-sm:p-10px">
         <!-- 右上角的主题、语言选择 -->

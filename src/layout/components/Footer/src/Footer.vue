@@ -19,6 +19,9 @@ const title = computed(() => appStore.getTitle)
     :class="prefixCls"
     class="h-[var(--app-footer-height)] bg-[var(--app-content-bg-color)] text-center leading-[var(--app-footer-height)] text-[var(--el-text-color-placeholder)] dark:bg-[var(--el-bg-color)]"
   >
-    <span class="text-14px">Copyright ©2022-{{ title }}</span>
+    <span class="text-14px">
+      <a href="https://beian.miit.gov.cn/" target="_blank">苏ICP备2024108348号</a>
+      <a href="https://beian.miit.gov.cn/" target="_blank">苏ICP备2024108348号-1</a>
+    </span>
   </div>
 </template>
