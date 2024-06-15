@@ -127,13 +127,13 @@ const cancel = () => {
                   <td rowspan="2">S</td>
                   <td style="text-decoration: underline">{{ formatDegree(lensItem.sph) }}D</td>
                   <td rowspan="2">C</td>
-                  <td style="text-decoration: underline"
-                    >{{ formatDegree(lensItem.sph + lensItem.cyl) }}D
-                  </td>
+                  <td style="text-decoration: underline">{{ formatDegree(lensItem.cyl) }}D</td>
                 </tr>
                 <tr>
-                  <td style="text-decoration: underline">{{ formatDegree(lensItem.cyl) }}D</td>
                   <td style="text-decoration: underline">{{ formatDegree(-lensItem.sph) }}D</td>
+                  <td style="text-decoration: underline">
+                    {{ formatDegree(lensItem.sph + lensItem.cyl) }}D
+                  </td>
                 </tr>
                 <tr>
                   <td colspan="2"></td>
