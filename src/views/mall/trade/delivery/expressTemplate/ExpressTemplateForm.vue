@@ -59,7 +59,7 @@
           <!--          </el-table-column>-->
           <el-table-column width="180" align="center" label="运费(元)" prop="startPrice">
             <template #default="{ row }">
-              <el-input-number v-model="row.startPrice" :min="1" />
+              <el-input-number v-model="row.startPrice" :min="0" />
             </template>
           </el-table-column>
           <!--          <el-table-column-->

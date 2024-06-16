@@ -36,10 +36,14 @@ const printTag = () => {
             font-size: 18px;
         }
         .print-content-top td {
-            padding-top: 2mm;
+            padding-top: 1mm;
         }
         .print-content-top {
+            margin-bottom: 2mm;
             transform: rotate(180deg);
+        }
+        .print-content-bottom {
+            margin-top: 8mm;
         }
         .print-content-bottom table{
             font-size: 26px;
@@ -73,6 +77,28 @@ const printTag = () => {
 const cancel = () => {
   dialogVisible.value = false
 }
+
+const translateLens = (sph: number, cyl: number) => {
+  if (sph >= 0 && cyl >= 0) {
+    return [sph, cyl]
+  }
+  if (sph >= 0) {
+    const sum = sph + cyl
+    if (sum > 0) {
+      return [sum, -cyl]
+    }
+  }
+  const sum = Math.abs(sph) - Math.abs(cyl)
+  if (sum > 0) {
+    return [sum, -cyl]
+  }
+  if (sum == 0) {
+    return []
+  }
+  if (sum < 0) {
+    return [0, -sum]
+  }
+}
 </script>
 
 <template>
@@ -95,7 +121,7 @@ const cancel = () => {
                 <tr>
                   <td>[颜色]{{ item.color }}</td>
                   <td>[镜片分类]眼镜类</td>
-                  <td rowspan="3">
+                  <td rowspan="3" align="right">
                     <div class="qrcode" data-size="70" :data-qrcode="orderPrintDetail.no"></div>
                   </td>
                 </tr>
@@ -109,7 +135,7 @@ const cancel = () => {
                 <tr>
                   <td colspan="2">执行标准：{{ item.standard }}</td>
                   <td>
-                    生产日期<br />
+                    生产日期：
                     {{ formatDate(orderPrintDetail.createTime, 'YYYY/MM/DD') }}
                   </td>
                 </tr>
@@ -118,10 +144,21 @@ const cancel = () => {
             <div class="print-content-bottom">
               <table border="0" cellpadding="0" cellspacing="0" style="width: 100%">
                 <tr>
-                  <td colspan="5">品名：{{ item.spuName }}</td>
+                  <td colspan="5">
+                    <div style="height: 80px; overflow: hidden; position: absolute">
+                      品名：{{ item.spuName }}
+                    </div>
+                  </td>
                 </tr>
+              </table>
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                style="width: 100%; margin-top: 60px"
+              >
                 <tr>
-                  <td rowspan="4">
+                  <td rowspan="4" style="margin-top: 60px">
                     <div class="qrcode" data-size="80" :data-qrcode="item.id"></div>
                   </td>
                   <td rowspan="2">S</td>
@@ -130,10 +167,10 @@ const cancel = () => {
                   <td style="text-decoration: underline">{{ formatDegree(lensItem.cyl) }}D</td>
                 </tr>
                 <tr>
-                  <td style="text-decoration: underline">{{ formatDegree(-lensItem.sph) }}D</td>
                   <td style="text-decoration: underline">
                     {{ formatDegree(lensItem.sph + lensItem.cyl) }}D
                   </td>
+                  <td style="text-decoration: underline"> {{ formatDegree(-lensItem.cyl) }}D</td>
                 </tr>
                 <tr>
                   <td colspan="2"></td>
