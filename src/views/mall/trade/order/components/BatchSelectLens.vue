@@ -270,12 +270,14 @@ window.onkeyup = (e) => {
 
 <template>
   <table border="0" cellpadding="0" cellspacing="0">
-    <tr>
-      <td><!--(1, 1) 用于展示纵横（交叉）表头--></td>
-      <td v-for="cyl in cylList" :key="cyl" class="tab-head">
-        {{ cyl.toFixed(2) }}
-      </td>
-    </tr>
+    <thead>
+      <tr>
+        <td><!--(1, 1) 用于展示纵横（交叉）表头--></td>
+        <td v-for="cyl in cylList" :key="cyl" class="tab-head">
+          {{ cyl.toFixed(2) }}
+        </td>
+      </tr>
+    </thead>
     <tr v-for="row in rows" :key="row.sph">
       <td class="tab-head">{{ row.sph.toFixed(2) }}</td>
       <td
@@ -309,7 +311,23 @@ table {
   border-left: 1px #ebeef5 solid;
   border-top: 1px #ebeef5 solid;
 
+  thead tr td {
+    position: sticky;
+    top: 0;
+    background: #f4f4f5;
+    height: 30px;
+  }
+
   tr {
+    td:first-child {
+      height: 30px;
+      position: sticky;
+      left: 0;
+      background: #f4f4f5;
+      right: 0;
+      text-align: center;
+    }
+
     td {
       width: 50px;
       height: 25px;

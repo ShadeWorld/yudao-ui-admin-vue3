@@ -46,8 +46,8 @@ if (model.value?.lensTags?.length == 0) {
           v-model="row.minSph"
           :precision="2"
           :step="0.25"
-          :min="-20"
-          :max="20"
+          :min="-30"
+          :max="30"
           class="w-45%!"
           controls-position="right"
         />
@@ -56,8 +56,8 @@ if (model.value?.lensTags?.length == 0) {
           v-model="row.maxSph"
           :precision="2"
           :step="0.25"
-          :min="-20"
-          :max="20"
+          :min="-30"
+          :max="30"
           class="w-45%!"
           controls-position="right"
         />

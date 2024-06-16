@@ -117,7 +117,7 @@
       <!--          <img :src="scope.row.avatar" style="width: 40px" />-->
       <!--        </template>-->
       <!--      </el-table-column>-->
-      <el-table-column align="center" label="联系人" prop="contactPerson" width="100px" />
+      <el-table-column align="center" label="联系人" prop="contactPerson" width="200px" />
       <el-table-column align="center" label="手机号" prop="mobile" width="120px" />
       <!--      <el-table-column align="center" label="昵称" prop="nickname" width="80px" />-->
       <el-table-column align="center" label="公司（店名）" prop="companyName" width="180px" />

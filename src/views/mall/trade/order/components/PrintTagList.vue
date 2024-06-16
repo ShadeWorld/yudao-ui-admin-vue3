@@ -43,10 +43,10 @@ const printTag = () => {
             transform: rotate(180deg);
         }
         .print-content-bottom {
-            margin-top: 8mm;
+            margin-top: 5mm;
         }
         .print-content-bottom table{
-            font-size: 26px;
+            font-size: 24px;
         }
     }
 </style>`
@@ -76,28 +76,6 @@ const printTag = () => {
 
 const cancel = () => {
   dialogVisible.value = false
-}
-
-const translateLens = (sph: number, cyl: number) => {
-  if (sph >= 0 && cyl >= 0) {
-    return [sph, cyl]
-  }
-  if (sph >= 0) {
-    const sum = sph + cyl
-    if (sum > 0) {
-      return [sum, -cyl]
-    }
-  }
-  const sum = Math.abs(sph) - Math.abs(cyl)
-  if (sum > 0) {
-    return [sum, -cyl]
-  }
-  if (sum == 0) {
-    return []
-  }
-  if (sum < 0) {
-    return [0, -sum]
-  }
 }
 </script>
 
@@ -135,7 +113,7 @@ const translateLens = (sph: number, cyl: number) => {
                 <tr>
                   <td colspan="2">执行标准：{{ item.standard }}</td>
                   <td>
-                    生产日期：
+                    生产日期<br />
                     {{ formatDate(orderPrintDetail.createTime, 'YYYY/MM/DD') }}
                   </td>
                 </tr>
