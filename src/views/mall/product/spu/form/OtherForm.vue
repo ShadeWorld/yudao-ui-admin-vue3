@@ -9,14 +9,6 @@
         class="w-80!"
       />
     </el-form-item>
-    <el-form-item label="赠送积分" prop="giveIntegral">
-      <el-input-number
-        v-model="formData.giveIntegral"
-        :min="0"
-        placeholder="请输入赠送积分"
-        class="w-80!"
-      />
-    </el-form-item>
     <el-form-item label="虚拟销量" prop="virtualSalesCount">
       <el-input-number
         v-model="formData.virtualSalesCount"
@@ -49,13 +41,11 @@ const formRef = ref() // 表单Ref
 // 表单数据
 const formData = ref<Spu>({
   sort: 0, // 商品排序
-  giveIntegral: 0, // 赠送积分
   virtualSalesCount: 0 // 虚拟销量
 })
 // 表单规则
 const rules = reactive({
   sort: [required],
-  giveIntegral: [required],
   virtualSalesCount: [required]
 })
 

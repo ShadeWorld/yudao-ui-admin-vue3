@@ -236,7 +236,7 @@ const onClose = () => {
             <div class="product-name">
               {{ spu.name }}
             </div>
-            <template v-if="spu.categoryId != 3">
+            <template v-if="spu.categoryId === 1 || spu.categoryId === 2">
               <!-- 镜片批量选择 -->
               <BatchSelectLens
                 v-if="isBatchLens"
@@ -287,6 +287,8 @@ const onClose = () => {
 }
 
 .product-name {
+  position: sticky;
+  top: 0;
   color: #000;
   margin-bottom: 10px;
 }

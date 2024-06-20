@@ -8,7 +8,6 @@ export interface Property {
 }
 
 export interface LensTag {
-  id?: number
   minSph?: number
   maxSph?: number
   centerThickness?: number // 中心厚度
@@ -38,7 +37,6 @@ export interface Sku {
   costPrice?: number | string // 成本价
   barCode?: string // 商品条码
   picUrl?: string // 图片地址
-  stock?: number // 库存
   weight?: number // 商品重量，单位：kg 千克
   volume?: number // 商品体积，单位：m^3 平米
   firstBrokeragePrice?: number | string // 一级分销的佣金
@@ -82,17 +80,14 @@ export interface Spu {
   deliveryTemplateId?: number | undefined // 运费模版
   brandId?: number // 商品品牌编号
   specType?: boolean // 商品规格
-  subCommissionType?: boolean // 分销类型
   skus?: Sku[] // sku数组
   description?: string // 商品详情
   sort?: number // 商品排序
-  giveIntegral?: number // 赠送积分
   virtualSalesCount?: number // 虚拟销量
   price?: number // 商品价格
   salesCount?: number // 商品销量
   marketPrice?: number // 市场价
   costPrice?: number // 成本价
-  stock?: number // 商品库存
   createTime?: Date // 商品创建时间
   status?: number // 商品状态
 }

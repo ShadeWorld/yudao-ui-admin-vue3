@@ -18,6 +18,10 @@
         />
         <span class="text-center">{{ item.name }}</span>
       </div>
+
+      <div class="h-20 w-20% flex flex-col cursor-pointer items-center justify-center gap-2">
+        <!-- 占位 -->
+      </div>
     </div>
   </el-card>
 </template>
@@ -37,7 +41,7 @@ const data = reactive({
   orderUndelivered: { name: '待发货订单', value: 9, routerName: 'TradeOrder' },
   // orderAfterSaleApply: { name: '退款中订单', value: 4, routerName: 'TradeAfterSale' },
   // orderWaitePickUp: { name: '待核销订单', value: 0, routerName: 'TradeOrder' },
-  productAlertStock: { name: '库存预警', value: 0, routerName: 'ProductSpu' },
+  // productAlertStock: { name: '库存预警', value: 0, routerName: 'ProductSpu' },
   productForSale: { name: '上架商品', value: 0, routerName: 'ProductSpu' },
   productInWarehouse: { name: '仓库商品', value: 0, routerName: 'ProductSpu' },
   // withdrawAuditing: { name: '提现待审核', value: 0, routerName: 'TradeBrokerageWithdraw' },
@@ -65,7 +69,7 @@ const getProductData = async () => {
   const productCount = await ProductSpuApi.getTabsCount()
   data.productForSale.value = productCount['0']
   data.productInWarehouse.value = productCount['1']
-  data.productAlertStock.value = productCount['3']
+  // data.productAlertStock.value = productCount['3']
 }
 
 /** 查询钱包充值数据 */

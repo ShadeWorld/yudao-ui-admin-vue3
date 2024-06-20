@@ -8,7 +8,12 @@
     max-height="500"
     size="small"
   >
-    <el-table-column align="center" label="图片" min-width="65" v-if="formData!.categoryId === 3">
+    <el-table-column
+      align="center"
+      label="图片"
+      min-width="65"
+      v-if="formData!.categoryId !== 1 && formData!.categoryId !== 2"
+    >
       <template #default="{ row }">
         <UploadImg v-model="row.picUrl" height="50px" width="50px" />
       </template>
@@ -29,7 +34,8 @@
         </template>
       </el-table-column>
     </template>
-    <template v-if="formData!.categoryId !== 3">
+    <!-- 镜片特殊处理 -->
+    <template v-if="formData!.categoryId === 1 || formData!.categoryId === 2">
       <!-- 批量添加镜片规格 -->
       <el-table-column align="center" label="球镜范围" min-width="168">
         <template #default="{ row }">
@@ -159,18 +165,6 @@
         />
       </template>
     </el-table-column>
-    <!--    <el-table-column align="center" label="市场价" min-width="115">-->
-    <!--      <template #default="{ row }">-->
-    <!--        <el-input-number-->
-    <!--          v-model="row.marketPrice"-->
-    <!--          :min="0"-->
-    <!--          :precision="2"-->
-    <!--          :step="0.1"-->
-    <!--          class="w-100%!"-->
-    <!--          controls-position="right"-->
-    <!--        />-->
-    <!--      </template>-->
-    <!--    </el-table-column>-->
     <el-table-column align="center" label="成本价" min-width="115">
       <template #default="{ row }">
         <el-input-number
@@ -181,11 +175,6 @@
           class="w-100%!"
           controls-position="right"
         />
-      </template>
-    </el-table-column>
-    <el-table-column align="center" label="库存" min-width="115">
-      <template #default="{ row }">
-        <el-input-number v-model="row.stock" :min="0" class="w-100%!" controls-position="right" />
       </template>
     </el-table-column>
     <!-- <el-table-column align="center" label="重量(kg)" min-width="168">
@@ -212,32 +201,6 @@
         />
       </template>
     </el-table-column> -->
-    <template v-if="formData!.subCommissionType">
-      <el-table-column align="center" label="一级返佣(元)" min-width="168">
-        <template #default="{ row }">
-          <el-input-number
-            v-model="row.firstBrokeragePrice"
-            :min="0"
-            :precision="2"
-            :step="0.1"
-            class="w-100%"
-            controls-position="right"
-          />
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="二级返佣(元)" min-width="168">
-        <template #default="{ row }">
-          <el-input-number
-            v-model="row.secondBrokeragePrice"
-            :min="0"
-            :precision="2"
-            :step="0.1"
-            class="w-100%"
-            controls-position="right"
-          />
-        </template>
-      </el-table-column>
-    </template>
     <el-table-column v-if="formData?.specType" align="center" fixed="right" label="操作" width="80">
       <template #default="{ row }">
         <el-button v-if="isBatch" link size="small" type="primary" @click="batchAdd">
@@ -260,7 +223,12 @@
     @selection-change="handleSelectionChange"
   >
     <el-table-column v-if="isComponent" type="selection" width="45" />
-    <el-table-column align="center" label="图片" min-width="80" v-if="formData!.categoryId === 3">
+    <el-table-column
+      align="center"
+      label="图片"
+      min-width="80"
+      v-if="formData!.categoryId !== 1 && formData!.categoryId !== 2"
+    >
       <template #default="{ row }">
         <el-image
           v-if="row.picUrl"
@@ -286,7 +254,7 @@
         </template>
       </el-table-column>
     </template>
-    <template v-if="formData!.categoryId === 1">
+    <template v-if="formData!.categoryId === 1 || formData!.categoryId === 2">
       <!-- 批量添加镜片规格 -->
       <el-table-column align="center" label="柱镜范围" min-width="100">
         <template #default="{ row }">
@@ -399,53 +367,16 @@
         </template>
       </el-table-column>
     </template>
-    <!--    <el-table-column align="center" label="商品条码" min-width="100">-->
-    <!--      <template #default="{ row }">-->
-    <!--        {{ row.barCode }}-->
-    <!--      </template>-->
-    <!--    </el-table-column>-->
     <el-table-column align="center" label="销售价(元)" min-width="80">
       <template #default="{ row }">
         {{ row.price }}
       </template>
     </el-table-column>
-    <!--    <el-table-column align="center" label="市场价(元)" min-width="80">-->
-    <!--      <template #default="{ row }">-->
-    <!--        {{ row.marketPrice }}-->
-    <!--      </template>-->
-    <!--    </el-table-column>-->
     <el-table-column align="center" label="成本价(元)" min-width="80">
       <template #default="{ row }">
         {{ row.costPrice }}
       </template>
     </el-table-column>
-    <el-table-column align="center" label="库存" min-width="80">
-      <template #default="{ row }">
-        {{ row.stock }}
-      </template>
-    </el-table-column>
-    <el-table-column align="center" label="重量(kg)" min-width="80">
-      <template #default="{ row }">
-        {{ row.weight }}
-      </template>
-    </el-table-column>
-    <el-table-column align="center" label="体积(m^3)" min-width="80">
-      <template #default="{ row }">
-        {{ row.volume }}
-      </template>
-    </el-table-column>
-    <template v-if="formData!.subCommissionType">
-      <el-table-column align="center" label="一级返佣(元)" min-width="80">
-        <template #default="{ row }">
-          {{ row.firstBrokeragePrice }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="二级返佣(元)" min-width="80">
-        <template #default="{ row }">
-          {{ row.secondBrokeragePrice }}
-        </template>
-      </el-table-column>
-    </template>
   </el-table>
 
   <!-- 情况三：作为活动组件 -->
@@ -479,29 +410,14 @@
         </template>
       </el-table-column>
     </template>
-    <!--    <el-table-column align="center" label="商品条码" min-width="100">-->
-    <!--      <template #default="{ row }">-->
-    <!--        {{ row.barCode }}-->
-    <!--      </template>-->
-    <!--    </el-table-column>-->
     <el-table-column align="center" label="销售价(元)" min-width="80">
       <template #default="{ row }">
         {{ row.price }}
       </template>
     </el-table-column>
-    <!--    <el-table-column align="center" label="市场价(元)" min-width="80">-->
-    <!--      <template #default="{ row }">-->
-    <!--        {{ row.marketPrice }}-->
-    <!--      </template>-->
-    <!--    </el-table-column>-->
     <el-table-column align="center" label="成本价(元)" min-width="80">
       <template #default="{ row }">
         {{ row.costPrice }}
-      </template>
-    </el-table-column>
-    <el-table-column align="center" label="库存" min-width="80">
-      <template #default="{ row }">
-        {{ row.stock }}
       </template>
     </el-table-column>
     <!--  方便扩展每个活动配置的属性不一样  -->
@@ -546,7 +462,6 @@ const skuList = ref([
     costPrice: 0, // 成本价
     barCode: '', // 商品条码
     picUrl: '', // 图片地址
-    stock: 0, // 库存
     weight: 0, // 商品重量
     volume: 0, // 商品体积
     firstBrokeragePrice: 0, // 一级分销的佣金
@@ -695,7 +610,6 @@ const generateTableData = (propertyList: any[]) => {
       costPrice: 0,
       barCode: '',
       picUrl: '',
-      stock: 0,
       weight: 0,
       volume: 0,
       firstBrokeragePrice: 0,
@@ -751,7 +665,6 @@ const addLensRow = () => {
     costPrice: 0,
     barCode: '',
     picUrl: '',
-    stock: 0,
     weight: 0,
     volume: 0,
     firstBrokeragePrice: 0,
@@ -777,7 +690,6 @@ watch(
           costPrice: 0,
           barCode: '',
           picUrl: '',
-          stock: 0,
           weight: 0,
           volume: 0,
           firstBrokeragePrice: 0,

@@ -74,12 +74,18 @@
         <el-form-item label="商品轮播图" prop="sliderPicUrls">
           <UploadImgs v-model="formData.sliderPicUrls" :disabled="isDetail" />
         </el-form-item>
-        <el-form-item label="属性" v-if="formData.categoryId && formData.categoryId != 3">
+        <el-form-item
+          label="属性"
+          v-if="formData.categoryId && (formData.categoryId === 1 || formData.categoryId === 2)"
+        >
           <ProductPropertyForm :is-detail="isDetail" v-model="formData" />
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item label="动态属性" v-if="formData.categoryId && formData.categoryId != 3">
+        <el-form-item
+          label="动态属性"
+          v-if="formData.categoryId && (formData.categoryId === 1 || formData.categoryId === 2)"
+        >
           <ProductLensTagForm :is-detail="isDetail" v-model="formData" />
         </el-form-item>
       </el-col>
@@ -123,7 +129,7 @@
           <el-button
             class="mb-10px mr-15px"
             @click="addLensRow"
-            v-if="!isDetail && formData.categoryId !== 3"
+            v-if="!isDetail && (formData.categoryId === 1 || formData.categoryId === 2)"
           >
             添加
           </el-button>
@@ -162,7 +168,6 @@ import ProductSpecAddForm from './ProductSpecAddForm.vue'
 import ProductSpec from './ProductSpec.vue'
 import ProductPropertyForm from './ProductPropertyForm.vue'
 import ProductLensTagForm from './ProductLensTagForm.vue'
-// import * as ProductPropertyApi from '@/api/mall/product/property'
 import {
   getSpecList,
   PropertyAndValues,
@@ -209,7 +214,6 @@ const formData = reactive<Spu>({
   introduction: '', // 商品简介
   brandId: undefined, // 商品品牌
   specType: false, // 商品规格
-  subCommissionType: false, // 分销类型
   skus: []
 })
 const rules = reactive({
@@ -223,11 +227,6 @@ const rules = reactive({
 })
 // sku 相关属性校验规则
 const ruleConfig: RuleConfig[] = [
-  {
-    name: 'stock',
-    rule: (arg) => arg >= 0,
-    message: '商品库存必须大于等于 1 ！！！'
-  },
   {
     name: 'price',
     rule: (arg) => arg >= 0.01,
@@ -260,7 +259,6 @@ const onChangeSpec = () => {
       costPrice: 0,
       barCode: '',
       picUrl: '',
-      stock: 0,
       weight: 0,
       volume: 0,
       firstBrokeragePrice: 0,
@@ -281,39 +279,11 @@ watch(
       // 回显规格
       specList.value = getSpecList(data)
     }
-    // if (data.categoryId) {
-    //   getPropertiesByCategory(data.categoryId)
-    // }
   },
   {
     immediate: true
   }
 )
-
-/** 获取属性规格集合 */
-// const getPropertiesByCategory = (categoryId: number) => {
-//   ProductPropertyApi.getPropertiesByCategory(categoryId)
-//     .then((data) => {
-//       propertyList.value = []
-//       specList.value = []
-//       data.forEach((item: any) => {
-//         if (item.type === 1) {
-//           propertyList.value.push({
-//             ...item,
-//             values: []
-//           })
-//         } else {
-//           specList.value.push({
-//             ...item,
-//             values: []
-//           })
-//         }
-//       })
-//     })
-//     .catch((error) => {
-//       console.log(error)
-//     })
-// }
 
 /** 表单校验 */
 const emit = defineEmits(['update:activeName'])

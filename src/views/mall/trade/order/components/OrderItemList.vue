@@ -160,7 +160,7 @@ const openDetail = (detailItem: TableOrderItem) => {
     // 普通镜片
     batchLensDetail()
   } else {
-    if (detailSpu.value.categoryId !== 3) {
+    if (detailSpu.value.categoryId === 1 || detailSpu.value.categoryId === 2) {
       // 车房或渐进
       singleLensDetail()
     } else {
@@ -278,7 +278,7 @@ const confirm = () => {
     // 普通镜片
     batchLensConfirm()
   } else {
-    if (detailSpu.value.categoryId !== 3) {
+    if (detailSpu.value.categoryId === 1 || detailSpu.value.categoryId === 2) {
       // 车房或渐进
       singleLensConfirm()
     } else {
