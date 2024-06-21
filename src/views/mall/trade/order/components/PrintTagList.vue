@@ -86,86 +86,88 @@ const cancel = () => {
       <div class="print-wrap" id="print-wrap">
         <div v-for="item in orderPrintDetail.spuItems" :key="item.id">
           <div class="print-content" v-for="lensItem in item.lensItems" :key="lensItem.orderItemId">
-            <div class="print-content-top">
-              <table border="0" cellpadding="0" cellspacing="0" style="width: 100%">
-                <tr class="first-tr">
-                  <td>[折射率]ne={{ item.refractive }}</td>
-                  <td colspan="2">[色散系数]Vd={{ item.abbe }}</td>
-                </tr>
-                <tr>
-                  <td>[中心厚度]{{ lensItem.centerThickness }}mm</td>
-                  <td colspan="2">[直径]Φ {{ lensItem.diameter }}mm</td>
-                </tr>
-                <tr>
-                  <td>[颜色]{{ item.color }}</td>
-                  <td>[镜片分类]眼镜类</td>
-                  <td rowspan="3" align="right">
-                    <div class="qrcode" data-size="70" :data-qrcode="orderPrintDetail.no"></div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>[膜层情况]{{ item.filmLayer }}</td>
-                  <td>[等级]合格</td>
-                </tr>
-                <tr>
-                  <td colspan="2">[透射比分类]{{ item.transmittance }}</td>
-                </tr>
-                <tr>
-                  <td colspan="2">执行标准：{{ item.standard }}</td>
-                  <td>
-                    生产日期<br />
-                    {{ formatDate(orderPrintDetail.createTime, 'YYYY/MM/DD') }}
-                  </td>
-                </tr>
-              </table>
-            </div>
-            <div class="print-content-bottom">
-              <table border="0" cellpadding="0" cellspacing="0" style="width: 100%">
-                <tr>
-                  <td colspan="5">
-                    <div style="height: 80px; overflow: hidden; position: absolute">
-                      品名：{{ item.spuName }}
-                    </div>
-                  </td>
-                </tr>
-              </table>
-              <table
-                border="0"
-                cellpadding="0"
-                cellspacing="0"
-                style="width: 100%; margin-top: 60px"
-              >
-                <tr>
-                  <td rowspan="4" style="margin-top: 60px">
-                    <div class="qrcode" data-size="80" :data-qrcode="item.id"></div>
-                  </td>
-                  <td rowspan="2">S</td>
-                  <td style="text-decoration: underline">{{ formatDegree(lensItem.sph) }}D</td>
-                  <td rowspan="2">C</td>
-                  <td style="text-decoration: underline">{{ formatDegree(lensItem.cyl) }}D</td>
-                </tr>
-                <tr>
-                  <td style="text-decoration: underline">
-                    {{ formatDegree(lensItem.sph + lensItem.cyl) }}D
-                  </td>
-                  <td style="text-decoration: underline"> {{ formatDegree(-lensItem.cyl) }}D</td>
-                </tr>
-                <tr>
-                  <td colspan="2"></td>
-                  <td colspan="2">
-                    ADD {{ formatDegree(lensItem.add) }}
-                    {{ lensItem.leftOrRight ? (lensItem.leftOrRight === 1 ? 'L' : 'R') : '' }}
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="2">CT {{ lensItem.centerThickness }}mm</td>
-                  <td colspan="2">Φ {{ lensItem.diameter }}mm</td>
-                </tr>
-                <tr>
-                  <td colspan="5">工艺：</td>
-                </tr>
-              </table>
-            </div>
+            <template v-for="n in lensItem.count" :key="n">
+              <div class="print-content-top">
+                <table border="0" cellpadding="0" cellspacing="0" style="width: 100%">
+                  <tr class="first-tr">
+                    <td>[折射率]ne={{ item.refractive }}</td>
+                    <td colspan="2">[色散系数]Vd={{ item.abbe }}</td>
+                  </tr>
+                  <tr>
+                    <td>[中心厚度]{{ lensItem.centerThickness }}mm</td>
+                    <td colspan="2">[直径]Φ {{ lensItem.diameter }}mm</td>
+                  </tr>
+                  <tr>
+                    <td>[颜色]{{ item.color }}</td>
+                    <td>[镜片分类]眼镜类</td>
+                    <td rowspan="3" align="right">
+                      <div class="qrcode" data-size="70" :data-qrcode="orderPrintDetail.no"></div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>[膜层情况]{{ item.filmLayer }}</td>
+                    <td>[等级]合格</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2">[透射比分类]{{ item.transmittance }}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2">执行标准：{{ item.standard }}</td>
+                    <td>
+                      生产日期<br />
+                      {{ formatDate(orderPrintDetail.createTime, 'YYYY/MM/DD') }}
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <div class="print-content-bottom">
+                <table border="0" cellpadding="0" cellspacing="0" style="width: 100%">
+                  <tr>
+                    <td colspan="5">
+                      <div style="height: 80px; overflow: hidden; position: absolute">
+                        品名：{{ item.spuName }}
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="width: 100%; margin-top: 60px"
+                >
+                  <tr>
+                    <td rowspan="4" style="margin-top: 60px">
+                      <div class="qrcode" data-size="80" :data-qrcode="item.id"></div>
+                    </td>
+                    <td rowspan="2">S</td>
+                    <td style="text-decoration: underline">{{ formatDegree(lensItem.sph) }}D</td>
+                    <td rowspan="2">C</td>
+                    <td style="text-decoration: underline">{{ formatDegree(lensItem.cyl) }}D</td>
+                  </tr>
+                  <tr>
+                    <td style="text-decoration: underline">
+                      {{ formatDegree(lensItem.sph + lensItem.cyl) }}D
+                    </td>
+                    <td style="text-decoration: underline"> {{ formatDegree(-lensItem.cyl) }}D</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td colspan="2">
+                      ADD {{ formatDegree(lensItem.add) }}
+                      {{ lensItem.leftOrRight ? (lensItem.leftOrRight === 1 ? 'L' : 'R') : '' }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2">CT {{ lensItem.centerThickness }}mm</td>
+                    <td colspan="2">Φ {{ lensItem.diameter }}mm</td>
+                  </tr>
+                  <tr>
+                    <td colspan="5">工艺：</td>
+                  </tr>
+                </table>
+              </div>
+            </template>
           </div>
         </div>
       </div>
