@@ -1,13 +1,14 @@
 import request from '@/config/axios'
 import { Sku } from '@/api/mall/product/spu'
 
-export interface CreateOrderReqVo {
-  memberId?: number
+export interface CreateOrUpdateVO {
+  id?: number
+  userId?: number
   addressId?: number
   deliveryTemplateId?: number
   remark?: string
   items?: OrderItem[]
-  orderSource: number
+  orderSource?: number
 }
 
 export interface OrderItem {
@@ -143,9 +144,14 @@ export interface TradeOrderSummaryRespVO {
   afterSalePrice?: string
 }
 
-// 查询交易订单列表
+// 创建订单
 export const createOrder = async (data: any) => {
   return await request.post({ url: `/trade/order/create`, data })
+}
+
+// 修改订单商品
+export const updateOrderProduct = async (data: any) => {
+  return await request.post({ url: `/trade/order/update-product`, data })
 }
 
 // 查询交易订单列表

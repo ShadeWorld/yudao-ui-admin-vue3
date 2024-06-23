@@ -412,6 +412,19 @@ const remainingRouter: AppRouteRecordRaw[] = [
         }
       },
       {
+        path: 'order/edit-product/:id',
+        component: () => import('@/views/mall/trade/order/form/OrderUpdateProductForm.vue'),
+        name: 'TradeOrderEditProduct',
+        meta: {
+          noCache: false,
+          hidden: true,
+          canTo: true,
+          title: '编辑商品',
+          icon: 'ep:edit',
+          activeMenu: '/mall/trade/order'
+        }
+      },
+      {
         path: 'order/detail/:id(\\d+)',
         component: () => import('@/views/mall/trade/order/detail/index.vue'),
         name: 'TradeOrderDetail',

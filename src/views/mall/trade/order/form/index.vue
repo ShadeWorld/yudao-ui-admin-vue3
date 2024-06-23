@@ -17,8 +17,8 @@ const { push, currentRoute } = useRouter() // 路由
 const { delView } = useTagsViewStore() // 标签页操作
 
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
-const formData = reactive<TradeOrderApi.CreateOrderReqVo>({
-  memberId: undefined,
+const formData = reactive<TradeOrderApi.CreateOrUpdateVO>({
+  userId: undefined,
   addressId: undefined,
   deliveryTemplateId: undefined,
   remark: undefined,
@@ -26,7 +26,7 @@ const formData = reactive<TradeOrderApi.CreateOrderReqVo>({
   orderSource: 2 // 1-微信小程序、2-手工录入
 })
 const rules = reactive({
-  memberId: [
+  userId: [
     {
       required: true,
       trigger: 'change',
@@ -140,7 +140,6 @@ const onChangeDelivery = (value: number) => {
 
 // 提交订单
 const submitForm = async () => {
-  console.log(formData)
   // 提交请求
   formLoading.value = true
   try {
@@ -169,8 +168,8 @@ const close = () => {
       <el-row justify="end">
         <el-col :span="10">
           <el-col :span="24">
-            <el-form-item label="客户" prop="memberId">
-              <MemberSelect v-model="formData.memberId" class="w-100%!" @select="selectUser" />
+            <el-form-item label="客户" prop="userId">
+              <MemberSelect v-model="formData.userId" class="w-100%!" @select="selectUser" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -200,7 +199,7 @@ const close = () => {
               <el-select
                 v-model="formData.deliveryTemplateId"
                 placeholder="请选择配送方式"
-                :disabled="!formData.memberId"
+                :disabled="!formData.userId"
                 @change="onChangeDelivery"
               >
                 <el-option
@@ -232,7 +231,7 @@ const close = () => {
           <el-col :span="24">
             <el-form-item label="商品列表" prop="items">
               <el-button
-                :disabled="!formData.memberId"
+                :disabled="!formData.userId"
                 class="mb-10px mr-15px"
                 @click="
                   () => {

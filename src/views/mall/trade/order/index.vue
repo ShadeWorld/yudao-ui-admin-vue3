@@ -244,13 +244,16 @@
                     <Icon icon="ep:takeaway-box" />
                     发货
                   </el-dropdown-item>
-                  <el-dropdown-item
-                    command="payOrder"
-                    v-if="row.status === TradeOrderStatusEnum.UNPAID.status"
-                  >
-                    <Icon icon="ep:chat-line-square" />
-                    支付订单
-                  </el-dropdown-item>
+                  <template v-if="row.status === TradeOrderStatusEnum.UNPAID.status">
+                    <el-dropdown-item command="editProduct">
+                      <Icon icon="ep:edit" />
+                      编辑商品
+                    </el-dropdown-item>
+                    <el-dropdown-item command="payOrder">
+                      <Icon icon="ep:money" />
+                      支付订单
+                    </el-dropdown-item>
+                  </template>
                   <el-dropdown-item command="remark">
                     <Icon icon="ep:chat-line-square" />
                     备注
@@ -393,6 +396,9 @@ const handleCommand = (command: string, row: TradeOrderApi.OrderVO) => {
       break
     case 'payOrder':
       payOrder(row.payOrderId)
+      break
+    case 'editProduct':
+      push({ name: 'TradeOrderEditProduct', params: { id: row.id } })
       break
   }
 }
