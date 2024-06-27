@@ -138,6 +138,7 @@ const showBatchSelectLens = (spu: Spu) => {
   }
   // 清除上一个spu的数据
   rows.value.splice(0, rows.value.length)
+  lensList.value.splice(0, lensList.value.length)
 }
 
 // 单个镜片选择时球镜范围
