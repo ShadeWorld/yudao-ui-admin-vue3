@@ -154,6 +154,11 @@ export const updateOrderProduct = async (data: any) => {
   return await request.post({ url: `/trade/order/update-product`, data })
 }
 
+// 终止订单
+export const terminateOrder = async (id: number) => {
+  return await request.post({ url: `/trade/order/terminate?id=${id}` })
+}
+
 // 查询交易订单列表
 export const getOrderPage = async (params: any) => {
   return await request.get({ url: `/trade/order/page`, params })

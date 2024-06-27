@@ -237,13 +237,16 @@
               <template #dropdown>
                 <el-dropdown-menu>
                   <!-- 如果是【快递】，并且【未发货】，则展示【发货】按钮 -->
-                  <el-dropdown-item
-                    v-if="row.status === TradeOrderStatusEnum.UNDELIVERED.status"
-                    command="delivery"
-                  >
-                    <Icon icon="ep:takeaway-box" />
-                    发货
-                  </el-dropdown-item>
+                  <template v-if="row.status === TradeOrderStatusEnum.UNDELIVERED.status">
+                    <el-dropdown-item command="delivery">
+                      <Icon icon="ep:takeaway-box" />
+                      发货
+                    </el-dropdown-item>
+                    <el-dropdown-item command="terminateOrder">
+                      <Icon icon="ep:close" />
+                      终止订单
+                    </el-dropdown-item>
+                  </template>
                   <template v-if="row.status === TradeOrderStatusEnum.UNPAID.status">
                     <el-dropdown-item command="editProduct">
                       <Icon icon="ep:edit" />
@@ -400,6 +403,9 @@ const handleCommand = (command: string, row: TradeOrderApi.OrderVO) => {
     case 'editProduct':
       push({ name: 'TradeOrderEditProduct', params: { id: row.id } })
       break
+    case 'terminateOrder':
+      terminateOrder(row.id)
+      break
   }
 }
 
@@ -444,6 +450,15 @@ const payOrder = async (id) => {
       await getList()
       return
     }
+  } finally {
+  }
+}
+
+const terminateOrder = async (id: number) => {
+  try {
+    await TradeOrderApi.terminateOrder(id)
+    message.success('终止成功！')
+    await getList()
   } finally {
   }
 }

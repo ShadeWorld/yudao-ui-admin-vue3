@@ -31,6 +31,13 @@
         >
           调整价格
         </el-button>
+        <el-button
+          v-if="formData.status! === TradeOrderStatusEnum.UNDELIVERED.status"
+          type="primary"
+          @click="terminateOrder(id)"
+        >
+          终止订单
+        </el-button>
         <el-button type="primary" @click="remark">备注</el-button>
         <!-- 待发货 -->
         <template v-if="formData.status! === TradeOrderStatusEnum.UNDELIVERED.status">
@@ -261,6 +268,15 @@ const updateAddress = () => {
 const updatePriceFormRef = ref() // 订单调价表单 Ref
 const updatePrice = () => {
   updatePriceFormRef.value?.open(formData.value)
+}
+
+const terminateOrder = async (id: number) => {
+  try {
+    await TradeOrderApi.terminateOrder(id)
+    message.success('终止成功！')
+    await getDetail()
+  } finally {
+  }
 }
 
 /** 获得详情 */
