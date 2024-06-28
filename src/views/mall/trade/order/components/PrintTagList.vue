@@ -112,10 +112,13 @@ const cancel = () => {
                     <td colspan="2">[透射比分类]{{ item.transmittance }}</td>
                   </tr>
                   <tr>
-                    <td colspan="2">执行标准：{{ item.standard }}</td>
-                    <td>
-                      生产日期<br />
-                      {{ formatDate(orderPrintDetail.createTime, 'YYYY/MM/DD') }}
+                    <td colspan="3">
+                      <div>
+                        执行标准：{{ item.standard.padEnd(50, '&nbsp;') }}
+                        <div style="float: right">
+                          生产日期：{{ formatDate(orderPrintDetail.createTime, 'YYYY/MM/DD') }}
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 </table>

@@ -170,6 +170,13 @@ const openDetail = (detailItem: TableOrderItem) => {
   dialogVisible.value = true
 }
 
+const removeItem = (row: TableOrderItem) => {
+  model.value?.splice(
+    model.value?.findIndex((item) => row.skuId === item.skuId),
+    1
+  )
+}
+
 const batchLensConfirm = () => {
   rows.value.forEach((row) => {
     row.cols.forEach((col) => {
@@ -317,11 +324,15 @@ const onClose = () => {
         {{ formatToFraction(row.price * row.count) }}
       </template>
     </el-table-column>
-    <el-table-column align="center" fixed="right" label="操作" width="80">
+    <el-table-column align="center" fixed="right" label="操作" width="160">
       <template #default="{ row }">
         <el-button link type="primary" @click="openDetail(row)">
           <Icon icon="ep:notification" />
           详情
+        </el-button>
+        <el-button link type="primary" @click="removeItem(row)">
+          <Icon icon="ep:remove" />
+          删除
         </el-button>
       </template>
     </el-table-column>

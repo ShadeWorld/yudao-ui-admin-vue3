@@ -13,7 +13,13 @@
     >
       <el-row>
         <el-form-item label="订单状态" prop="status">
-          <el-select v-model="queryParams.status" class="!w-280px" clearable placeholder="全部">
+          <el-select
+            v-model="queryParams.status"
+            class="!w-280px"
+            clearable
+            placeholder="全部"
+            :disabled="queryParams.tabType !== 3"
+          >
             <el-option
               v-for="dict in getIntDictOptions(DICT_TYPE.TRADE_ORDER_STATUS)"
               :key="dict.value"
@@ -22,7 +28,7 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="支付方式" prop="payChannelCode">
+        <el-form-item label="支付方式" prop="payChannelCode" :disabled="queryParams.tabType === 1">
           <el-select
             v-model="queryParams.payChannelCode"
             class="!w-280px"
@@ -154,6 +160,14 @@
 
   <!-- 列表 -->
   <ContentWrap>
+    <el-tabs v-model="queryParams.tabType" @tab-click="handleTabClick">
+      <el-tab-pane
+        v-for="item in tabsData"
+        :key="item.type"
+        :label="item.name + '(' + item.count + ')'"
+        :name="item.type"
+      />
+    </el-tabs>
     <!-- 添加 row-key="id" 解决列数据中的 table#header 数据不刷新的问题  -->
     <el-table
       ref="orderTableRef"
@@ -286,7 +300,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { FormInstance } from 'element-plus'
+import { FormInstance, TabsPaneContext } from 'element-plus'
 import OrderDeliveryForm from '@/views/mall/trade/order/form/OrderDeliveryForm.vue'
 import OrderUpdateRemarkForm from '@/views/mall/trade/order/form/OrderUpdateRemarkForm.vue'
 import * as TradeOrderApi from '@/api/mall/trade/order'
@@ -307,10 +321,36 @@ const total = ref(2) // 列表的总页数
 const list = ref<TradeOrderApi.OrderVO[]>([]) // 列表的数据
 const queryFormRef = ref<FormInstance>() // 搜索的表单
 const orderTableRef = ref()
+
+// tabs 数据
+const tabsData = ref([
+  {
+    name: '成品订单',
+    type: 0,
+    count: 0
+  },
+  {
+    name: '订单配货',
+    type: 1,
+    count: 0
+  },
+  {
+    name: '订单发货',
+    type: 2,
+    count: 0
+  },
+  {
+    name: '所有订单',
+    type: 3,
+    count: 0
+  }
+])
+
 // 表单搜索
 const queryParams = ref({
   pageNo: 1, // 页数
   pageSize: 10, // 每页显示数量
+  tabType: 0,
   status: undefined, // 订单状态
   payChannelCode: undefined, // 支付方式
   createTime: undefined, // 创建时间
@@ -327,6 +367,13 @@ const dynamicSearchList = ref([
   { value: 'userNickname', label: '用户昵称' },
   { value: 'userMobile', label: '用户电话' }
 ])
+
+/** 切换 Tab */
+const handleTabClick = (tab: TabsPaneContext) => {
+  queryParams.value.tabType = tab.paneName as number
+  getList()
+}
+
 /**
  * 聚合搜索切换查询对象时触发
  * @param val
@@ -366,6 +413,7 @@ const resetQuery = () => {
   queryParams.value = {
     pageNo: 1, // 页数
     pageSize: 10, // 每页显示数量
+    tabType: queryParams.value.tabType,
     status: undefined, // 订单状态
     payChannelCode: undefined, // 支付方式
     createTime: undefined, // 创建时间

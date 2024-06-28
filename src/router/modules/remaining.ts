@@ -599,6 +599,13 @@ const remainingRouter: AppRouteRecordRaw[] = [
         component: () => import('@/views/crm/product/detail/index.vue')
       }
     ]
+  },
+  {
+    path: '/trade-order/',
+    component: Layout,
+    name: 'TradeOrderCenter',
+    meta: { hidden: true },
+    children: []
   }
 ]
 
