@@ -161,12 +161,7 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-tabs v-model="queryParams.tabType" @tab-click="handleTabClick">
-      <el-tab-pane
-        v-for="item in tabsData"
-        :key="item.type"
-        :label="item.name + '(' + item.count + ')'"
-        :name="item.type"
-      />
+      <el-tab-pane v-for="item in tabsData" :key="item.type" :label="item.name" :name="item.type" />
     </el-tabs>
     <!-- 添加 row-key="id" 解决列数据中的 table#header 数据不刷新的问题  -->
     <el-table
