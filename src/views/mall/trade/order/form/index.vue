@@ -59,6 +59,11 @@ const chooseProductFormRef = ref()
 
 const addressList = ref<any>()
 const areaId = ref<number | undefined>()
+watch(areaId, (data: number) => {
+  getSimpleTemplateList(data).then((res) => {
+    expressList.value = res
+  })
+})
 
 const selectUser = (item) => {
   getAddressList({ userId: item.id }).then((response) => {
@@ -77,11 +82,7 @@ const selectUser = (item) => {
 
 const expressList = ref<any>()
 
-onMounted(() => {
-  getSimpleTemplateList().then((res) => {
-    expressList.value = res
-  })
-})
+onMounted(() => {})
 
 /**
  * 添加商品的回调

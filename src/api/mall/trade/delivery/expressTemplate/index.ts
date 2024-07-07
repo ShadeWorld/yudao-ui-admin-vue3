@@ -42,8 +42,10 @@ export const getDeliveryPrice = async (id: number, areaId: number): Promise<numb
 }
 
 // 查询快递运费模板详情
-export const getSimpleTemplateList = async () => {
-  return await request.get({ url: '/trade/delivery/express-template/list-all-simple' })
+export const getSimpleTemplateList = async (areaId: number) => {
+  return await request.get({
+    url: `/trade/delivery/express-template/list-all-simple?areaId=${areaId}`
+  })
 }
 
 // 新增快递运费模板

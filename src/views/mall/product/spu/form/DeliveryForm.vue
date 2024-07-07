@@ -33,7 +33,6 @@ import { PropType } from 'vue'
 import { copyValueToTarget } from '@/utils'
 import { propTypes } from '@/utils/propTypes'
 import type { Spu } from '@/api/mall/product/spu'
-import * as ExpressTemplateApi from '@/api/mall/trade/delivery/expressTemplate'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { DeliveryTypeEnum } from '@/utils/constants'
 
@@ -91,6 +90,6 @@ defineExpose({ validate })
 /** 初始化 */
 const deliveryTemplateList = ref([]) // 运费模版
 onMounted(async () => {
-  deliveryTemplateList.value = await ExpressTemplateApi.getSimpleTemplateList()
+  // deliveryTemplateList.value = await ExpressTemplateApi.getSimpleTemplateList()
 })
 </script>

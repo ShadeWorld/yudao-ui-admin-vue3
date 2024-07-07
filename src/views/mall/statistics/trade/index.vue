@@ -169,24 +169,6 @@
         </el-col>
         <el-col :md="6" :sm="12" :xs="24">
           <SummaryCard
-            title="支付佣金金额"
-            tooltip="后台给推广员支付的推广佣金，以实际支付为准"
-            icon="fa-solid:award"
-            icon-color="bg-yellow-100"
-            icon-bg-color="text-yellow-500"
-            prefix="￥"
-            :decimals="2"
-            :value="fenToYuan(trendSummary?.value?.brokerageSettlementPrice || 0)"
-            :percent="
-              calculateRelativeRate(
-                trendSummary?.value?.brokerageSettlementPrice,
-                trendSummary?.reference?.brokerageSettlementPrice
-              )
-            "
-          />
-        </el-col>
-        <el-col :md="6" :sm="12" :xs="24">
-          <SummaryCard
             title="商品退款金额"
             tooltip="用户成功退款的商品金额"
             icon="fa-solid:times-circle"
@@ -213,11 +195,11 @@
 </template>
 <script lang="ts" setup>
 import * as TradeStatisticsApi from '@/api/mall/statistics/trade'
+import { TradeSummaryRespVO, TradeTrendSummaryRespVO } from '@/api/mall/statistics/trade'
 import TradeStatisticValue from './components/TradeStatisticValue.vue'
 import SummaryCard from '@/components/SummaryCard/index.vue'
 import { EChartsOption } from 'echarts'
 import { DataComparisonRespVO } from '@/api/mall/statistics/common'
-import { TradeSummaryRespVO, TradeTrendSummaryRespVO } from '@/api/mall/statistics/trade'
 import { calculateRelativeRate, fenToYuan } from '@/utils'
 import download from '@/utils/download'
 import { CardTitle } from '@/components/Card'
