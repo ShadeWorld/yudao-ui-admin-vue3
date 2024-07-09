@@ -391,6 +391,8 @@ const singleLensDetail = () => {
       sph: item.sph,
       cyl: item.cyl,
       add: item.add,
+      leftOrRight: item.leftOrRight,
+      axis: item.axis,
       count: item.count
     }
     lensList.value.push(orderLens)

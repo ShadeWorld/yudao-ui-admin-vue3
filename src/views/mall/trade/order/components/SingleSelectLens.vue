@@ -178,10 +178,13 @@ watch(
         </el-table-column>
         <el-table-column label="左右" align="center" min-width="50px">
           <template #default="{ row }">
-            <el-select v-model="row.leftOrRight" clearable placeholder="请选择">
+            <el-select v-model="row.leftOrRight" clearable placeholder="请选择" v-if="!isDetail">
               <el-option value="1" label="左" />
               <el-option value="2" label="右" />
             </el-select>
+            <el-text v-else>
+              {{ row.leftOrRight === undefined ? '' : row.leftOrRight === 1 ? '左' : '右' }}
+            </el-text>
           </template>
         </el-table-column>
         <el-table-column label="轴位" align="center" min-width="70px">
