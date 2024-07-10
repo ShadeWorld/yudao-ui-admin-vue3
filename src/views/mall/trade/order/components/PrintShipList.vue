@@ -79,8 +79,8 @@ const printTag = () => {
             height: e.getAttribute('data-size')
     });
   })
-  // window.print()
-  // window.close()
+  window.print()
+  window.close()
 `
 
   newBlankWindow?.document.write(qrcodeScript.outerHTML + style + html! + script.outerHTML)
