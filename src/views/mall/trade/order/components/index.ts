@@ -4,6 +4,7 @@ import BatchSelectLens from './BatchSelectLens.vue'
 import PrintShipList from './PrintShipList.vue'
 import PrintTagList from './PrintTagList.vue'
 import SingleSelectLens from './SingleSelectLens.vue'
+import ProcessOrderItem from './ProcessOrderItem.vue'
 import { Sku } from '@/api/mall/product/spu'
 import { OrderLens } from '@/views/mall/trade/order/components/SingleSelectLens.vue'
 
@@ -13,7 +14,8 @@ export {
   BatchSelectLens,
   PrintShipList,
   PrintTagList,
-  SingleSelectLens
+  SingleSelectLens,
+  ProcessOrderItem
 }
 
 /**
@@ -26,12 +28,7 @@ const between = (target: number, interval: number[]): boolean => {
   return target >= interval[0] && target <= interval[1]
 }
 
-export const calcDegreeRange = (
-  currentValue: number,
-  row: OrderLens,
-  type: string,
-  skuList: Sku[]
-) => {
+export const calcDegreeRange = (currentValue: number, row: OrderLens, type: string, skuList: Sku[]) => {
   const cylRangeList: number[] = []
   const addRangeList: number[] = []
   switch (type) {

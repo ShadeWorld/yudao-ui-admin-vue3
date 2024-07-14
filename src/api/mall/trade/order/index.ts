@@ -3,6 +3,7 @@ import { Sku } from '@/api/mall/product/spu'
 
 export interface CreateOrUpdateVO {
   id?: number
+  type: number | string
   userId?: number
   addressId?: number
   deliveryTemplateId?: number
@@ -24,12 +25,15 @@ export interface OrderItem {
 }
 
 export interface OrderItemLens {
-  sph: number
-  cyl: number
-  add: number
-  leftOrRight?: number
-  axis?: number
-  count: number
+  sph: number // 球镜
+  cyl: number // 柱镜
+  add: number // 加光
+  leftOrRight?: number // 左右眼
+  axis?: number // 轴位
+  prism?: number // 棱镜
+  pd?: number // 瞳距
+  ph?: number // 瞳高
+  count: number // 数量
 }
 
 export interface OrderVO {

@@ -157,8 +157,8 @@ export const getSpuSimpleList = async () => {
 }
 
 // 获得商品种类列表
-export const getCategoryList = async () => {
-  return request.get({ url: '/product/spu/categoryList' })
+export const getCategoryList = async (ids: number[] = []) => {
+  return request.get({ url: `/product/spu/categoryList?idStr=${ids.join(',')}` })
 }
 
 // 获得商品品牌列表

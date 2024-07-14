@@ -94,10 +94,7 @@ export function formatTime(time: Date | number | string, fmt: string) {
     }
     for (const k in o) {
       if (new RegExp('(' + k + ')').test(fmt)) {
-        fmt = fmt.replace(
-          RegExp.$1,
-          RegExp.$1.length === 1 ? o[k] : ('00' + o[k]).substr(('' + o[k]).length)
-        )
+        fmt = fmt.replace(RegExp.$1, RegExp.$1.length === 1 ? o[k] : ('00' + o[k]).substr(('' + o[k]).length))
       }
     }
     return fmt
@@ -131,16 +128,13 @@ export const generateUUID = () => {
     if (typeof crypto.getRandomValues === 'function' && typeof Uint8Array === 'function') {
       const callback = (c: any) => {
         const num = Number(c)
-        return (num ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (num / 4)))).toString(
-          16
-        )
+        return (num ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (num / 4)))).toString(16)
       }
       return '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, callback)
     }
   }
   let timestamp = new Date().getTime()
-  let performanceNow =
-    (typeof performance !== 'undefined' && performance.now && performance.now() * 1000) || 0
+  let performanceNow = (typeof performance !== 'undefined' && performance.now && performance.now() * 1000) || 0
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     let random = Math.random() * 16
     if (timestamp > 0) {
@@ -277,6 +271,17 @@ export const floatToFixed2 = (num: number | string | undefined): string => {
       break
   }
   return str
+}
+
+/**
+ * 格式化度数
+ */
+export const formatLensDegree = (degree: number, defaultValue: string = '-') => {
+  if (degree !== undefined) {
+    return degree.toFixed(2)
+  } else {
+    return defaultValue
+  }
 }
 
 /**

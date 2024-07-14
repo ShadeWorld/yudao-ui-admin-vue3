@@ -19,6 +19,8 @@ export interface OrderLens {
   add: number
   leftOrRight?: number
   axis?: number
+  pd?: number
+  ph?: number
   count?: number
   price?: number
   skuId?: number
@@ -35,9 +37,12 @@ const props = withDefaults(
     spuId?: number
     sphRange?: number[]
     isDetail?: boolean
+    processChoose?: boolean
+    leftOrRight?: number
   }>(),
   {
-    isDetail: false
+    isDetail: false,
+    processChoose: false
   }
 )
 
@@ -70,6 +75,9 @@ watch(
         price: skuLensPrice?.price,
         skuId: skuLensPrice?.id
       }
+      if (props.leftOrRight) {
+        defaultRow.leftOrRight = props.leftOrRight.toString()
+      }
       calcDegreeRange(defaultRow.sph, defaultRow, 'sph', props.skuList)
       if (!model.value?.length) {
         model.value?.push(JSON.parse(JSON.stringify(defaultRow)))
@@ -84,12 +92,12 @@ watch(
 
 <template>
   <div style="width: 100%">
-    <el-row justify="end" style="margin-bottom: 10px" v-if="!isDetail">
+    <el-row justify="end" style="margin-bottom: 10px" v-if="!isDetail && !processChoose">
       <el-button size="small" type="primary" :icon="Plus" plain @click="addLensRow" />
     </el-row>
     <el-form :disabled="isDetail">
       <el-table :data="model!" size="small" border>
-        <el-table-column label="球镜" align="center">
+        <el-table-column label="球镜" align="center" min-width="15">
           <template #default="{ row }">
             <el-tooltip
               class="box-item"
@@ -118,7 +126,7 @@ watch(
             </el-text>
           </template>
         </el-table-column>
-        <el-table-column label="柱镜" align="center">
+        <el-table-column label="柱镜" align="center" min-width="15">
           <template #default="{ row }">
             <el-tooltip
               class="box-item"
@@ -147,7 +155,7 @@ watch(
             </el-text>
           </template>
         </el-table-column>
-        <el-table-column label="加光" align="center">
+        <el-table-column label="加光" align="center" min-width="15">
           <template #default="{ row }">
             <el-tooltip
               class="box-item"
@@ -176,7 +184,7 @@ watch(
             </el-text>
           </template>
         </el-table-column>
-        <el-table-column label="左右" align="center" min-width="50px">
+        <el-table-column label="左右" align="center" min-width="15" v-if="!processChoose">
           <template #default="{ row }">
             <el-select v-model="row.leftOrRight" clearable placeholder="请选择" v-if="!isDetail">
               <el-option value="1" label="左" />
@@ -187,7 +195,7 @@ watch(
             </el-text>
           </template>
         </el-table-column>
-        <el-table-column label="轴位" align="center" min-width="70px">
+        <el-table-column label="轴位" align="center" min-width="15">
           <template #default="{ row }">
             <el-input-number
               v-model="row.axis"
@@ -196,6 +204,7 @@ watch(
               size="small"
               :min="0"
               :max="180"
+              :controls="false"
               v-if="!isDetail"
             />
             <el-text v-else>
@@ -203,22 +212,47 @@ watch(
             </el-text>
           </template>
         </el-table-column>
-        <el-table-column label="数量" align="center" min-width="70px">
+        <el-table-column label="瞳距" align="center" min-width="15">
           <template #default="{ row }">
             <el-input-number
-              v-model="row.count"
-              :precision="0"
-              :step="1"
+              v-model="row.pd"
+              :precision="2"
+              :step="0.01"
               size="small"
-              :min="1"
+              :min="0"
+              :controls="false"
               v-if="!isDetail"
             />
+            <el-text v-else>
+              {{ row.pd }}
+            </el-text>
+          </template>
+        </el-table-column>
+        <el-table-column label="瞳高" align="center" min-width="15">
+          <template #default="{ row }">
+            <el-input-number
+              v-model="row.ph"
+              :precision="2"
+              :step="0.01"
+              size="small"
+              :min="0"
+              :controls="false"
+              v-if="!isDetail"
+            />
+            <el-text v-else>
+              {{ row.ph }}
+            </el-text>
+          </template>
+        </el-table-column>
+        <el-table-column label="数量" align="center" min-width="15">
+          <template #default="{ row }">
+            <el-input-number v-model="row.count" :precision="0" :step="1" size="small" :min="1" v-if="!isDetail" />
             <el-text v-else>
               {{ row.count }}
             </el-text>
           </template>
         </el-table-column>
-        <el-table-column label="操作" min-width="30px" align="center" v-if="!isDetail">
+        <el-table-column label="操作" min-width="30px" align="center" v-if="!isDetail && !processChoose">
           <template #default="{ row }">
             <el-button link type="primary" @click="delLensRow(row)" :disabled="model?.length <= 1">
               <Icon icon="ep:delete" />

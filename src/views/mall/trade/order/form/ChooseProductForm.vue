@@ -4,9 +4,22 @@ import { Spu } from '@/api/mall/product/spu'
 import { BatchSelectLens, SingleSelectLens } from '@/views/mall/trade/order/components'
 import { DegreeRange, Row } from '@/views/mall/trade/order/components/BatchSelectLens.vue'
 import { OrderLens } from '@/views/mall/trade/order/components/SingleSelectLens.vue'
+import { ProcessItem } from '@/views/mall/trade/order/components/ProcessOrderItem.vue'
 
 defineOptions({ name: 'ChooseProductForm' })
 const emit = defineEmits(['confirm'])
+
+const props = withDefaults(
+  defineProps<{
+    processChoose?: boolean
+    leftOrRight?: number
+  }>(),
+  {
+    processChoose: false
+  }
+)
+
+const model = defineModel<ProcessItem>() // 目前是只有加工订单会用到，直接把类型写死
 
 const dialogVisible = ref(false) // 弹窗的是否展示
 
@@ -25,7 +38,11 @@ const lazyLoad = async (node, resolve) => {
   const { level } = node
   switch (level) {
     case 0:
-      resolve(await ProductSpuApi.getCategoryList())
+      if (props.processChoose) {
+        resolve(await ProductSpuApi.getCategoryList([1, 2]))
+      } else {
+        resolve(await ProductSpuApi.getCategoryList())
+      }
       break
     case 1:
       resolve(await ProductSpuApi.getBrandList({ categoryId: node.data.value }))
@@ -79,12 +96,12 @@ const treeProps = {
 const spu = ref<Spu>()
 
 /**
- * 镜片是否支持多选
+ * 镜片是否支持多选，如果是加工订单不支持多选
  * 现片如果区分左右眼，则不能多选
  * 车房统一使用单选模板
  */
 const isBatchLens = computed(
-  () => spu.value?.categoryId === 1 && !spu.value?.lensProperty?.distinguishEye
+  () => !props.processChoose && spu.value?.categoryId === 1 && !spu.value?.lensProperty?.distinguishEye
 )
 
 // 分类变动的回调
@@ -182,12 +199,13 @@ const transformRows = () => {
 /**
  * 确认按钮事件，重组rows，返回给父级
  */
-const confirm = () => {
+const confirm = (doubleEye: boolean = false) => {
   if (isBatchLens.value) {
     // 如果是多选，需要把rows转成lensList
     transformRows()
   }
   emit('confirm', {
+    doubleEye: doubleEye,
     id: spu.value?.id,
     distinguishEye: spu.value?.lensProperty?.distinguishEye,
     categoryId: spu.value?.categoryId,
@@ -220,7 +238,7 @@ const onClose = () => {
     class="lens-dialog"
   >
     <el-row>
-      <el-col :span="6">
+      <el-col :span="4">
         <el-tree
           class="choose-header"
           highlight-current
@@ -231,26 +249,23 @@ const onClose = () => {
           @node-click="nodeClick"
         />
       </el-col>
-      <el-col :span="18">
+      <el-col :span="20">
         <el-scrollbar :height="maxHeight()" v-if="spu">
           <div class="choose-content">
             <div class="product-name">
-              {{ spu.name }}
+              <el-tag> {{ spu.name }}</el-tag>
             </div>
             <template v-if="spu.categoryId === 1 || spu.categoryId === 2">
               <!-- 镜片批量选择 -->
-              <BatchSelectLens
-                v-if="isBatchLens"
-                v-model="rows"
-                :sku-list="spu.skus"
-                :degree-range="degreeRange"
-              />
+              <BatchSelectLens v-if="isBatchLens" v-model="rows" :sku-list="spu.skus" :degree-range="degreeRange" />
               <!-- 镜片普通选择 -->
               <SingleSelectLens
                 v-else
                 v-model="lensList"
                 :sku-list="spu.skus!"
                 :sph-range="sphRange"
+                :process-choose="processChoose"
+                :left-or-right="leftOrRight"
               />
             </template>
             <template v-else> 其他商品</template>
@@ -260,16 +275,40 @@ const onClose = () => {
     </el-row>
     <template #footer>
       <div class="dialog-footer">
-        <el-button
-          type="primary"
-          @click="
-            () => {
-              dialogVisible = false
-            }
-          "
-          >完成
-        </el-button>
-        <el-button type="primary" @click="confirm">添加</el-button>
+        <template v-if="processChoose">
+          <el-button
+            type="primary"
+            @click="
+              () => {
+                confirm()
+                dialogVisible = false
+              }
+            "
+            >确定
+          </el-button>
+          <el-button
+            type="primary"
+            @click="
+              () => {
+                confirm(true)
+                dialogVisible = false
+              }
+            "
+            >应用到双眼
+          </el-button>
+        </template>
+        <template v-else>
+          <el-button
+            type="primary"
+            @click="
+              () => {
+                dialogVisible = false
+              }
+            "
+            >完成
+          </el-button>
+          <el-button type="primary" @click="confirm">添加</el-button>
+        </template>
       </div>
     </template>
   </Dialog>

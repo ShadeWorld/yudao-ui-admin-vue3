@@ -4,10 +4,13 @@ import { getAddressList } from '@/api/member/address'
 import { getDeliveryPrice, getSimpleTemplateList } from '@/api/mall/trade/delivery/expressTemplate'
 import { OrderItemList } from '@/views/mall/trade/order/components'
 import ChooseProductForm from './ChooseProductForm.vue'
+import ProcessOrderItem from '../components/ProcessOrderItem.vue'
 import { formatToFraction } from '@/utils'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import * as TradeOrderApi from '@/api/mall/trade/order'
 import { FormInstance } from 'element-plus'
+import { DICT_TYPE, getStrDictOptions } from '@/utils/dict'
+import { TradeOrderTypeEnum } from '@/utils/constants'
 
 defineOptions({ name: 'TradeOrderAdd' })
 
@@ -18,6 +21,7 @@ const { delView } = useTagsViewStore() // 标签页操作
 
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
 const formData = reactive<TradeOrderApi.CreateOrUpdateVO>({
+  type: '0',
   userId: undefined,
   addressId: undefined,
   deliveryTemplateId: undefined,
@@ -49,11 +53,10 @@ const rules = reactive({
   ]
 })
 const formRef = ref<FormInstance>()
+const processItemRef = ref() // 加工商品信息表单
 
 // 所有商品总价
-const allProductPrice = computed(() =>
-  formData.items?.reduce((acc, item) => acc + item.price * item.count, 0)
-)
+const allProductPrice = computed(() => formData.items?.reduce((acc, item) => acc + item.price * item.count, 0))
 
 const chooseProductFormRef = ref()
 
@@ -144,6 +147,7 @@ const submitForm = async () => {
   // 提交请求
   formLoading.value = true
   try {
+    await processItemRef.value?.validate()
     await formRef.value?.validate()
     if (!formData.items?.length) {
       message.error('至少选择一个商品！')
@@ -187,9 +191,7 @@ const close = () => {
                 <el-option
                   v-for="item in addressList"
                   :key="item.id"
-                  :label="
-                    item.name + ' ' + item.areaName + ' ' + item.detailAddress + ' ' + item.mobile
-                  "
+                  :label="item.name + ' ' + item.areaName + ' ' + item.detailAddress + ' ' + item.mobile"
                   :value="item.id as number"
                 />
               </el-select>
@@ -203,12 +205,7 @@ const close = () => {
                 :disabled="!formData.userId"
                 @change="onChangeDelivery"
               >
-                <el-option
-                  v-for="item in expressList"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id as number"
-                />
+                <el-option v-for="item in expressList" :key="item.id" :label="item.name" :value="item.id as number" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -218,9 +215,7 @@ const close = () => {
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="运费" class="bold-label">
-              {{ formatToFraction(deliveryPrice) }} 元
-            </el-form-item>
+            <el-form-item label="运费" class="bold-label"> {{ formatToFraction(deliveryPrice) }} 元</el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="商品总价" class="bold-label">
@@ -229,21 +224,42 @@ const close = () => {
           </el-col>
         </el-col>
         <el-col :span="14">
-          <el-col :span="24">
-            <el-form-item label="商品列表" prop="items">
-              <el-button
-                :disabled="!formData.userId"
-                class="mb-10px mr-15px"
-                @click="
-                  () => {
-                    chooseProductFormRef.open()
-                  }
-                "
-                >添加商品
-              </el-button>
-              <OrderItemList v-model="formData.items" />
-            </el-form-item>
-          </el-col>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="订单类型" prop="type">
+                <el-select v-model="formData.type" class="!w-280px">
+                  <el-option
+                    v-for="dict in getStrDictOptions(DICT_TYPE.TRADE_ORDER_TYPE)"
+                    :key="dict.value"
+                    :label="dict.label"
+                    :value="dict.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <template v-if="TradeOrderTypeEnum.NORMAL == formData.type">
+                <el-form-item label="商品列表" prop="items">
+                  <el-button
+                    :disabled="!formData.userId"
+                    class="mb-10px mr-15px"
+                    @click="
+                      () => {
+                        chooseProductFormRef.open()
+                      }
+                    "
+                    >添加商品
+                  </el-button>
+                  <OrderItemList v-model="formData.items" />
+                </el-form-item>
+              </template>
+              <template v-if="TradeOrderTypeEnum.PROCESS == formData.type">
+                <ProcessOrderItem ref="processItemRef" v-model="formData.items" />
+              </template>
+            </el-col>
+          </el-row>
         </el-col>
       </el-row>
       <el-row justify="end">
@@ -259,5 +275,9 @@ const close = () => {
 .bold-label {
   color: #29b6f6;
   font-weight: bold;
+}
+
+.content-wrap {
+  padding: 0 20px;
 }
 </style>
