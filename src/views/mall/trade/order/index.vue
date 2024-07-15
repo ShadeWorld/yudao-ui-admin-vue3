@@ -4,13 +4,7 @@
 
   <!-- 搜索 -->
   <ContentWrap>
-    <el-form
-      ref="queryFormRef"
-      :inline="true"
-      :model="queryParams"
-      class="-mb-15px"
-      label-width="68px"
-    >
+    <el-form ref="queryFormRef" :inline="true" :model="queryParams" class="-mb-15px" label-width="68px">
       <el-row>
         <el-form-item label="订单状态" prop="status">
           <el-select
@@ -29,12 +23,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="支付方式" prop="payChannelCode" :disabled="queryParams.tabType === 1">
-          <el-select
-            v-model="queryParams.payChannelCode"
-            class="!w-280px"
-            clearable
-            placeholder="全部"
-          >
+          <el-select v-model="queryParams.payChannelCode" class="!w-280px" clearable placeholder="全部">
             <el-option
               v-for="dict in getStrDictOptions(DICT_TYPE.PAY_CHANNEL_CODE)"
               :key="dict.value"
@@ -55,12 +44,7 @@
           />
         </el-form-item>
         <el-form-item label="订单来源" prop="terminal">
-          <el-select
-            v-model="queryParams.orderSource"
-            class="!w-280px"
-            clearable
-            placeholder="全部"
-          >
+          <el-select v-model="queryParams.orderSource" class="!w-280px" clearable placeholder="全部">
             <el-option
               v-for="dict in getIntDictOptions(DICT_TYPE.TRADE_ORDER_SOURCE)"
               :key="dict.value"
@@ -69,16 +53,16 @@
             />
           </el-select>
         </el-form-item>
-        <!--      <el-form-item label="订单类型" prop="type">-->
-        <!--        <el-select v-model="queryParams.type" class="!w-280px" clearable placeholder="全部">-->
-        <!--          <el-option-->
-        <!--            v-for="dict in getIntDictOptions(DICT_TYPE.TRADE_ORDER_TYPE)"-->
-        <!--            :key="dict.value"-->
-        <!--            :label="dict.label"-->
-        <!--            :value="dict.value"-->
-        <!--          />-->
-        <!--        </el-select>-->
-        <!--      </el-form-item>-->
+        <el-form-item label="订单类型" prop="type">
+          <el-select v-model="queryParams.type" class="!w-280px" clearable placeholder="全部">
+            <el-option
+              v-for="dict in getIntDictOptions(DICT_TYPE.TRADE_ORDER_TYPE)"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
+        </el-form-item>
         <!--      <el-form-item-->
         <!--        v-if="queryParams.deliveryType === DeliveryTypeEnum.EXPRESS.type"-->
         <!--        label="快递公司"-->
@@ -136,21 +120,11 @@
         </el-form-item>
       </el-row>
       <el-form-item>
-        <el-button
-          @click="() => printShipRef.open(currentRow)"
-          type="primary"
-          plain
-          :disabled="!currentRow"
-        >
+        <el-button @click="() => printShipRef.open(currentRow)" type="primary" plain :disabled="!currentRow">
           <Icon class="mr-5px" icon="ep:printer" />
           打印配货单
         </el-button>
-        <el-button
-          @click="() => printTagRef.open(currentRow)"
-          type="primary"
-          plain
-          :disabled="!currentRow"
-        >
+        <el-button @click="() => printTagRef.open(currentRow)" type="primary" plain :disabled="!currentRow">
           <Icon class="mr-5px" icon="ep:printer" />
           打印标签
         </el-button>
@@ -205,13 +179,7 @@
           <span v-if="row.payTime" class="mr-20px"> {{ formatDate(row.payTime) }} </span>
         </template>
       </el-table-column>
-      <el-table-column
-        :formatter="dateFormatter"
-        align="center"
-        label="创建时间"
-        prop="createTime"
-        width="180"
-      />
+      <el-table-column :formatter="dateFormatter" align="center" label="创建时间" prop="createTime" width="180" />
       <el-table-column label="收货信息" min-width="200">
         <template #default="{ row }">
           <!-- 快递发货  -->
@@ -226,19 +194,11 @@
       <el-table-column label="操作">
         <template #default="{ row }">
           <div class="flex items-center">
-            <el-button
-              v-hasPermi="['trade:order:query']"
-              link
-              type="primary"
-              @click="openDetail(row.id)"
-            >
+            <el-button v-hasPermi="['trade:order:query']" link type="primary" @click="openDetail(row.id)">
               <Icon icon="ep:notification" />
               详情
             </el-button>
-            <el-dropdown
-              v-hasPermi="['trade:order:update']"
-              @command="(command) => handleCommand(command, row)"
-            >
+            <el-dropdown v-hasPermi="['trade:order:update']" @command="(command) => handleCommand(command, row)">
               <el-button link type="primary">
                 <Icon icon="ep:d-arrow-right" />
                 更多

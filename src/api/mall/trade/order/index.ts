@@ -8,8 +8,16 @@ export interface CreateOrUpdateVO {
   addressId?: number
   deliveryTemplateId?: number
   remark?: string
+  craftList?: CraftVO[]
   items?: OrderItem[]
   orderSource?: number
+}
+
+export interface CraftVO {
+  id?: number
+  craftId?: number
+  craftName?: string
+  price?: number
 }
 
 export interface OrderItem {
@@ -60,6 +68,7 @@ export interface OrderVO {
   payChannelCode?: string // 支付渠道
   totalPrice?: number | null // 商品原价（总）
   discountPrice?: number | null // 订单优惠（总）
+  craftPrice?: number | null
   deliveryPrice?: number | null // 运费金额
   adjustPrice?: number | null // 订单调价（总）
   payPrice?: number | null // 应付金额（总）
@@ -86,6 +95,7 @@ export interface OrderVO {
   couponPrice?: number | null // 优惠劵减免金额
 
   items?: OrderItemRespVO[] // 订单项列表
+  craftList?: CraftVO[] // 工艺列表
   // 下单用户信息
   user?: {
     id?: number | null

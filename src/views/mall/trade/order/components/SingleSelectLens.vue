@@ -212,7 +212,7 @@ watch(
             </el-text>
           </template>
         </el-table-column>
-        <el-table-column label="瞳距" align="center" min-width="15">
+        <el-table-column label="瞳距" align="center" min-width="15" v-if="processChoose">
           <template #default="{ row }">
             <el-input-number
               v-model="row.pd"
@@ -228,7 +228,7 @@ watch(
             </el-text>
           </template>
         </el-table-column>
-        <el-table-column label="瞳高" align="center" min-width="15">
+        <el-table-column label="瞳高" align="center" min-width="15" v-if="processChoose">
           <template #default="{ row }">
             <el-input-number
               v-model="row.ph"

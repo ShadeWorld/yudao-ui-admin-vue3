@@ -8,6 +8,7 @@ import ProcessOrderItem from '../components/ProcessOrderItem.vue'
 import { formatToFraction } from '@/utils'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import * as TradeOrderApi from '@/api/mall/trade/order'
+import { LensCraftApi } from '@/api/mall/product/craft'
 import { FormInstance } from 'element-plus'
 import { DICT_TYPE, getStrDictOptions } from '@/utils/dict'
 import { TradeOrderTypeEnum } from '@/utils/constants'
@@ -26,8 +27,12 @@ const formData = reactive<TradeOrderApi.CreateOrUpdateVO>({
   addressId: undefined,
   deliveryTemplateId: undefined,
   remark: undefined,
+  craftList: [],
   items: [],
   orderSource: 2 // 1-微信小程序、2-手工录入
+})
+const craftPrice = computed(() => {
+  return formData.craftList?.reduce((prev, cur) => prev + cur.price!, 0)
 })
 const rules = reactive({
   userId: [
@@ -54,9 +59,16 @@ const rules = reactive({
 })
 const formRef = ref<FormInstance>()
 const processItemRef = ref() // 加工商品信息表单
+const craftConfigList = ref<any[]>([]) // 工艺配置列表
 
 // 所有商品总价
-const allProductPrice = computed(() => formData.items?.reduce((acc, item) => acc + item.price * item.count, 0))
+const allProductPrice = computed(() => {
+  if (formData.type === TradeOrderTypeEnum.NORMAL) {
+    return formData.items?.reduce((acc, item) => acc + item.price * item.count, 0)
+  } else {
+    return processItemRef.value?.productPrice()
+  }
+})
 
 const chooseProductFormRef = ref()
 
@@ -85,7 +97,11 @@ const selectUser = (item) => {
 
 const expressList = ref<any>()
 
-onMounted(() => {})
+onMounted(() => {
+  LensCraftApi.getSimpleCraftList().then((res) => {
+    craftConfigList.value = res
+  })
+})
 
 /**
  * 添加商品的回调
@@ -165,6 +181,10 @@ const close = () => {
   delView(unref(currentRoute))
   push({ name: 'TradeOrder' })
 }
+const changeType = () => {
+  formData.craftList?.splice(0, formData.craftList.length)
+  formData.items?.splice(0, formData.items.length)
+}
 </script>
 
 <template>
@@ -172,67 +192,92 @@ const close = () => {
     <ContentWrap v-loading="formLoading">
       <el-row justify="end">
         <el-col :span="10">
-          <el-col :span="24">
-            <el-form-item label="客户" prop="userId">
-              <MemberSelect v-model="formData.userId" class="w-100%!" @select="selectUser" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="收货地址" prop="addressId">
-              <el-select
-                v-model="formData.addressId"
-                placeholder="请选择收货地址"
-                @change="
-                  (value) => {
-                    areaId = value.areaId
-                  }
-                "
-              >
-                <el-option
-                  v-for="item in addressList"
-                  :key="item.id"
-                  :label="item.name + ' ' + item.areaName + ' ' + item.detailAddress + ' ' + item.mobile"
-                  :value="item.id as number"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="配送方式" prop="deliveryTemplateId">
-              <el-select
-                v-model="formData.deliveryTemplateId"
-                placeholder="请选择配送方式"
-                :disabled="!formData.userId"
-                @change="onChangeDelivery"
-              >
-                <el-option v-for="item in expressList" :key="item.id" :label="item.name" :value="item.id as number" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="备注" prop="remark">
-              <el-input v-model="formData.remark" type="textarea" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="运费" class="bold-label"> {{ formatToFraction(deliveryPrice) }} 元</el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="商品总价" class="bold-label">
-              {{ formatToFraction(allProductPrice) }} 元
-            </el-form-item>
-          </el-col>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="客户" prop="userId">
+                <MemberSelect v-model="formData.userId" class="w-100%!" @select="selectUser" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <el-form-item label="收货地址" prop="addressId">
+                <el-select
+                  v-model="formData.addressId"
+                  placeholder="请选择收货地址"
+                  @change="
+                    (value) => {
+                      areaId = value.areaId
+                    }
+                  "
+                >
+                  <el-option
+                    v-for="item in addressList"
+                    :key="item.id"
+                    :label="item.name + ' ' + item.areaName + ' ' + item.detailAddress + ' ' + item.mobile"
+                    :value="item.id as number"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <el-form-item label="配送方式" prop="deliveryTemplateId">
+                <el-select
+                  v-model="formData.deliveryTemplateId"
+                  placeholder="请选择配送方式"
+                  :disabled="!formData.userId"
+                  @change="onChangeDelivery"
+                >
+                  <el-option v-for="item in expressList" :key="item.id" :label="item.name" :value="item.id as number" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <el-form-item label="备注" prop="remark">
+                <el-input v-model="formData.remark" type="textarea" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="5">
+              <el-form-item label="运费" class="bold-label"> {{ formatToFraction(deliveryPrice) }} 元</el-form-item>
+            </el-col>
+            <el-col :span="5">
+              <el-form-item label="工艺费用" class="bold-label" v-if="TradeOrderTypeEnum.PROCESS == formData.type">
+                {{ formatToFraction(craftPrice) }} 元
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <el-form-item label="商品总价" class="bold-label">
+                {{ formatToFraction(allProductPrice) }} 元
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-col>
         <el-col :span="14">
           <el-row>
-            <el-col :span="24">
+            <el-col :span="12">
               <el-form-item label="订单类型" prop="type">
-                <el-select v-model="formData.type" class="!w-280px">
+                <el-select v-model="formData.type" class="!w-280px" @change="changeType">
                   <el-option
                     v-for="dict in getStrDictOptions(DICT_TYPE.TRADE_ORDER_TYPE)"
                     :key="dict.value"
                     :label="dict.label"
                     :value="dict.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="工艺" prop="craftList" v-if="TradeOrderTypeEnum.PROCESS == formData.type">
+                <el-select
+                  v-model="formData.craftList"
+                  value-key="craftId"
+                  multiple
+                  placeholder="请选择镜片工艺"
+                  class="!w-280px"
+                >
+                  <el-option
+                    v-for="craft in craftConfigList"
+                    :key="craft.id"
+                    :label="`${craft.craftName} ${formatToFraction(craft.price)}元`"
+                    :value="{ craftId: craft.id, craftName: craft.craftName, price: craft.price }"
                   />
                 </el-select>
               </el-form-item>

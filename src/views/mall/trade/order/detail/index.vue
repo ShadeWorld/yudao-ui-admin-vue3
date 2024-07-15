@@ -24,11 +24,7 @@
         <dict-tag :type="DICT_TYPE.TRADE_ORDER_STATUS" :value="formData.status!" />
       </el-descriptions-item>
       <el-descriptions-item v-hasPermi="['trade:order:update']" label-class-name="no-colon">
-        <el-button
-          v-if="formData.status! === TradeOrderStatusEnum.UNPAID.status"
-          type="primary"
-          @click="updatePrice"
-        >
+        <el-button v-if="formData.status! === TradeOrderStatusEnum.UNPAID.status" type="primary" @click="updatePrice">
           调整价格
         </el-button>
         <el-button
@@ -42,11 +38,7 @@
         <!-- 待发货 -->
         <template v-if="formData.status! === TradeOrderStatusEnum.UNDELIVERED.status">
           <!-- 快递发货 -->
-          <el-button
-            v-if="formData.deliveryType === DeliveryTypeEnum.EXPRESS.type"
-            type="primary"
-            @click="delivery"
-          >
+          <el-button v-if="formData.deliveryType === DeliveryTypeEnum.EXPRESS.type" type="primary" @click="delivery">
             发货
           </el-button>
           <el-button type="primary" @click="updateAddress"> 修改地址</el-button>
@@ -59,6 +51,11 @@
       <el-descriptions-item labelClassName="no-colon">
         <el-row :gutter="20">
           <el-col :span="15">
+            <div class="flex gap-2 mb-10px">
+              <el-tag type="primary" v-for="craft in formData.craftList" :key="craft.id">
+                {{ `${craft.craftName} ${fenToYuan(craft.price)}元` }}
+              </el-tag>
+            </div>
             <el-table :data="formData.items" border>
               <el-table-column label="商品" prop="spuName" width="auto">
                 <template #default="{ row }">
@@ -77,10 +74,7 @@
               </el-table-column>
               <el-table-column label="售后状态" prop="afterSaleStatus" width="120">
                 <template #default="{ row }">
-                  <dict-tag
-                    :type="DICT_TYPE.TRADE_ORDER_ITEM_AFTER_SALE_STATUS"
-                    :value="row.afterSaleStatus"
-                  />
+                  <dict-tag :type="DICT_TYPE.TRADE_ORDER_ITEM_AFTER_SALE_STATUS" :value="row.afterSaleStatus" />
                 </template>
               </el-table-column>
               <el-table-column align="center" fixed="right" label="操作" width="80">
@@ -99,16 +93,11 @@
     </el-descriptions>
     <el-descriptions :column="4">
       <!-- 第一层 -->
-      <el-descriptions-item label="商品总额: ">
-        {{ fenToYuan(formData.totalPrice!) }} 元
-      </el-descriptions-item>
-      <el-descriptions-item label="运费金额: ">
-        {{ fenToYuan(formData.deliveryPrice!) }} 元
-      </el-descriptions-item>
-      <el-descriptions-item label="订单调价: ">
-        {{ fenToYuan(formData.adjustPrice!) }} 元
-      </el-descriptions-item>
-      <el-descriptions-item v-for="item in 1" :key="item" label-class-name="no-colon" />
+      <el-descriptions-item label="商品总额: "> {{ fenToYuan(formData.totalPrice!) }} 元 </el-descriptions-item>
+      <el-descriptions-item label="工艺金额: "> {{ fenToYuan(formData.craftPrice!) }} 元 </el-descriptions-item>
+      <el-descriptions-item label="运费金额: "> {{ fenToYuan(formData.deliveryPrice!) }} 元 </el-descriptions-item>
+      <el-descriptions-item label="订单调价: "> {{ fenToYuan(formData.adjustPrice!) }} 元 </el-descriptions-item>
+      <!--      <el-descriptions-item v-for="item in 1" :key="item" label-class-name="no-colon" />-->
       <!-- 第二层 -->
       <el-descriptions-item>
         <template #label><span style="color: red">优惠劵优惠: </span></template>
@@ -116,9 +105,7 @@
       </el-descriptions-item>
       <!-- 第三层 -->
       <el-descriptions-item v-for="item in 3" :key="item" label-class-name="no-colon" />
-      <el-descriptions-item label="应付金额: ">
-        {{ fenToYuan(formData.payPrice!) }} 元
-      </el-descriptions-item>
+      <el-descriptions-item label="应付金额: "> {{ fenToYuan(formData.payPrice!) }} 元 </el-descriptions-item>
     </el-descriptions>
 
     <!-- 物流信息 -->
@@ -172,10 +159,7 @@
               {{ log.content }}
             </div>
             <template #dot>
-              <span
-                :style="{ backgroundColor: getUserTypeColor(log.userType!) }"
-                class="dot-node-style"
-              >
+              <span :style="{ backgroundColor: getUserTypeColor(log.userType!) }" class="dot-node-style">
                 {{ getDictLabel(DICT_TYPE.USER_TYPE, log.userType)[0] }}
               </span>
             </template>
@@ -201,12 +185,13 @@
     v-if="currentDetailItem"
   >
     <el-row justify="center">
-      <BatchSelectLens v-model="rows" v-if="currentDetailItem.categoryId === 1" :is-detail="true" />
       <SingleSelectLens
         v-model="lensList"
-        v-if="currentDetailItem.categoryId === 2"
+        v-if="isSingleSelect"
+        :process-choose="formData.type == TradeOrderTypeEnum.PROCESS"
         :is-detail="true"
       />
+      <BatchSelectLens v-model="rows" v-if="!isSingleSelect" :is-detail="true" />
     </el-row>
   </ElDialog>
 </template>
@@ -221,7 +206,7 @@ import OrderDeliveryForm from '@/views/mall/trade/order/form/OrderDeliveryForm.v
 import OrderUpdateAddressForm from '@/views/mall/trade/order/form/OrderUpdateAddressForm.vue'
 import OrderUpdatePriceForm from '@/views/mall/trade/order/form/OrderUpdatePriceForm.vue'
 import { useTagsViewStore } from '@/store/modules/tagsView'
-import { DeliveryTypeEnum, TradeOrderStatusEnum } from '@/utils/constants'
+import { DeliveryTypeEnum, TradeOrderStatusEnum, TradeOrderTypeEnum } from '@/utils/constants'
 import { propTypes } from '@/utils/propTypes'
 import { BatchSelectLens } from '@/views/mall/trade/order/components'
 import SingleSelectLens from '../components/SingleSelectLens.vue'
@@ -251,6 +236,14 @@ const getUserTypeColor = (type: number) => {
 const formData = ref<TradeOrderApi.OrderVO>({
   logs: []
 })
+
+const isLensProduct = computed(
+  () => currentDetailItem.value?.categoryId === 1 || currentDetailItem.value?.categoryId === 2
+)
+
+const isSingleSelect = computed(
+  () => currentDetailItem.value?.categoryId === 2 || formData.value.type === TradeOrderTypeEnum.PROCESS
+)
 
 /** 各种操作 */
 const updateRemarkForm = ref() // 订单备注表单 Ref
@@ -334,10 +327,13 @@ const detailWidth = ref<number>(800)
  */
 const openDetail = (detailItem: OrderItemRespVO) => {
   currentDetailItem.value = detailItem
-  if (detailItem.categoryId === 1) {
-    batchLensDetail()
-  } else if (detailItem.categoryId === 2) {
-    singleLensDetail()
+  if (isLensProduct) {
+    // 镜片详情处理
+    if (isSingleSelect) {
+      singleLensDetail()
+    } else {
+      batchLensDetail()
+    }
   }
   dialogVisible.value = true
 }
@@ -393,6 +389,9 @@ const singleLensDetail = () => {
       add: item.add,
       leftOrRight: item.leftOrRight,
       axis: item.axis,
+      prism: item.prism,
+      pd: item.pd,
+      ph: item.ph,
       count: item.count
     }
     lensList.value.push(orderLens)

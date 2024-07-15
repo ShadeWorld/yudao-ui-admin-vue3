@@ -44,5 +44,10 @@ export const LensCraftApi = {
   // 导出加工配置 Excel
   exportLensCraft: async (params) => {
     return await request.download({ url: `/product/lens-craft/export-excel`, params })
+  },
+
+  // 获得商品品牌精简信息列表
+  getSimpleCraftList: async () => {
+    return request.get({ url: '/product/lens-craft/list-all-simple' })
   }
 }

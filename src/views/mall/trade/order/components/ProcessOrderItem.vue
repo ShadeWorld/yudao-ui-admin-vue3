@@ -95,13 +95,13 @@ const onConfirm = (checkedSpu: any) => {
     count: checkedSpu.lensList[0].count
   }
   if (checkedSpu.doubleEye) {
-    leftLens.value = lens
-    rightLens.value = lens
+    leftLens.value = JSON.parse(JSON.stringify(lens))
+    rightLens.value = JSON.parse(JSON.stringify(lens))
   } else {
     if (currentType.value === 1) {
-      leftLens.value = lens
+      leftLens.value = JSON.parse(JSON.stringify(lens))
     } else {
-      rightLens.value = lens
+      rightLens.value = JSON.parse(JSON.stringify(lens))
     }
   }
 }
@@ -154,7 +154,18 @@ const validate = () => {
     })
   }
 }
-defineExpose({ validate })
+
+const productPrice = () => {
+  let price = 0
+  if (!leftLens.value.isSelf && leftLens.value.skuId) {
+    price += leftLens.value.price! * leftLens.value.count!
+  }
+  if (!rightLens.value.isSelf && rightLens.value.skuId) {
+    price += rightLens.value.price! * rightLens.value.count!
+  }
+  return price
+}
+defineExpose({ validate, productPrice })
 </script>
 
 <template>
