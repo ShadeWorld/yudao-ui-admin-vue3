@@ -420,8 +420,8 @@ export const TradeOrderStatusEnum = {
 }
 
 export const TradeOrderTypeEnum = {
-  NORMAL: 0,
-  PROCESS: 1
+  NORMAL: 0, // 普通订单
+  PROCESS: 1 // 加工订单
 }
 
 // ========== ERP - 企业资源计划 ==========

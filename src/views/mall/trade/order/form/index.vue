@@ -165,7 +165,7 @@ const submitForm = async () => {
   try {
     await processItemRef.value?.validate()
     await formRef.value?.validate()
-    if (!formData.items?.length) {
+    if (formData.type == TradeOrderTypeEnum.NORMAL && !formData.items?.length) {
       message.error('至少选择一个商品！')
       return
     }
