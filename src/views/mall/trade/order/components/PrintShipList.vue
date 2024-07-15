@@ -102,7 +102,7 @@ const cancel = () => {
       请确认是否打印该订单的配货单？
       <div class="print-ship-wrap" id="print-wrap">
         <div class="print-ship-header">
-          <div class="fl">{{ `备注：${orderPrintDetail.remark!}` }}</div>
+          <div class="fl">{{ `备注：${orderPrintDetail.remark ? orderPrintDetail.remark : ''}` }}</div>
           <div class="qrcode fr" data-size="70" :data-qrcode="orderPrintDetail.no"></div>
           <div style="clear: both">
             <table style="border: none; padding-top: 5px; margin-top: 5px; width: 100%">
@@ -112,9 +112,7 @@ const cancel = () => {
               </tr>
               <tr>
                 <td colspan="2">
-                  地址：{{
-                    orderPrintDetail.receiverAreaName + orderPrintDetail.receiverDetailAddress
-                  }}
+                  地址：{{ orderPrintDetail.receiverAreaName + orderPrintDetail.receiverDetailAddress }}
                 </td>
               </tr>
             </table>
