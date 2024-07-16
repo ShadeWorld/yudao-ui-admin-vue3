@@ -235,10 +235,10 @@ const changeType = () => {
                 <el-input v-model="formData.remark" type="textarea" />
               </el-form-item>
             </el-col>
-            <el-col :span="5">
+            <el-col :span="12">
               <el-form-item label="运费" class="bold-label"> {{ formatToFraction(deliveryPrice) }} 元</el-form-item>
             </el-col>
-            <el-col :span="5">
+            <el-col :span="12">
               <el-form-item label="工艺费用" class="bold-label" v-if="TradeOrderTypeEnum.PROCESS == formData.type">
                 {{ formatToFraction(craftPrice) }} 元
               </el-form-item>
