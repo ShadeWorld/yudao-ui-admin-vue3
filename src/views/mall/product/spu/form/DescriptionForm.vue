@@ -1,6 +1,6 @@
 <!-- 商品发布 - 商品详情 -->
 <template>
-  <el-form ref="formRef" :model="formData" :rules="rules" label-width="120px" :disabled="isDetail">
+  <el-form ref="formRef" :model="formData" label-width="120px" :disabled="isDetail">
     <!--富文本编辑器组件-->
     <el-form-item label="商品详情" prop="description">
       <Editor v-model:modelValue="formData.description" />
@@ -29,10 +29,6 @@ const props = defineProps({
 const formRef = ref() // 表单Ref
 const formData = ref<Spu>({
   description: '' // 商品详情
-})
-// 表单规则
-const rules = reactive({
-  description: [required]
 })
 
 /** 富文本编辑器如果输入过再清空会有残留，需再重置一次 */
