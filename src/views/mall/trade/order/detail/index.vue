@@ -211,6 +211,7 @@ import { propTypes } from '@/utils/propTypes'
 import { BatchSelectLens } from '@/views/mall/trade/order/components'
 import SingleSelectLens from '../components/SingleSelectLens.vue'
 import { OrderLens } from '@/views/mall/trade/order/components/SingleSelectLens.vue'
+import { Row } from '@/views/mall/trade/order/components/BatchSelectLens.vue'
 
 defineOptions({ name: 'TradeOrderDetail' })
 
@@ -327,9 +328,9 @@ const detailWidth = ref<number>(800)
  */
 const openDetail = (detailItem: OrderItemRespVO) => {
   currentDetailItem.value = detailItem
-  if (isLensProduct) {
+  if (isLensProduct.value) {
     // 镜片详情处理
-    if (isSingleSelect) {
+    if (isSingleSelect.value) {
       singleLensDetail()
     } else {
       batchLensDetail()
