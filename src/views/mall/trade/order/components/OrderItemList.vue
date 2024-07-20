@@ -4,9 +4,7 @@ import { ElTable } from 'element-plus'
 import { Row } from '@/views/mall/trade/order/components/BatchSelectLens.vue'
 import { formatToFraction } from '@/utils'
 import { BatchSelectLens, calcDegreeRange } from '@/views/mall/trade/order/components'
-import SingleSelectLens, {
-  OrderLens
-} from '@/views/mall/trade/order/components/SingleSelectLens.vue'
+import SingleSelectLens, { OrderLens } from '@/views/mall/trade/order/components/SingleSelectLens.vue'
 import { Sku } from '@/api/mall/product/spu'
 
 interface TableOrderItem {
@@ -30,9 +28,7 @@ watch(
     tableData.value = !value
       ? []
       : value?.reduce((tableData: TableOrderItem[], item: OrderItem) => {
-          let data: TableOrderItem | undefined = tableData.find(
-            (i) => i.spuId === item.spuId && i.skuId == item.skuId
-          )
+          let data: TableOrderItem | undefined = tableData.find((i) => i.spuId === item.spuId && i.skuId == item.skuId)
           if (data) {
             data.count += item.count
           } else {
@@ -65,9 +61,7 @@ const detailWidth = ref<number>(800)
  * 现片如果区分左右眼，则不能多选
  * 车房统一使用单选模板
  */
-const isBatchLens = computed(
-  () => detailSpu.value?.categoryId === 1 && !detailSpu.value?.distinguishEye
-)
+const isBatchLens = computed(() => detailSpu.value?.categoryId === 1 && !detailSpu.value?.distinguishEye)
 
 // 批量选择镜片的所有行
 const rows = ref<Row[]>([])
@@ -233,14 +227,22 @@ const batchLensConfirm = () => {
 }
 
 const singleLensConfirm = () => {
+  // 根据skuId找item
   let existsItem = model.value?.find((i) => i.skuId === detailSpu.value?.skuId)
+  // 清空item里面的镜片
   existsItem?.orderLensList?.splice(0, existsItem.orderLensList?.length)
+  // count清零
   existsItem.count = 0
   lensList.value.forEach((item) => {
     if (existsItem) {
       existsItem.count += item.count
       let existsLens = existsItem.orderLensList?.find(
-        (i) => i.sph === item.sph && i.cyl === item.cyl && i.add === item.add
+        (i) =>
+          i.sph === item.sph &&
+          i.cyl === item.cyl &&
+          i.add === item.add &&
+          i.leftOrRight === item.leftOrRight &&
+          i.axis === item.axis
       )
       if (existsLens) {
         existsLens.count += item.count
@@ -350,13 +352,7 @@ const onClose = () => {
   >
     <el-row justify="center">
       <BatchSelectLens v-model="rows" v-if="isBatchLens" />
-      <SingleSelectLens
-        v-else
-        v-model="lensList"
-        :sku-list="skuList!"
-        :sph-range="sphRange"
-        :is-detail="false"
-      />
+      <SingleSelectLens v-else v-model="lensList" :sku-list="skuList!" :sph-range="sphRange" :is-detail="false" />
     </el-row>
     <template #footer>
       <div class="dialog-footer">

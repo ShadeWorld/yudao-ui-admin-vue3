@@ -104,6 +104,7 @@ onMounted(() => {
 })
 
 /**
+ * 普通订单
  * 添加商品的回调
  * @param checkedSpu
  */
@@ -113,7 +114,12 @@ const onConfirm = (checkedSpu) => {
     if (existsItem) {
       existsItem.count += item.count
       let existsLens = existsItem.orderLensList?.find(
-        (i) => i.sph === item.sph && i.cyl === item.cyl && i.add === item.add
+        (i) =>
+          i.sph === item.sph &&
+          i.cyl === item.cyl &&
+          i.add === item.add &&
+          i.leftOrRight === item.leftOrRight &&
+          i.axis === item.axis
       )
       if (existsLens) {
         existsLens.count += item.count

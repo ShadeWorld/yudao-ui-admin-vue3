@@ -275,6 +275,7 @@ const onClose = () => {
     </el-row>
     <template #footer>
       <div class="dialog-footer">
+        <!-- 加工单 -->
         <template v-if="processChoose">
           <el-button
             type="primary"
@@ -297,6 +298,7 @@ const onClose = () => {
             >应用到双眼
           </el-button>
         </template>
+        <!-- 普通单 -->
         <template v-else>
           <el-button
             type="primary"
