@@ -243,7 +243,10 @@ const isLensProduct = computed(
 )
 
 const isSingleSelect = computed(
-  () => currentDetailItem.value?.categoryId === 2 || formData.value.type === TradeOrderTypeEnum.PROCESS
+  () =>
+    currentDetailItem.value?.categoryId === 2 ||
+    currentDetailItem.value?.orderLensList.find((i) => i.leftOrRight) ||
+    formData.value.type === TradeOrderTypeEnum.PROCESS
 )
 
 /** 各种操作 */
