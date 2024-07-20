@@ -97,35 +97,27 @@ const localDegreeRange = ref<DegreeRange>({
 })
 
 // 普通镜片，只有球柱镜
-const isNormal = computed(
-  () => localDegreeRange.value.minAdd === 0 && localDegreeRange.value.maxAdd === 0
-)
+const isNormal = computed(() => localDegreeRange.value.minAdd === 0 && localDegreeRange.value.maxAdd === 0)
 
-const cylList = ref<number[]>([])
+const colList = ref<number[]>([])
 
 const renderGrid = () => {
-  if (isNormal) {
-    cylList.value.splice(0, cylList.value.length)
-    for (
-      let sph = localDegreeRange.value.maxSph;
-      sph >= localDegreeRange.value.minSph;
-      sph -= 0.25
-    ) {
-      // 先找rows里面有没有这一行
-      let row: Row | undefined = rows.value?.find((i) => i.sph === sph)
-      if (!row) {
-        // 没有就new一个，然后push到rows里面
-        row = row ? row : { sph: sph, cols: [] }
-        rows.value?.push(row)
-      }
-      for (
-        let cyl = localDegreeRange.value.maxCyl;
-        cyl >= localDegreeRange.value.minCyl;
-        cyl -= 0.25
-      ) {
+  // 清空横轴度数
+  colList.value.splice(0, colList.value.length)
+  for (let sph = localDegreeRange.value.maxSph; sph >= localDegreeRange.value.minSph; sph -= 0.25) {
+    // 先找rows里面有没有这一行
+    let row: Row | undefined = rows.value?.find((i) => i.sph === sph)
+    if (!row) {
+      // 没有就new一个，然后push到rows里面
+      row = row ? row : { sph: sph, cols: [] }
+      rows.value?.push(row)
+    }
+    if (isNormal.value) {
+      // 球镜和柱镜的情况
+      for (let cyl = localDegreeRange.value.maxCyl; cyl >= localDegreeRange.value.minCyl; cyl -= 0.25) {
         if (sph === localDegreeRange.value.maxSph) {
           // 保存所有柱镜（只用保存一次，用于展示横向表头）
-          cylList.value.push(cyl)
+          colList.value.push(cyl)
         }
         // 如果该行已经有这一列，就不用重新生成了
         if (row.cols.findIndex((i) => i.cyl === cyl) > -1) continue
@@ -133,12 +125,27 @@ const renderGrid = () => {
         row.cols.push(col)
       }
       row.cols.sort((a, b) => b.cyl - a.cyl)
+    } else {
+      // 球镜和ADD的情况
+      for (let add = localDegreeRange.value.maxAdd; add >= localDegreeRange.value.minAdd; add -= 0.25) {
+        if (sph === localDegreeRange.value.maxSph) {
+          // 保存所有柱镜（只用保存一次，用于展示横向表头）
+          colList.value.push(add)
+        }
+        // 如果该行已经有这一列，就不用重新生成了
+        if (row.cols.findIndex((i) => i.add === add) > -1) continue
+        let col: Col = { row: row, cyl: 0, add: add, ...getLensInfo(sph, 0, add) }
+        row.cols.push(col)
+      }
+      row.cols.sort((a, b) => b.add - a.add)
     }
-    rows.value?.sort((a, b) => b.sph - a.sph)
   }
+  // 把行按度数从低到高排序
+  rows.value?.sort((a, b) => b.sph - a.sph)
 }
 
 if (rows.value?.length) {
+  // 添加订单或订单详情的商品列表详情按钮会进这里
   localDegreeRange.value = {
     minSph: rows.value[rows.value?.length - 1].sph,
     maxSph: rows.value[0].sph,
@@ -196,7 +203,6 @@ const onMouseDown = (col: Col) => {
   if (!col.skuId) return
   mouseDown = true
   firstPosition = { col: col.cyl, row: col.row.sph }
-  console.log(firstPosition)
 }
 
 const onMouseEnter = (col: Col) => {
@@ -272,9 +278,12 @@ window.onkeyup = (e) => {
   <table border="0" cellpadding="0" cellspacing="0">
     <thead>
       <tr>
-        <td><!--(1, 1) 用于展示纵横（交叉）表头--></td>
-        <td v-for="cyl in cylList" :key="cyl" class="tab-head">
-          {{ cyl.toFixed(2) }}
+        <td>
+          <!--(1, 1) 用于展示纵横（交叉）表头-->
+          {{ isNormal ? 'SPH/CYL' : 'SPH/ADD' }}
+        </td>
+        <td v-for="col in colList" :key="col" class="tab-head">
+          {{ col.toFixed(2) }}
         </td>
       </tr>
     </thead>
@@ -282,7 +291,7 @@ window.onkeyup = (e) => {
       <td class="tab-head">{{ row.sph.toFixed(2) }}</td>
       <td
         v-for="col in row.cols"
-        :key="`${row.sph}, ${col.cyl}`"
+        :key="isNormal ? `${row.sph}, ${col.cyl}` : `${row.sph}, ${col.add}`"
         @mousedown="onMouseDown(col)"
         @mouseenter="onMouseEnter(col)"
         :class="{ 'td-selected': col.selected && col.skuId, 'td-disabled': !col.skuId }"
@@ -329,7 +338,7 @@ table {
     }
 
     td {
-      width: 50px;
+      width: 60px;
       height: 25px;
       border-bottom: 1px #ebeef5 solid;
       border-right: 1px #ebeef5 solid;

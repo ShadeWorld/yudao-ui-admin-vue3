@@ -106,7 +106,7 @@ const batchLensDetail = () => {
       })
     }
   })
-  detailWidth.value = ((maxCyl - minCyl) / 0.25 + 1) * 51 + 100
+  detailWidth.value = ((maxCyl - minCyl) / 0.25 + 1) * 61 + 200
 }
 
 // 单独选择镜片的所有行

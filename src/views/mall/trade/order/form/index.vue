@@ -62,13 +62,9 @@ const processItemRef = ref() // 加工商品信息表单
 const craftConfigList = ref<any[]>([]) // 工艺配置列表
 
 // 所有商品总价
-const allProductPrice = computed(() => {
-  if (formData.type === TradeOrderTypeEnum.NORMAL) {
-    return formData.items?.reduce((acc, item) => acc + item.price * item.count, 0)
-  } else {
-    return processItemRef.value?.productPrice()
-  }
-})
+const normalAllProductPrice = computed(() => formData.items?.reduce((acc, item) => acc + item.price * item.count, 0))
+
+const processAllProductPrice = computed(() => processItemRef.value?.productPrice())
 
 const chooseProductFormRef = ref()
 
@@ -250,8 +246,11 @@ const changeType = () => {
               </el-form-item>
             </el-col>
             <el-col :span="24">
-              <el-form-item label="商品总价" class="bold-label">
-                {{ formatToFraction(allProductPrice) }} 元
+              <el-form-item label="商品总价" v-if="TradeOrderTypeEnum.PROCESS == formData.type" class="bold-label">
+                {{ formatToFraction(processAllProductPrice) }} 元
+              </el-form-item>
+              <el-form-item label="商品总价" v-else class="bold-label">
+                {{ formatToFraction(normalAllProductPrice) }} 元
               </el-form-item>
             </el-col>
           </el-row>
