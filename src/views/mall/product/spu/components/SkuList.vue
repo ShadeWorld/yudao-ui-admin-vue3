@@ -59,11 +59,7 @@
             controls-position="right"
           />
           跳过
-          <RangeSelect
-            :max-value="row.skuLens.maxSph"
-            :min-value="row.skuLens.minSph"
-            v-model="row.skuLens.skipSph"
-          />
+          <RangeSelect :max-value="row.skuLens.maxSph" :min-value="row.skuLens.minSph" v-model="row.skuLens.skipSph" />
         </template>
       </el-table-column>
       <el-table-column align="center" label="柱镜范围" min-width="168">
@@ -88,11 +84,7 @@
             controls-position="right"
           />
           跳过
-          <RangeSelect
-            :max-value="row.skuLens.maxCyl"
-            :min-value="row.skuLens.minCyl"
-            v-model="row.skuLens.skipCyl"
-          />
+          <RangeSelect :max-value="row.skuLens.maxCyl" :min-value="row.skuLens.minCyl" v-model="row.skuLens.skipCyl" />
         </template>
       </el-table-column>
       <el-table-column align="center" label="加光范围" min-width="168">
@@ -117,11 +109,7 @@
             controls-position="right"
           />
           跳过
-          <RangeSelect
-            :max-value="row.skuLens.maxAdd"
-            :min-value="row.skuLens.minAdd"
-            v-model="row.skuLens.skipAdd"
-          />
+          <RangeSelect :max-value="row.skuLens.maxAdd" :min-value="row.skuLens.minAdd" v-model="row.skuLens.skipAdd" />
         </template>
       </el-table-column>
       <el-table-column align="center" label="联合光度" min-width="100">
@@ -203,9 +191,7 @@
     </el-table-column> -->
     <el-table-column v-if="formData?.specType" align="center" fixed="right" label="操作" width="80">
       <template #default="{ row }">
-        <el-button v-if="isBatch" link size="small" type="primary" @click="batchAdd">
-          批量添加
-        </el-button>
+        <el-button v-if="isBatch" link size="small" type="primary" @click="batchAdd"> 批量添加 </el-button>
         <el-button v-else link size="small" type="primary" @click="deleteSku(row)">删除</el-button>
       </template>
     </el-table-column>
@@ -230,12 +216,7 @@
       v-if="formData!.categoryId !== 1 && formData!.categoryId !== 2"
     >
       <template #default="{ row }">
-        <el-image
-          v-if="row.picUrl"
-          :src="row.picUrl"
-          class="h-50px w-50px"
-          @click="imagePreview(row.picUrl)"
-        />
+        <el-image v-if="row.picUrl" :src="row.picUrl" class="h-50px w-50px" @click="imagePreview(row.picUrl)" />
       </template>
     </el-table-column>
     <template v-if="formData!.specType && !isBatch">
@@ -256,7 +237,7 @@
     </template>
     <template v-if="formData!.categoryId === 1 || formData!.categoryId === 2">
       <!-- 批量添加镜片规格 -->
-      <el-table-column align="center" label="柱镜范围" min-width="100">
+      <el-table-column align="center" label="球镜范围" min-width="100">
         <template #default="{ row }">
           <el-input-number
             v-model="row.skuLens.minSph"
@@ -278,14 +259,10 @@
             controls-position="right"
           />
           跳过
-          <RangeSelect
-            :max-value="row.skuLens.maxSph"
-            :min-value="row.skuLens.minSph"
-            v-model="row.skuLens.skipSph"
-          />
+          <RangeSelect :max-value="row.skuLens.maxSph" :min-value="row.skuLens.minSph" v-model="row.skuLens.skipSph" />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="球镜范围" min-width="100">
+      <el-table-column align="center" label="柱镜范围" min-width="100">
         <template #default="{ row }">
           <el-input-number
             v-model="row.skuLens.minCyl"
@@ -307,11 +284,7 @@
             controls-position="right"
           />
           跳过
-          <RangeSelect
-            :max-value="row.skuLens.maxCyl"
-            :min-value="row.skuLens.minCyl"
-            v-model="row.skuLens.skipCyl"
-          />
+          <RangeSelect :max-value="row.skuLens.maxCyl" :min-value="row.skuLens.minCyl" v-model="row.skuLens.skipCyl" />
         </template>
       </el-table-column>
       <el-table-column align="center" label="加光范围" min-width="100">
@@ -336,11 +309,7 @@
             controls-position="right"
           />
           跳过
-          <RangeSelect
-            :max-value="row.skuLens.maxAdd"
-            :min-value="row.skuLens.minAdd"
-            v-model="row.skuLens.skipAdd"
-          />
+          <RangeSelect :max-value="row.skuLens.maxAdd" :min-value="row.skuLens.minAdd" v-model="row.skuLens.skipAdd" />
         </template>
       </el-table-column>
       <el-table-column align="center" label="联合光度" min-width="100">
@@ -380,14 +349,7 @@
   </el-table>
 
   <!-- 情况三：作为活动组件 -->
-  <el-table
-    v-if="isActivityComponent"
-    :data="formData!.skus!"
-    border
-    max-height="500"
-    size="small"
-    style="width: 99%"
-  >
+  <el-table v-if="isActivityComponent" :data="formData!.skus!" border max-height="500" size="small" style="width: 99%">
     <el-table-column v-if="isComponent" type="selection" width="45" />
     <el-table-column align="center" label="图片" min-width="80">
       <template #default="{ row }">
