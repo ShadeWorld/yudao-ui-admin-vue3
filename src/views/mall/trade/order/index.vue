@@ -280,7 +280,7 @@ const orderTableRef = ref()
 // tabs 数据
 const tabsData = ref([
   {
-    name: '成品订单',
+    name: '待支付订单',
     type: 0,
     count: 0
   },
