@@ -153,9 +153,21 @@
           {{ floatToFixed2(row.payPrice) + '元' }}
         </template>
       </el-table-column>
-      <el-table-column label="订单状态" min-width="50">
+      <el-table-column label="订单状态" min-width="100">
         <template #default="{ row }">
           <dict-tag :type="DICT_TYPE.TRADE_ORDER_STATUS" :value="row.status!" />
+          <dict-tag
+            style="margin-left: 10px"
+            v-if="row.printShipStatus"
+            :type="DICT_TYPE.TRADE_ORDER_PRINT_SHIP_STATUS"
+            :value="row.printShipStatus"
+          />
+          <dict-tag
+            style="margin-left: 10px"
+            v-if="row.printTagStatus"
+            :type="DICT_TYPE.TRADE_ORDER_PRINT_TAG_STATUS"
+            :value="row.printTagStatus"
+          />
           <!--          <dict-tag :type="DICT_TYPE.TRADE_ORDER_TYPE" :value="row.type" />-->
         </template>
       </el-table-column>

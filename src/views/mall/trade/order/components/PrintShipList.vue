@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getPrintDetail, OrderVO } from '@/api/mall/trade/order'
+import { getPrintDetail, OrderVO, updatePrintStatus } from '@/api/mall/trade/order'
 import { formatDegree } from '@/utils/lens'
 
 defineOptions({ name: 'PrintShipList' })
@@ -7,15 +7,21 @@ const dialogVisible = ref(false) // 弹窗的是否展示
 
 const orderPrintDetail = ref<any>()
 
+let id: number | undefined = undefined
+
 const open = async (orderVo: OrderVO) => {
+  id = orderVo.id!
   orderPrintDetail.value = await getPrintDetail(orderVo.id!, orderVo.no!)
   orderPrintDetail.value.createTime = orderVo.createTime
   dialogVisible.value = true
 }
 defineExpose({ open })
 
-// 标签 宽70mm 高60mm 间距 3mm
-const printTag = () => {
+/**
+ * 打印备货单
+ */
+const printShip = () => {
+  updatePrintStatus(id!, 1)
   const dom = document.querySelector(`[class="print-ship-wrap"]`)
   // debugger;
   const html = dom?.outerHTML
@@ -136,7 +142,7 @@ const cancel = () => {
               <td>{{ lensItem.leftOrRight ? (lensItem.leftOrRight === 1 ? 'L' : 'R') : '' }}</td>
               <td>{{ formatDegree(lensItem.sph) }}</td>
               <td>{{ formatDegree(lensItem.cyl) }}</td>
-              <td>{{ formatDegree(lensItem.add) }} </td>
+              <td>{{ formatDegree(lensItem.add) }}</td>
               <td>{{ lensItem['axis'] }}</td>
               <td>{{ lensItem.count }}</td>
             </tr>
@@ -158,7 +164,7 @@ const cancel = () => {
     <template #footer>
       <el-row justify="end">
         <el-button type="primary" @click="cancel">取消</el-button>
-        <el-button type="primary" @click="printTag">打印</el-button>
+        <el-button type="primary" @click="printShip">打印</el-button>
       </el-row>
     </template>
   </Dialog>

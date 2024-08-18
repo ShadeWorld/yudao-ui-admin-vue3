@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getPrintDetail, OrderVO } from '@/api/mall/trade/order'
+import { getPrintDetail, OrderVO, updatePrintStatus } from '@/api/mall/trade/order'
 import { formatDate } from '@/utils/formatTime'
 import { formatDegree } from '@/utils/lens'
 
@@ -8,15 +8,21 @@ const dialogVisible = ref(false) // 弹窗的是否展示
 
 const orderPrintDetail = ref<any>()
 
+let id: number | undefined = undefined
+
 const open = async (orderVo: OrderVO) => {
+  id = orderVo.id!
   orderPrintDetail.value = await getPrintDetail(orderVo.id!, orderVo.no!)
   orderPrintDetail.value.createTime = orderVo.createTime
   dialogVisible.value = true
 }
 defineExpose({ open })
 
-// 标签 宽70mm 高60mm 间距 3mm
+/**
+ * 打印标签
+ */
 const printTag = () => {
+  updatePrintStatus(id!, 2)
   const dom = document.querySelector(`[class="print-wrap"]`)
   // debugger;
   const html = dom?.innerHTML
@@ -127,18 +133,11 @@ const cancel = () => {
                 <table border="0" cellpadding="0" cellspacing="0" style="width: 100%">
                   <tr>
                     <td colspan="5">
-                      <div style="height: 80px; overflow: hidden; position: absolute">
-                        品名：{{ item.spuName }}
-                      </div>
+                      <div style="height: 80px; overflow: hidden; position: absolute"> 品名：{{ item.spuName }} </div>
                     </td>
                   </tr>
                 </table>
-                <table
-                  border="0"
-                  cellpadding="0"
-                  cellspacing="0"
-                  style="width: 100%; margin-top: 60px"
-                >
+                <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; margin-top: 60px">
                   <tr>
                     <td rowspan="4" style="margin-top: 60px">
                       <div class="qrcode" data-size="80" :data-qrcode="item.id"></div>
@@ -149,9 +148,7 @@ const cancel = () => {
                     <td style="text-decoration: underline">{{ formatDegree(lensItem.cyl) }}D</td>
                   </tr>
                   <tr>
-                    <td style="text-decoration: underline">
-                      {{ formatDegree(lensItem.sph + lensItem.cyl) }}D
-                    </td>
+                    <td style="text-decoration: underline"> {{ formatDegree(lensItem.sph + lensItem.cyl) }}D </td>
                     <td style="text-decoration: underline"> {{ formatDegree(-lensItem.cyl) }}D</td>
                   </tr>
                   <tr>

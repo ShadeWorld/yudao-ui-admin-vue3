@@ -246,3 +246,12 @@ export const getPrintDetail = async (id: number, no: string) => {
     params: { id: id, no: no }
   })
 }
+
+/**
+ * 修改打印状态
+ * @param id 打印备货单
+ * @param type 打印标签
+ */
+export const updatePrintStatus = async (id: number, type: number) => {
+  return await request.post({ url: `/trade/order/update-print-status?id=${id}&type=${type}` })
+}
