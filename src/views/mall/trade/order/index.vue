@@ -338,6 +338,9 @@ const dynamicSearchList = ref([
 /** 切换 Tab */
 const handleTabClick = (tab: TabsPaneContext) => {
   queryParams.value.tabType = tab.paneName as number
+  if (queryParams.value.tabType !== 3) {
+    queryParams.value.status = undefined
+  }
   getList()
 }
 
