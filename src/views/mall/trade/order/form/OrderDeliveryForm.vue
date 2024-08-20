@@ -57,6 +57,7 @@
   </Dialog>
 </template>
 <script lang="ts" setup>
+import { cloneDeep } from 'lodash-es'
 import * as DeliveryExpressApi from '@/api/mall/trade/delivery/express'
 import * as TradeOrderApi from '@/api/mall/trade/order'
 import { getOrder } from '@/api/mall/trade/order'
@@ -74,7 +75,8 @@ const expressType = ref('express') // 如果值是 express，则是快递；none
 const formData = ref<TradeOrderApi.DeliveryVO>({
   id: 0, // 订单编号
   sendType: 2,
-  logisticsNo: '' // 物流编号
+  logisticsNo: '', // 物流编号
+  items: []
 })
 // 商品集合
 const skuList = ref<any>([])
@@ -137,18 +139,19 @@ const submitForm = async () => {
   // 提交请求
   formLoading.value = true
   try {
-    const data = unref(formData)
+    const param = unref(formData)
     if (expressType.value === 'none') {
       // 无需发货的情况
-      data.logisticsNo = ''
+      param.logisticsNo = ''
     }
     const sendSkuList = []
-    data.items = sendSkuList
+    param.items = sendSkuList
 
     // 合并镜片到商品项中
-    skuList.value.forEach((item: any) => {
-      if (item.sendCount > 0 || formData.value.sendType === 2) {
-        item.finishCount = formData.value.sendType === 2 ? item.count : item.finishCount + item.sendCount
+    const skuListParam = cloneDeep(unref(skuList))
+    skuListParam.forEach((item: any) => {
+      if (item.sendCount > 0 || param.sendType === 2) {
+        item.finishCount = param.sendType === 2 ? item.count : item.finishCount + item.sendCount
         const existsItem = sendSkuList.find((i) => i.id === item.orderItemId)
         if (existsItem) {
           existsItem.finishCount += item.finishCount
@@ -165,8 +168,17 @@ const submitForm = async () => {
     if (!sendSkuList.length) {
       message.error('请输入发货数量')
     } else {
-      await TradeOrderApi.deliveryOrder(data)
-      message.success(t('common.updateSuccess'))
+      const { deliveryId } = await TradeOrderApi.deliveryOrder(param)
+      if (deliveryId) {
+        message.success(t('common.updateSuccess'))
+        let url: any = ''
+        while (!url || url === '') {
+          url = await TradeOrderApi.printDelivery(deliveryId)
+        }
+        window.open(url)
+      } else {
+        message.error('快递订单创建失败')
+      }
       dialogVisible.value = false
       // 发送操作成功的事件
       emit('success', true)

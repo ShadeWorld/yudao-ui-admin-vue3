@@ -4,6 +4,8 @@ export interface DeliveryExpressVO {
   id: number
   code: string
   name: string
+  appKey: string
+  appSecret: string
   logo: string
   sort: number
   status: number

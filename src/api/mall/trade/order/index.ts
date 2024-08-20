@@ -203,6 +203,11 @@ export const deliveryOrder = async (data: DeliveryVO) => {
   return await request.put({ url: `/trade/order/delivery`, data })
 }
 
+// 订单发货
+export const printDelivery = async (deliveryId: number) => {
+  return await request.get({ url: `/trade/order/print-delivery`, params: { deliveryId } })
+}
+
 // 订单备注
 export const updateOrderRemark = async (data: any) => {
   return await request.put({ url: `/trade/order/update-remark`, data })

@@ -1,17 +1,17 @@
 <template>
   <Dialog :title="dialogTitle" v-model="dialogVisible">
-    <el-form
-      ref="formRef"
-      :model="formData"
-      :rules="formRules"
-      label-width="120px"
-      v-loading="formLoading"
-    >
+    <el-form ref="formRef" :model="formData" :rules="formRules" label-width="120px" v-loading="formLoading">
       <el-form-item label="公司编码" prop="code">
         <el-input v-model="formData.code" placeholder="请输入快递编码" />
       </el-form-item>
       <el-form-item label="公司名称" prop="name">
         <el-input v-model="formData.name" placeholder="请输入快递名称" />
+      </el-form-item>
+      <el-form-item label="appKey" prop="appKey">
+        <el-input v-model="formData.appKey" placeholder="请输入appKey" />
+      </el-form-item>
+      <el-form-item label="appSecret" prop="appSecret">
+        <el-input v-model="formData.appSecret" placeholder="请输入appSecret" />
       </el-form-item>
       <el-form-item label="公司 logo" prop="logo">
         <UploadImg v-model="formData.logo" :limit="1" :is-show-tip="false" />
@@ -22,11 +22,7 @@
       </el-form-item>
       <el-form-item label="开启状态" prop="status">
         <el-radio-group v-model="formData.status">
-          <el-radio
-            v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
-            :key="dict.value"
-            :label="dict.value"
-          >
+          <el-radio v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)" :key="dict.value" :label="dict.value">
             {{ dict.label }}
           </el-radio>
         </el-radio-group>
@@ -56,6 +52,8 @@ const formData = ref({
   id: undefined,
   code: '',
   name: '',
+  appKey: undefined,
+  appSecret: undefined,
   logo: '',
   sort: 0,
   status: CommonStatusEnum.ENABLE
@@ -118,7 +116,9 @@ const resetForm = () => {
   formData.value = {
     id: undefined,
     name: '',
-    picUrl: '',
+    appKey: undefined,
+    appSecret: undefined,
+    logo: '',
     status: CommonStatusEnum.ENABLE
   }
   formRef.value?.resetFields()
