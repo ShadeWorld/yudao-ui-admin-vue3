@@ -120,11 +120,21 @@
         </el-form-item>
       </el-row>
       <el-form-item>
-        <el-button @click="() => printShipRef.open(currentRow)" type="primary" plain :disabled="!currentRow">
+        <el-button
+          @click="() => printShipRef.open(currentRow)"
+          type="primary"
+          plain
+          :disabled="!currentRow && queryParams.tabType === 1"
+        >
           <Icon class="mr-5px" icon="ep:printer" />
           打印配货单
         </el-button>
-        <el-button @click="() => printTagRef.open(currentRow)" type="primary" plain :disabled="!currentRow">
+        <el-button
+          @click="() => printTagRef.open(currentRow)"
+          type="primary"
+          plain
+          :disabled="!currentRow && queryParams.tabType === 2"
+        >
           <Icon class="mr-5px" icon="ep:printer" />
           打印标签
         </el-button>
@@ -218,7 +228,7 @@
               <template #dropdown>
                 <el-dropdown-menu>
                   <!-- 如果是【快递】，并且【未发货】，则展示【发货】按钮 -->
-                  <template v-if="row.status === TradeOrderStatusEnum.UNDELIVERED.status">
+                  <template v-if="row.status === TradeOrderStatusEnum.UNDELIVERED.status && queryParams.tabType === 1">
                     <el-dropdown-item command="delivery">
                       <Icon icon="ep:takeaway-box" />
                       发货
