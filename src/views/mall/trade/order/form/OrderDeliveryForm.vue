@@ -57,7 +57,7 @@
   </Dialog>
 </template>
 <script lang="ts" setup>
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, delay } from 'lodash-es'
 import * as DeliveryExpressApi from '@/api/mall/trade/delivery/express'
 import * as TradeOrderApi from '@/api/mall/trade/order'
 import { getOrder } from '@/api/mall/trade/order'
@@ -172,8 +172,12 @@ const submitForm = async () => {
       if (deliveryId) {
         message.success(t('common.updateSuccess'))
         let url: any = ''
-        while (!url || url === '') {
-          url = await TradeOrderApi.printDelivery(deliveryId)
+        let retryCount = 0
+        while ((!url || url === '') && retryCount < 5) {
+          retryCount++
+          delay(() => {
+            url = printDelivery(deliveryId)
+          }, 600)
         }
         window.open(url)
       } else {
@@ -186,6 +190,10 @@ const submitForm = async () => {
   } finally {
     formLoading.value = false
   }
+}
+
+async function printDelivery(deliveryId: number) {
+  return await TradeOrderApi.printDelivery(deliveryId)
 }
 
 /** 重置表单 */
