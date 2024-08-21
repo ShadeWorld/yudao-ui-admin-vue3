@@ -153,8 +153,8 @@ const cancel = () => {
                   </tr>
                   <tr>
                     <td colspan="2"></td>
-                    <td colspan="2">
-                      ADD {{ formatDegree(lensItem.add) }}
+                    <td colspan="2" style="height: 28px">
+                      {{ lensItem.add ? `ADD ${formatDegree(lensItem.add)}` : '' }}
                       {{ lensItem.leftOrRight ? (lensItem.leftOrRight === 1 ? 'L' : 'R') : '' }}
                     </td>
                   </tr>
