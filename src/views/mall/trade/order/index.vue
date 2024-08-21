@@ -124,7 +124,7 @@
           @click="() => printShipRef.open(currentRow)"
           type="primary"
           plain
-          :disabled="!currentRow && queryParams.tabType === 1"
+          :disabled="!currentRow && queryParams.tabType !== 1"
         >
           <Icon class="mr-5px" icon="ep:printer" />
           打印配货单
@@ -133,7 +133,7 @@
           @click="() => printTagRef.open(currentRow)"
           type="primary"
           plain
-          :disabled="!currentRow && queryParams.tabType === 2"
+          :disabled="!currentRow && queryParams.tabType !== 2"
         >
           <Icon class="mr-5px" icon="ep:printer" />
           打印标签
@@ -228,11 +228,13 @@
               <template #dropdown>
                 <el-dropdown-menu>
                   <!-- 如果是【快递】，并且【未发货】，则展示【发货】按钮 -->
-                  <template v-if="row.status === TradeOrderStatusEnum.UNDELIVERED.status && queryParams.tabType === 1">
+                  <template v-if="row.status === TradeOrderStatusEnum.UNDELIVERED.status && queryParams.tabType === 2">
                     <el-dropdown-item command="delivery">
                       <Icon icon="ep:takeaway-box" />
                       发货
                     </el-dropdown-item>
+                  </template>
+                  <template v-if="row.status === TradeOrderStatusEnum.UNDELIVERED.status">
                     <el-dropdown-item command="terminateOrder">
                       <Icon icon="ep:close" />
                       终止订单
