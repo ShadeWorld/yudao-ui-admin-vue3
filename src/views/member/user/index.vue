@@ -3,13 +3,7 @@
 
   <ContentWrap>
     <!-- 搜索工作栏 -->
-    <el-form
-      ref="queryFormRef"
-      :inline="true"
-      :model="queryParams"
-      class="-mb-15px"
-      label-width="68px"
-    >
+    <el-form ref="queryFormRef" :inline="true" :model="queryParams" class="-mb-15px" label-width="68px">
       <!--      <el-form-item label="用户昵称" prop="nickname">-->
       <!--        <el-input-->
       <!--          v-model="queryParams.nickname"-->
@@ -29,18 +23,8 @@
         />
       </el-form-item>
       <el-form-item label="业务员" prop="userId">
-        <el-select
-          v-model="queryParams.userId"
-          placeholder="请选择业务员"
-          clearable
-          class="!w-240px"
-        >
-          <el-option
-            v-for="user in userList"
-            :key="user.id"
-            :label="user.nickname"
-            :value="user.id"
-          />
+        <el-select v-model="queryParams.userId" placeholder="请选择业务员" clearable class="!w-240px">
+          <el-option v-for="user in userList" :key="user.id" :label="user.nickname" :value="user.id" />
         </el-select>
       </el-form-item>
       <el-form-item label="手机号" prop="mobile">
@@ -92,7 +76,10 @@
           <Icon class="mr-5px" icon="ep:refresh" />
           重置
         </el-button>
-        <el-button v-hasPermi="['promotion:coupon:send']" @click="openCoupon">发送优惠券</el-button>
+        <el-button v-hasPermi="['promotion:coupon:send']" @click="openCoupon" :disabled="selectedIds.length === 0">
+          发送优惠券
+        </el-button>
+        <el-button @click="openUserSkuPrice" :disabled="selectedIds.length !== 1">自定义客户价格</el-button>
         <el-button @click="createMember" type="primary" plain>
           <Icon class="mr-5px" icon="ep:plus" />
           添加会员
@@ -124,12 +111,7 @@
       <!--      <el-table-column align="center" label="等级" prop="levelName" width="100px" />-->
       <!--      <el-table-column align="center" label="分组" prop="groupName" width="100px" />-->
       <el-table-column align="center" label="业务员" prop="userName" width="100px" />
-      <el-table-column
-        :show-overflow-tooltip="false"
-        align="center"
-        label="用户标签"
-        prop="tagNames"
-      >
+      <el-table-column :show-overflow-tooltip="false" align="center" label="用户标签" prop="tagNames">
         <template #default="scope">
           <el-tag v-for="(tagName, index) in scope.row.tagNames" :key="index" class="mr-5px">
             {{ tagName }}
@@ -142,27 +124,9 @@
           <dict-tag :type="DICT_TYPE.MEMBER_STATUS" :value="scope.row.status" />
         </template>
       </el-table-column>
-      <el-table-column
-        :formatter="dateFormatter"
-        align="center"
-        label="登录时间"
-        prop="loginDate"
-        width="180px"
-      />
-      <el-table-column
-        :formatter="dateFormatter"
-        align="center"
-        label="注册时间"
-        prop="createTime"
-        width="180px"
-      />
-      <el-table-column
-        :show-overflow-tooltip="false"
-        align="center"
-        fixed="right"
-        label="操作"
-        width="100px"
-      >
+      <el-table-column :formatter="dateFormatter" align="center" label="登录时间" prop="loginDate" width="180px" />
+      <el-table-column :formatter="dateFormatter" align="center" label="注册时间" prop="createTime" width="180px" />
+      <el-table-column :show-overflow-tooltip="false" align="center" fixed="right" label="操作" width="100px">
         <template #default="scope">
           <div class="flex items-center justify-center">
             <el-button link type="primary" @click="openDetail(scope.row.id)">详情</el-button>
@@ -181,10 +145,7 @@
               </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item
-                    v-if="checkPermi(['member:user:update'])"
-                    command="handleUpdate"
-                  >
+                  <el-dropdown-item v-if="checkPermi(['member:user:update'])" command="handleUpdate">
                     编辑
                   </el-dropdown-item>
                   <!--                  <el-dropdown-item-->
@@ -199,10 +160,7 @@
                   <!--                  >-->
                   <!--                    修改积分-->
                   <!--                  </el-dropdown-item>-->
-                  <el-dropdown-item
-                    v-if="checkPermi(['member:user:update-balance'])"
-                    command="handleUpdateBalance"
-                  >
+                  <el-dropdown-item v-if="checkPermi(['member:user:update-balance'])" command="handleUpdateBalance">
                     修改余额
                   </el-dropdown-item>
                 </el-dropdown-menu>
@@ -231,6 +189,8 @@
   <UserBalanceUpdateForm ref="updateBalanceFormRef" @success="getList" />
   <!-- 发送优惠券弹窗 -->
   <CouponSendForm ref="couponSendFormRef" />
+  <!-- 自定义客户价格弹窗 -->
+  <UserSkuPriceForm ref="userSkuPriceFormRef" />
 </template>
 <script lang="ts" setup>
 import { dateFormatter } from '@/utils/formatTime'
@@ -244,6 +204,7 @@ import UserPointUpdateForm from './UserPointUpdateForm.vue'
 import { CouponSendForm } from '@/views/mall/promotion/coupon/components'
 import { checkPermi } from '@/utils/permission'
 import * as SysUserApi from '@/api/system/user'
+import { UserSkuPriceForm } from '@/views/member/user/components'
 
 defineOptions({ name: 'MemberUser' })
 
@@ -321,6 +282,16 @@ const openCoupon = () => {
     return
   }
   couponSendFormRef.value.open(selectedIds.value)
+}
+
+/** 自定义客户价格 */
+const userSkuPriceFormRef = ref()
+const openUserSkuPrice = () => {
+  if (selectedIds.value.length === 0) {
+    message.warning('请选择要定义价格的用户')
+    return
+  }
+  userSkuPriceFormRef.value.open(selectedIds.value[0])
 }
 
 /** 操作分发 */

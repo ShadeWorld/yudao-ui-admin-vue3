@@ -7,9 +7,7 @@
           <template #header>
             <div class="card-header">
               <CardTitle title="基本信息" />
-              <el-button type="primary" size="small" text @click="openForm('update')">
-                编辑
-              </el-button>
+              <el-button type="primary" size="small" text @click="openForm('update')"> 编辑 </el-button>
             </div>
           </template>
         </UserBasicInfo>
@@ -54,6 +52,7 @@
           <el-tab-pane label="优惠劵" lazy>
             <UserCouponList :user-id="id" />
           </el-tab-pane>
+          <el-tab-pane label="用户价格" lazy> 123</el-tab-pane>
           <!--          <el-tab-pane label="推广用户" lazy>-->
           <!--            <UserBrokerageList :bind-user-id="id" />-->
           <!--          </el-tab-pane>-->
