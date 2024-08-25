@@ -34,8 +34,16 @@ export interface UserPricePageVO {
 
 // ------------------------ 属性项 -------------------
 
+// 重置客户价格
+export const resetUserPrice = (data: UserPriceVO[]) => {
+  return request.put({ url: '/product/user-price/reset-user-price', data })
+}
+// 重置客户所有价格
+export const resetAll = (userId: number) => {
+  return request.put({ url: `/product/user-price/reset-user-all-price?userId=${userId}` })
+}
 // 保存用户价格
-export const saveUserPrice = (data: UserPriceVO) => {
+export const saveUserPrice = (data: UserPriceVO[]) => {
   return request.put({ url: '/product/user-price/save', data })
 }
 // 获得用户价格分页

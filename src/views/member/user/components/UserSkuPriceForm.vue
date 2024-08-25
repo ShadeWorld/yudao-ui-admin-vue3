@@ -2,14 +2,17 @@
   <Dialog v-model="dialogVisible" :appendToBody="true" title="发送优惠券" width="70%">
     <!-- 搜索工作栏 -->
     <el-form ref="queryFormRef" :inline="true" :model="queryParams" label-width="82px">
-      <el-form-item label="优惠券名称" prop="name">
+      <el-form-item label="商品名称" prop="name">
         <el-input
           v-model="queryParams.name"
           class="!w-240px"
-          placeholder="请输入优惠劵名"
+          placeholder="请输入商品名称"
           clearable
           @keyup="handleQuery"
         />
+      </el-form-item>
+      <el-form-item prop="name">
+        <el-checkbox label="已设置价格的商品" v-model="queryParams.existsUserPrice" />
       </el-form-item>
       <el-form-item>
         <el-button @click="handleQuery">
@@ -20,7 +23,8 @@
           <Icon class="mr-5px" icon="ep:refresh" />
           重置
         </el-button>
-        <el-button @click="resetQuery" type="primary" :disabled="selectedIds.length === 0"> 恢复默认值</el-button>
+        <el-button @click="resetUserPrice" type="primary" :disabled="selectedIds.length === 0">恢复默认值</el-button>
+        <el-button @click="resetAll" type="primary"> 重置所有 </el-button>
       </el-form-item>
     </el-form>
 
@@ -95,7 +99,8 @@ const queryParams = ref({
   pageSize: 10,
   userId: 0,
   brandId: 1,
-  name: null
+  name: null,
+  existsUserPrice: false
 }) // 查询参数
 const queryFormRef = ref() // 搜索的表单
 const selectedIds = ref<number[]>([]) // 表格的选中 ID 数组
@@ -103,8 +108,8 @@ const selectedIds = ref<number[]>([]) // 表格的选中 ID 数组
 /** 打开弹窗 */
 const open = (id: number) => {
   queryParams.value.userId = id
-  // 打开时重置查询，防止发送列表剩余数量未更新的问题
-  resetQuery()
+  // 打开时查询，防止发送列表剩余数量未更新的问题
+  handleQuery()
 
   dialogVisible.value = true
 }
@@ -152,8 +157,34 @@ const handleQuery = () => {
 
 /** 重置按钮操作 */
 const resetQuery = () => {
-  queryFormRef?.value?.resetFields()
+  queryParams.value.name = null
   handleQuery()
+}
+
+/** 重置用户价格按钮操作 */
+const resetUserPrice = () => {
+  try {
+    saveLoading.value = true
+    UserPriceApi.resetUserPrice(selectedIds.value.map((i) => ({ id: i })))
+    // 提示
+    message.success('重置成功')
+  } finally {
+    saveLoading.value = false
+    getList()
+  }
+}
+
+/** 重置所有 */
+const resetAll = () => {
+  try {
+    saveLoading.value = true
+    UserPriceApi.resetAll(queryParams.value.userId)
+    // 提示
+    message.success('重置成功')
+  } finally {
+    saveLoading.value = false
+    getList()
+  }
 }
 
 /** 发送操作 **/
@@ -170,9 +201,9 @@ const handleSaveUserPrice = async (row: UserPricePageVO) => {
     ])
     // 提示
     message.success('保存成功')
-    dialogVisible.value = false
   } finally {
     saveLoading.value = false
+    await getList()
   }
 }
 </script>
