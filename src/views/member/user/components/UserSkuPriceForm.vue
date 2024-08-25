@@ -115,10 +115,18 @@ const open = (id: number) => {
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
+const formatLens = (value: number) => {
+  if (value) {
+    return value > 0 ? `+${value.toFixed(2)}` : value.toFixed(2)
+  } else {
+    return '0.00'
+  }
+}
+
 const formatLensRange = (value: any) => {
-  return `柱镜:${value.minSph.toFixed(2)}-${value.maxSph.toFixed(2)}
-  , 球镜:${value.minCyl.toFixed(2)}-${value.maxCyl.toFixed(2)}
-  , 下加光:${value.minAdd.toFixed(2)}-${value.maxAdd.toFixed(2)}`
+  return `柱镜:${formatLens(value.minSph)}到${formatLens(value.maxSph)}
+  , 球镜:${formatLens(value.minCyl)}到${formatLens(value.maxCyl)}
+  , 下加光:${formatLens(value.minAdd)}到${formatLens(value.maxAdd)}`
 }
 
 /** 查询列表 */
