@@ -124,8 +124,8 @@ const formatLens = (value: number) => {
 }
 
 const formatLensRange = (value: any) => {
-  return `柱镜:${formatLens(value.minSph)}到${formatLens(value.maxSph)}
-  , 球镜:${formatLens(value.minCyl)}到${formatLens(value.maxCyl)}
+  return `球镜:${formatLens(value.minSph)}到${formatLens(value.maxSph)}
+  , 柱镜:${formatLens(value.minCyl)}到${formatLens(value.maxCyl)}
   , 下加光:${formatLens(value.minAdd)}到${formatLens(value.maxAdd)}`
 }
 
