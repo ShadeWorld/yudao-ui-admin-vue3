@@ -93,6 +93,7 @@ export interface Spu {
 }
 
 export interface CascadeReqVO {
+  userId?: number
   categoryId?: number
   brandId?: number
   series?: string

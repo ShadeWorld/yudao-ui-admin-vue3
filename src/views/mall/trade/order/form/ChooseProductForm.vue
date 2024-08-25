@@ -11,6 +11,7 @@ const emit = defineEmits(['confirm'])
 
 const props = withDefaults(
   defineProps<{
+    userId?: number
     processChoose?: boolean
     leftOrRight?: number
   }>(),
@@ -108,6 +109,7 @@ const isBatchLens = computed(
 const nodeClick = async (data, node) => {
   if (!data.leaf) return
   spu.value = await ProductSpuApi.getLensSpu({
+    userId: props.userId,
     categoryId: node.parent.parent.parent.parent.parent.data.value,
     brandId: node.parent.parent.parent.parent.data.value,
     series: node.parent.parent.parent.data.value,

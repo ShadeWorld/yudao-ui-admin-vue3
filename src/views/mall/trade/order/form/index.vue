@@ -306,7 +306,7 @@ const changeType = () => {
                 </el-form-item>
               </template>
               <template v-if="TradeOrderTypeEnum.PROCESS == formData.type">
-                <ProcessOrderItem ref="processItemRef" v-model="formData.items" />
+                <ProcessOrderItem ref="processItemRef" v-model="formData.items" :user-id="formData.userId" />
               </template>
             </el-col>
           </el-row>
@@ -318,7 +318,7 @@ const changeType = () => {
       </el-row>
     </ContentWrap>
   </el-form>
-  <ChooseProductForm ref="chooseProductFormRef" @confirm="onConfirm" />
+  <ChooseProductForm ref="chooseProductFormRef" @confirm="onConfirm" :user-id="formData.userId" />
 </template>
 
 <style scoped lang="scss">

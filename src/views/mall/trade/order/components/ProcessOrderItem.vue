@@ -28,6 +28,10 @@ const currentType = ref(0)
 
 const model = defineModel<OrderItem[]>()
 
+const props = defineProps({
+  userId: Number
+})
+
 const rightLens = ref<ProcessItem>({
   isSelf: false,
   spuId: undefined,
@@ -331,6 +335,7 @@ defineExpose({ validate, productPrice })
     @confirm="onConfirm"
     :process-choose="true"
     :left-or-right="currentType"
+    :user-id="props.userId"
   />
 </template>
 

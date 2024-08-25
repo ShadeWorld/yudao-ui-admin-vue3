@@ -132,7 +132,7 @@ const close = () => {
       </el-form-item>
     </el-form>
   </ContentWrap>
-  <ChooseProductForm ref="chooseProductFormRef" @confirm="onConfirm" />
+  <ChooseProductForm ref="chooseProductFormRef" @confirm="onConfirm" :user-id="formData.userId" />
 </template>
 
 <style scoped lang="scss"></style>
