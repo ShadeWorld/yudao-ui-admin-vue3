@@ -125,24 +125,24 @@
           type="primary"
         />
       </el-descriptions-item>
-      <el-descriptions-item v-if="formData.logisticsNo" label="运单号: ">
-        {{ formData.logisticsNo }}
-      </el-descriptions-item>
-      <el-descriptions-item v-if="formatDate.deliveryTime" label="发货时间: ">
-        {{ formatDate(formData.deliveryTime) }}
-      </el-descriptions-item>
+      <!--      <el-descriptions-item v-if="formData.logisticsNo" label="运单号: ">-->
+      <!--        {{ formData.logisticsNo }}-->
+      <!--      </el-descriptions-item>-->
+      <!--      <el-descriptions-item v-if="formatDate.deliveryTime" label="发货时间: ">-->
+      <!--        {{ formatDate(formData.deliveryTime) }}-->
+      <!--      </el-descriptions-item>-->
       <el-descriptions-item v-for="item in 2" :key="item" label-class-name="no-colon" />
-      <el-descriptions-item v-if="expressTrackList.length > 0" label="物流详情: ">
-        <el-timeline>
-          <el-timeline-item
-            v-for="(express, index) in expressTrackList"
-            :key="index"
-            :timestamp="formatDate(express.time)"
-          >
-            {{ express.content }}
-          </el-timeline-item>
-        </el-timeline>
-      </el-descriptions-item>
+      <!--      <el-descriptions-item v-if="expressTrackList.length > 0" label="物流详情: ">-->
+      <!--        <el-timeline>-->
+      <!--          <el-timeline-item-->
+      <!--            v-for="(express, index) in expressTrackList"-->
+      <!--            :key="index"-->
+      <!--            :timestamp="formatDate(express.time)"-->
+      <!--          >-->
+      <!--            {{ express.content }}-->
+      <!--          </el-timeline-item>-->
+      <!--        </el-timeline>-->
+      <!--      </el-descriptions-item>-->
     </el-descriptions>
 
     <!-- 订单日志 -->
