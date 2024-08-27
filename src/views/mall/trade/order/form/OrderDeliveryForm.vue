@@ -168,20 +168,23 @@ const submitForm = async () => {
         }
       }
     })
+
     if (!sendSkuList.length) {
       message.error('请输入发货数量')
-      formLoading.value = false
     } else {
-      const { deliveryId } = await TradeOrderApi.deliveryOrder(param)
-      if (deliveryId) {
-        await printDelivery(deliveryId, 0)
+      const { deliveryId, orderNo } = await TradeOrderApi.deliveryOrder(param)
+      if (deliveryId && orderNo) {
+        let orderCode = `${orderNo}-${deliveryId}`
+        await request.put({ url: `/ext/redirect/to-zto`, params: { orderCode } })
+        // await printDelivery(deliveryId, 0)
+        // 发送操作成功的事件
+        emit('success', true)
       } else {
         message.error('快递订单创建失败')
-        formLoading.value = false
-        dialogVisible.value = false
       }
+      dialogVisible.value = false
     }
-  } catch (e) {
+  } finally {
     formLoading.value = false
   }
 }
