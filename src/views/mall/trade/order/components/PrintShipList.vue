@@ -21,6 +21,7 @@ defineExpose({ open })
  * 打印备货单
  */
 const printShip = () => {
+  dialogVisible.value = false
   updatePrintStatus(id!, 1)
   const dom = document.querySelector(`[class="print-ship-wrap"]`)
   // debugger;

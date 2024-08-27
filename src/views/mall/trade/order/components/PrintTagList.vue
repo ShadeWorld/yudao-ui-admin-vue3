@@ -22,6 +22,7 @@ defineExpose({ open })
  * 打印标签
  */
 const printTag = () => {
+  dialogVisible.value = false
   updatePrintStatus(id!, 2)
   const dom = document.querySelector(`[class="print-wrap"]`)
   // debugger;

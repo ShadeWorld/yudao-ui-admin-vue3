@@ -19,35 +19,37 @@
       <!--        </el-form-item>-->
       <!--      </template>-->
       <el-form-item v-if="formData.sendType === 1" label="商品列表">
-        <el-table v-loading="loading" :data="skuList" size="small" border>
-          <el-table-column align="center" label="商品名称" min-width="100">
-            <template #default="{ row }">
-              {{ row.name }}
-            </template>
-          </el-table-column>
-          <el-table-column align="center" label="订单数量" min-width="20">
-            <template #default="{ row }">
-              {{ row.count }}
-            </template>
-          </el-table-column>
-          <el-table-column align="center" label="已发货数量" min-width="20">
-            <template #default="{ row }">
-              {{ row.finishCount }}
-            </template>
-          </el-table-column>
-          <el-table-column align="center" label="发货数量" min-width="30">
-            <template #default="{ row }">
-              <el-input-number
-                v-model="row.sendCount"
-                :precision="0"
-                :step="1"
-                size="small"
-                :min="0"
-                :max="row.count - row.finishCount"
-              />
-            </template>
-          </el-table-column>
-        </el-table>
+        <el-scrollbar height="400px" class="w-100%">
+          <el-table v-loading="loading" :data="skuList" size="small" border>
+            <el-table-column align="center" label="商品名称" min-width="100">
+              <template #default="{ row }">
+                {{ row.name }}
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="订单数量" min-width="20">
+              <template #default="{ row }">
+                {{ row.count }}
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="已发货数量" min-width="20">
+              <template #default="{ row }">
+                {{ row.finishCount }}
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="发货数量" min-width="30">
+              <template #default="{ row }">
+                <el-input-number
+                  v-model="row.sendCount"
+                  :precision="0"
+                  :step="1"
+                  size="small"
+                  :min="0"
+                  :max="row.count - row.finishCount"
+                />
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-scrollbar>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -57,11 +59,12 @@
   </Dialog>
 </template>
 <script lang="ts" setup>
-import { cloneDeep, delay } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import * as DeliveryExpressApi from '@/api/mall/trade/delivery/express'
 import * as TradeOrderApi from '@/api/mall/trade/order'
 import { getOrder } from '@/api/mall/trade/order'
 import { copyValueToTarget } from '@/utils'
+import request from '@/config/axios'
 
 defineOptions({ name: 'OrderDeliveryForm' })
 
@@ -167,33 +170,41 @@ const submitForm = async () => {
     })
     if (!sendSkuList.length) {
       message.error('请输入发货数量')
+      formLoading.value = false
     } else {
       const { deliveryId } = await TradeOrderApi.deliveryOrder(param)
       if (deliveryId) {
-        message.success(t('common.updateSuccess'))
-        let url: any = ''
-        let retryCount = 0
-        while ((!url || url === '') && retryCount < 5) {
-          retryCount++
-          delay(() => {
-            url = printDelivery(deliveryId)
-          }, 600)
-        }
-        window.open(url)
+        await printDelivery(deliveryId, 0)
       } else {
         message.error('快递订单创建失败')
+        formLoading.value = false
+        dialogVisible.value = false
       }
-      dialogVisible.value = false
-      // 发送操作成功的事件
-      emit('success', true)
     }
-  } finally {
+  } catch (e) {
     formLoading.value = false
   }
 }
 
-async function printDelivery(deliveryId: number) {
-  return await TradeOrderApi.printDelivery(deliveryId)
+async function printDelivery(deliveryId: number, retryCount: number) {
+  setTimeout(async () => {
+    let logisticsNo: any = await TradeOrderApi.printDelivery(deliveryId)
+    if (logisticsNo && logisticsNo !== '') {
+      message.success(t('common.updateSuccess'))
+      await request.put({ url: `/ext/redirect/to-zto`, params: { logisticsNo } })
+    } else {
+      if (retryCount < 5) {
+        await printDelivery(deliveryId, ++retryCount)
+        return
+      } else {
+        message.error('快递单号获取失败，请手动前往快递管家打印订单')
+      }
+    }
+    formLoading.value = false
+    dialogVisible.value = false
+    // 发送操作成功的事件
+    emit('success', true)
+  }, 600)
 }
 
 /** 重置表单 */

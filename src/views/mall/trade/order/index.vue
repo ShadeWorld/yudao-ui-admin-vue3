@@ -124,7 +124,7 @@
           @click="() => printShipRef.open(currentRow)"
           type="primary"
           plain
-          :disabled="!currentRow && queryParams.tabType !== 1"
+          :disabled="!currentRow || queryParams.tabType !== 1"
         >
           <Icon class="mr-5px" icon="ep:printer" />
           打印配货单
@@ -133,7 +133,7 @@
           @click="() => printTagRef.open(currentRow)"
           type="primary"
           plain
-          :disabled="!currentRow && queryParams.tabType !== 2"
+          :disabled="!currentRow || queryParams.tabType !== 2"
         >
           <Icon class="mr-5px" icon="ep:printer" />
           打印标签
@@ -279,7 +279,7 @@
 </template>
 
 <script lang="ts" setup>
-import { FormInstance, TabsPaneContext } from 'element-plus'
+import { ElMessageBox, FormInstance, TabsPaneContext } from 'element-plus'
 import OrderDeliveryForm from '@/views/mall/trade/order/form/OrderDeliveryForm.vue'
 import OrderUpdateRemarkForm from '@/views/mall/trade/order/form/OrderUpdateRemarkForm.vue'
 import * as TradeOrderApi from '@/api/mall/trade/order'
@@ -290,9 +290,9 @@ import { PrintShipList, PrintTagList } from './components'
 import { floatToFixed2 } from '@/utils'
 import { dateFormatter, formatDate } from '@/utils/formatTime'
 import * as PayOrderApi from '@/api/pay/order'
-import { Message as message } from '@/layout/components/Message'
 
 defineOptions({ name: 'TradeOrder' })
+const message = useMessage() // 消息弹窗
 
 const { currentRoute, push } = useRouter() // 路由跳转
 const loading = ref(true) // 列表的加载中
@@ -353,6 +353,8 @@ const handleTabClick = (tab: TabsPaneContext) => {
   if (queryParams.value.tabType !== 3) {
     queryParams.value.status = undefined
   }
+  // 切换tab时清空选中
+  currentRow.value = undefined
   getList()
 }
 
@@ -485,12 +487,14 @@ const payOrder = async (id) => {
 }
 
 const terminateOrder = async (id: number) => {
-  try {
+  ElMessageBox.confirm('确认终止该订单吗？', '提示', {
+    confirmButtonText: '确 认',
+    cancelButtonText: '取 消'
+  }).then(async () => {
     await TradeOrderApi.terminateOrder(id)
     message.success('终止成功！')
     await getList()
-  } finally {
-  }
+  })
 }
 
 // 打印配货单弹窗
