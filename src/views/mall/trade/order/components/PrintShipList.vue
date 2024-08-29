@@ -11,7 +11,7 @@ let id: number | undefined = undefined
 
 const open = async (orderVo: OrderVO) => {
   id = orderVo.id!
-  orderPrintDetail.value = await getPrintDetail(orderVo.id!, orderVo.no!)
+  orderPrintDetail.value = await getPrintDetail(orderVo.id!, orderVo.no!, 1)
   orderPrintDetail.value.createTime = orderVo.createTime
   dialogVisible.value = true
 }

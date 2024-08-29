@@ -245,10 +245,10 @@ export const getOrderByPickUpVerifyCode = async (pickUpVerifyCode: string) => {
 }
 
 // 查询打印列表
-export const getPrintDetail = async (id: number, no: string) => {
+export const getPrintDetail = async (id: number, no: string, type: number) => {
   return await request.get({
     url: `/trade/order/get-print-detail`,
-    params: { id: id, no: no }
+    params: { id: id, no: no, type: type }
   })
 }
 
