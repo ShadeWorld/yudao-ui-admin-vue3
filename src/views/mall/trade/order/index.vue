@@ -124,7 +124,7 @@
           @click="() => printShipRef.open(currentRow)"
           type="primary"
           plain
-          :disabled="!currentRow || queryParams.tabType !== 1"
+          :disabled="!currentRow || ![1, 3].includes(queryParams.tabType)"
         >
           <Icon class="mr-5px" icon="ep:printer" />
           打印配货单
@@ -133,7 +133,7 @@
           @click="() => printTagRef.open(currentRow)"
           type="primary"
           plain
-          :disabled="!currentRow || queryParams.tabType !== 2"
+          :disabled="!currentRow || ![2, 3].includes(queryParams.tabType)"
         >
           <Icon class="mr-5px" icon="ep:printer" />
           打印标签
