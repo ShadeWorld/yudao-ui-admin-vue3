@@ -101,6 +101,8 @@ const printShip = () => {
 const cancel = () => {
   dialogVisible.value = false
 }
+
+const formatCraftList = (craftList) => {}
 </script>
 
 <template>
@@ -157,6 +159,11 @@ const cancel = () => {
             </tr>
             <tr>
               <td colspan="2"> 总数量：{{ orderPrintDetail.count }}</td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                {{ orderPrintDetail.type === 1 ? `加工订单:${orderPrintDetail.craftList.join(',')}` : '' }}</td
+              >
             </tr>
           </table>
         </div>
