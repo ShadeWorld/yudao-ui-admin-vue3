@@ -78,7 +78,7 @@ const printShip = () => {
   if (import.meta.env.VITE_DEV === 'true') {
     qrcodeScript.src = '/src/assets/js/qrcode.js'
   } else {
-    qrcodeScript.src = 'https://www.zhaomingyanjing.store/glass-manage/qrcode.js'
+    qrcodeScript.src = 'https://zhaomingyanjing.store/glass-manage/qrcode.js'
   }
   const script = document.createElement('script')
   script.type = 'text/javascript'
