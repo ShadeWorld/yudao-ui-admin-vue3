@@ -13,6 +13,10 @@ const between = (target: number, interval: number[]): boolean => {
   return target >= interval[0] && target <= interval[1]
 }
 
+const nearZero = (val1, val2) => {
+  return Math.min(val1 - 0, val2 - 0)
+}
+
 export interface OrderLens {
   sph: number
   cyl: number
@@ -61,22 +65,40 @@ watch(
   () => props.skuList,
   (value) => {
     if (value) {
-      const skuLensPrice = value.find(
-        ({ skuLens }) =>
-          between(0, [skuLens?.minSph, skuLens?.maxSph]) &&
-          between(0, [skuLens?.minCyl, skuLens?.maxCyl]) &&
-          between(0, [skuLens?.minAdd, skuLens?.maxAdd])
-      )
+      let defaultSku: any
+      const sphFilter = value.filter(({ skuLens }) => between(0, [skuLens?.minSph, skuLens?.maxSph]))
+      if (sphFilter.length > 0) {
+        // 有sph包含0度的
+        const cylFilter = sphFilter.filter(({ skuLens }) => between(0, [skuLens?.minCyl, skuLens?.maxCyl]))
+        if (cylFilter.length > 0) {
+          // 有sph和cyl都包含0度的
+          const addFilter = cylFilter.filter(({ skuLens }) => between(0, [skuLens?.minAdd, skuLens?.maxAdd]))
+          if (addFilter.length > 0) {
+            // 有sph、cyl和add都包含0度的
+            defaultSku = addFilter[0].skuLens
+          } else {
+            // 只有sph和cyl包含0度的
+            defaultSku = cylFilter[0].skuLens
+          }
+        } else {
+          // 只有sph包含0度的
+          defaultSku = sphFilter[0].skuLens
+        }
+      } else {
+        // sph都没有包含0度的
+        defaultSku = value[0].skuLens
+      }
+
       defaultRow = {
-        sph: 0,
-        cyl: 0,
-        add: 0,
+        sph: between(0, [defaultSku.minSph, defaultSku.maxSph]) ? 0 : nearZero(defaultSku.minSph, defaultSku.maxSph),
+        cyl: between(0, [defaultSku.minCyl, defaultSku.maxCyl]) ? 0 : nearZero(defaultSku.minCyl, defaultSku.maxCyl),
+        add: between(0, [defaultSku.minAdd, defaultSku.maxAdd]) ? 0 : nearZero(defaultSku.minAdd, defaultSku.maxAdd),
         count: 1,
-        price: skuLensPrice?.price,
-        skuId: skuLensPrice?.id
+        price: defaultSku?.price,
+        skuId: defaultSku?.id
       }
       if (props.leftOrRight) {
-        defaultRow.leftOrRight = props.leftOrRight.toString()
+        defaultRow.leftOrRight = props.leftOrRight
       }
       calcDegreeRange(defaultRow.sph, defaultRow, 'sph', props.skuList)
       if (!model.value?.length) {
