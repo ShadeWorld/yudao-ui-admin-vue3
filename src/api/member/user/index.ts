@@ -57,9 +57,9 @@ export const updateUserPoint = async (data: any) => {
   return await request.put({ url: `/member/user/update-point`, data })
 }
 
-// 修改会员用户余额
-export const updateUserBalance = async (data: any) => {
-  return await request.put({ url: `/member/user/update-balance`, data })
+// 会员充值
+export const recharge = async (data: any) => {
+  return await request.put({ url: `/member/user/recharge`, data })
 }
 
 // 获取当前登录业务员简单会员列表

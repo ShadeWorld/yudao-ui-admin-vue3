@@ -13,11 +13,31 @@
           <el-radio border :label="1">部分发货</el-radio>
         </el-radio-group>
       </el-form-item>
-      <!--      <template v-if="expressType === 'express'">-->
-      <!--        <el-form-item label="物流单号">-->
-      <!--          <el-input v-model="formData.logisticsNo" />-->
-      <!--        </el-form-item>-->
-      <!--      </template>-->
+      <el-form-item label="运费">
+        <el-input-number
+          v-model="formData.deliveryPrice"
+          :max="formData.deliveryPrice"
+          :min="0"
+          :precision="0"
+          :step="1"
+        />
+      </el-form-item>
+      <el-row>
+        <el-col :span="24">
+          <el-form-item label="物流单号">
+            <el-radio-group v-model="formData.existsLogisticsNo">
+              <el-radio border :label="false">自动生成</el-radio>
+              <el-radio border :label="true">手动填写</el-radio>
+            </el-radio-group>
+            <el-input
+              v-if="formData.existsLogisticsNo"
+              style="width: 240px; margin-left: 10px"
+              v-model="formData.logisticsNo"
+              placeholder="请输入物流单号"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
       <el-form-item v-if="formData.sendType === 1" label="商品列表">
         <el-scrollbar height="400px" class="w-100%">
           <el-table v-loading="loading" :data="skuList" size="small" border>
@@ -76,6 +96,8 @@ const dialogVisible = ref(false) // 弹窗的是否展示
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
 const expressType = ref('express') // 如果值是 express，则是快递；none 则是无；未来做同城配送；
 const formData = ref<TradeOrderApi.DeliveryVO>({
+  existsLogisticsNo: false,
+  deliveryPrice: 0,
   id: 0, // 订单编号
   sendType: 2,
   logisticsNo: '', // 物流编号
@@ -91,6 +113,7 @@ const open = async (row: TradeOrderApi.OrderVO) => {
   resetForm()
   // 设置数据
   copyValueToTarget(formData.value, row)
+  formData.value.deliveryPrice = formData.value.deliveryPrice! / 100
   // 加载sku信息
   loadSkuList()
   loading.value = false
@@ -172,12 +195,15 @@ const submitForm = async () => {
     if (!sendSkuList.length) {
       message.error('请输入发货数量')
     } else {
-      const { deliveryId, orderNo } = await TradeOrderApi.deliveryOrder(param)
+      const { deliveryId, orderNo, logisticsNo } = await TradeOrderApi.deliveryOrder(param)
       if (deliveryId && orderNo) {
-        let orderCode = `${orderNo}-${deliveryId}`
-        await request.put({ url: `/ext/redirect/to-zto`, params: { orderCode } })
+        if (!logisticsNo) {
+          let orderCode = `${orderNo}-${deliveryId}`
+          await request.put({ url: `/ext/redirect/to-zto`, params: { orderCode } })
+        }
         // await printDelivery(deliveryId, 0)
         // 发送操作成功的事件
+        message.success('发货成功')
         emit('success', true)
       } else {
         message.error('快递订单创建失败')
@@ -213,6 +239,8 @@ async function printDelivery(deliveryId: number, retryCount: number) {
 /** 重置表单 */
 const resetForm = () => {
   formData.value = {
+    existsLogisticsNo: false,
+    deliveryPrice: 0,
     id: 0, // 订单编号
     sendType: 2, // 发货类型
     logisticsNo: '' // 物流编号

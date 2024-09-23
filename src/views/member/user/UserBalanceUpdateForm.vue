@@ -1,31 +1,25 @@
 <template>
-  <Dialog title="修改用户余额" v-model="dialogVisible" width="600">
-    <el-form
-      ref="formRef"
-      :model="formData"
-      :rules="formRules"
-      label-width="100px"
-      v-loading="formLoading"
-    >
+  <Dialog title="余额充值" v-model="dialogVisible" width="600">
+    <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px" v-loading="formLoading">
       <el-form-item label="用户编号" prop="id">
         <el-input v-model="formData.id" class="!w-240px" disabled />
       </el-form-item>
       <el-form-item label="用户昵称" prop="nickname">
         <el-input v-model="formData.nickname" class="!w-240px" disabled />
       </el-form-item>
-      <el-form-item label="变动前余额" prop="point">
+      <el-form-item label="当前余额" prop="balance">
         <el-input-number v-model="formData.balance" class="!w-240px" disabled />
       </el-form-item>
-      <el-form-item label="变动类型" prop="changeType">
-        <el-radio-group v-model="formData.changeType">
-          <el-radio :label="1">增加</el-radio>
-          <el-radio :label="-1">减少</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="变动余额" prop="changePoint">
+      <!--      <el-form-item label="变动类型" prop="changeType">-->
+      <!--        <el-radio-group v-model="formData.changeType">-->
+      <!--          <el-radio :label="1">增加</el-radio>-->
+      <!--          <el-radio :label="-1">减少</el-radio>-->
+      <!--        </el-radio-group>-->
+      <!--      </el-form-item>-->
+      <el-form-item label="充值金额" prop="changeValue">
         <el-input-number v-model="formData.changeValue" class="!w-240px" :min="0" :precision="0" />
       </el-form-item>
-      <el-form-item label="变动后余额">
+      <el-form-item label="充值后余额">
         <el-input-number v-model="balanceResult" class="!w-240px" disabled />
       </el-form-item>
     </el-form>
@@ -37,6 +31,8 @@
 </template>
 <script setup lang="ts">
 import * as UserApi from '@/api/member/user'
+import { cloneDeep } from 'lodash-es'
+import { convertToInteger } from '@/utils'
 
 /** 修改用户积分表单 */
 defineOptions({ name: 'UpdatePointForm' })
@@ -54,7 +50,7 @@ const formData = ref({
   changeType: 1
 })
 const formRules = reactive({
-  changePoint: [{ required: true, message: '变动积分不能为空', trigger: 'blur' }]
+  changeValue: [{ required: true, message: '充值金额不能为空', trigger: 'blur' }]
 })
 const formRef = ref() // 表单 Ref
 
@@ -67,6 +63,7 @@ const open = async (id?: number) => {
     formLoading.value = true
     try {
       formData.value = await UserApi.getUser(id)
+      formData.value.balance = formData.value.balance! / 100
       formData.value.changeType = 1 // 默认增加积分
       formData.value.changeValue = 0 // 变动积分默认0
     } finally {
@@ -84,21 +81,21 @@ const submitForm = async () => {
   const valid = await formRef.value.validate()
   if (!valid) return
 
-  if (formData.value.changeValue < 1) {
-    message.error('变动积分不能小于 1')
+  if (formData.value.changeValue < 0) {
+    message.error('充值金额不能小于 0')
     return
   }
-  if (balanceResult.value < 0) {
-    message.error('变动后的积分不能小于 0')
-    return
-  }
+
+  // 深拷贝一份用于提交
+  const data = cloneDeep(unref(formData))
 
   // 提交请求
   formLoading.value = true
   try {
-    await UserApi.updateUserPoint({
-      id: formData.value.id,
-      point: formData.value.changePoint * formData.value.changeType
+    await UserApi.recharge({
+      userId: data.id,
+      payPrice: convertToInteger(data.changeValue * data.changeType),
+      userType: 1
     })
 
     message.success(t('common.updateSuccess'))
@@ -115,14 +112,13 @@ const resetForm = () => {
   formData.value = {
     id: undefined,
     nickname: undefined,
-    levelId: undefined,
-    reason: undefined
+    balance: 0,
+    changeValue: 0,
+    changeType: 1
   }
   formRef.value?.resetFields()
 }
 
 /** 变动后的积分 */
-const balanceResult = computed(
-  () => formData.value.balance + formData.value.changeValue * formData.value.changeType
-)
+const balanceResult = computed(() => formData.value.balance + formData.value.changeValue * formData.value.changeType)
 </script>
