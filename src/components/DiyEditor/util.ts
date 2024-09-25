@@ -113,11 +113,11 @@ export const PAGE_LIBS = [
     extended: true,
     components: [
       'SearchBar',
-      'NoticeBar',
+      // 'NoticeBar',
       'MenuSwiper',
       'MenuGrid',
       'MenuList',
-      'Popover',
+      // 'Popover',
       'FloatingActionButton'
     ]
   },
@@ -130,8 +130,8 @@ export const PAGE_LIBS = [
       'TitleBar',
       'VideoPlayer',
       'Divider',
-      'MagicCube',
-      'HotZone'
+      'MagicCube'
+      // , 'HotZone'
     ]
   },
   { name: '商品组件', extended: true, components: ['ProductCard', 'ProductList'] },
@@ -144,11 +144,11 @@ export const PAGE_LIBS = [
     name: '营销组件',
     extended: true,
     components: [
-      'PromotionCombination',
-      'PromotionSeckill',
-      'PromotionPoint',
-      'CouponCard',
-      'PromotionArticle'
+      // 'PromotionCombination',
+      // 'PromotionSeckill',
+      // 'PromotionPoint',
+      'CouponCard'
+      // 'PromotionArticle'
     ]
   }
 ] as DiyComponentLibrary[]

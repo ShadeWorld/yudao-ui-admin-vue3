@@ -1,6 +1,6 @@
 <template>
   <el-image
-    src="https://shopro.sheepjs.com/admin/static/images/shop/decorate/walletCardStyle.png"
+    src="https://zhaomingyanjing.store/glass-manage/c1a300164fe33db8fcfe43b7b1b33ab56981e8094f593259c4c004d6f50fc6ff.png"
   />
 </template>
 <script setup lang="ts">
