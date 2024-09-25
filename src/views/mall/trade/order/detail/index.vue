@@ -55,6 +55,7 @@
               <el-tag type="primary" v-for="craft in formData.craftList" :key="craft.id">
                 {{ `${craft.craftName} ${fenToYuan(craft.price)}元` }}
               </el-tag>
+              <el-tag type="success" v-if="formData.mainOrderId"> 加单免运费 </el-tag>
             </div>
             <el-table :data="formData.items" border>
               <el-table-column label="商品" prop="spuName" width="auto">

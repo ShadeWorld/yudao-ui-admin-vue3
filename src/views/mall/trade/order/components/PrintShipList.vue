@@ -101,8 +101,6 @@ const printShip = () => {
 const cancel = () => {
   dialogVisible.value = false
 }
-
-const formatCraftList = (craftList) => {}
 </script>
 
 <template>
@@ -111,7 +109,10 @@ const formatCraftList = (craftList) => {}
       请确认是否打印该订单的配货单？
       <div class="print-ship-wrap" id="print-wrap">
         <div class="print-ship-header">
-          <div class="fl">{{ `备注：${orderPrintDetail.remark ? orderPrintDetail.remark : ''}` }}</div>
+          <div class="fl">
+            <p>{{ `备注：${orderPrintDetail.remark ? orderPrintDetail.remark : ''}` }}</p>
+            <p>{{ `${orderPrintDetail.mainOrderId ? '加单免运费' : ''}` }}</p>
+          </div>
           <div class="qrcode fr" data-size="70" :data-qrcode="orderPrintDetail.no"></div>
           <div style="clear: both">
             <table style="border: none; padding-top: 5px; margin-top: 5px; width: 100%">
