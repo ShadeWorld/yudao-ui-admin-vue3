@@ -17,7 +17,7 @@
       <!--        </el-radio-group>-->
       <!--      </el-form-item>-->
       <el-form-item label="充值金额" prop="changeValue">
-        <el-input-number v-model="formData.changeValue" class="!w-240px" :min="0" :precision="0" />
+        <el-input-number v-model="formData.changeValue" class="!w-240px" :min="-formData.balance" :precision="0" />
       </el-form-item>
       <el-form-item label="充值后余额">
         <el-input-number v-model="balanceResult" class="!w-240px" disabled />
@@ -81,8 +81,8 @@ const submitForm = async () => {
   const valid = await formRef.value.validate()
   if (!valid) return
 
-  if (formData.value.changeValue < 0) {
-    message.error('充值金额不能小于 0')
+  if (formData.value.changeValue < -formData.value.balance) {
+    message.error('扣款金额不能小于余额')
     return
   }
 

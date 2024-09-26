@@ -85,6 +85,7 @@ import * as TradeOrderApi from '@/api/mall/trade/order'
 import { getOrder } from '@/api/mall/trade/order'
 import { copyValueToTarget } from '@/utils'
 import request from '@/config/axios'
+import axios from 'axios'
 
 defineOptions({ name: 'OrderDeliveryForm' })
 
@@ -195,14 +196,33 @@ const submitForm = async () => {
     if (!sendSkuList.length) {
       message.error('请输入发货数量')
     } else {
-      const { deliveryId, orderNo, logisticsNo } = await TradeOrderApi.deliveryOrder(param)
+      const { expressId, deliveryId, orderNo, logisticsNo, printUrl, downloadToken } =
+        await TradeOrderApi.deliveryOrder(param)
       if (deliveryId && orderNo) {
-        if (!logisticsNo) {
+        if (expressId === 3 && !logisticsNo) {
+          // 没有运单号，并且是中通
           let orderCode = `${orderNo}-${deliveryId}`
           await request.put({ url: `/ext/redirect/to-zto`, params: { orderCode } })
         }
-        // await printDelivery(deliveryId, 0)
-        // 发送操作成功的事件
+        if (expressId === 2 && !formData.existsLogisticsNo) {
+          // 自动生成运单号，并且是顺丰
+          axios
+            .get(printUrl, {
+              responseType: 'blob',
+              headers: {
+                'X-Auth-token': downloadToken
+              }
+            })
+            .then((res) => {
+              console.log('res', res)
+              //文件以pdf形式进行预览
+              let blob = new Blob([res.data], {
+                type: 'application/pdf'
+              })
+              let fileURL = URL.createObjectURL(blob)
+              window.open(fileURL)
+            })
+        }
         message.success('发货成功')
         emit('success', true)
       } else {
