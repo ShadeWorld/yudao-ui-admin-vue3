@@ -83,7 +83,7 @@ import { cloneDeep } from 'lodash-es'
 import * as DeliveryExpressApi from '@/api/mall/trade/delivery/express'
 import * as TradeOrderApi from '@/api/mall/trade/order'
 import { getOrder } from '@/api/mall/trade/order'
-import { copyValueToTarget } from '@/utils'
+import { convertToInteger, copyValueToTarget } from '@/utils'
 import request from '@/config/axios'
 import axios from 'axios'
 
@@ -196,6 +196,7 @@ const submitForm = async () => {
     if (!sendSkuList.length) {
       message.error('请输入发货数量')
     } else {
+      param.deliveryPrice = convertToInteger(param.deliveryPrice)
       const { expressId, deliveryId, orderNo, logisticsNo, printUrl, downloadToken } =
         await TradeOrderApi.deliveryOrder(param)
       if (deliveryId && orderNo) {
