@@ -2,12 +2,7 @@
   <ContentWrap v-loading="formLoading">
     <el-tabs v-model="activeName">
       <el-tab-pane label="基础设置" name="info">
-        <InfoForm
-          ref="infoRef"
-          v-model:activeName="activeName"
-          :is-detail="isDetail"
-          :propFormData="formData"
-        />
+        <InfoForm ref="infoRef" v-model:activeName="activeName" :is-detail="isDetail" :propFormData="formData" />
       </el-tab-pane>
       <!--      <el-tab-pane label="物流设置" name="delivery">-->
       <!--        <DeliveryForm-->
@@ -36,9 +31,7 @@
     </el-tabs>
     <el-form>
       <el-form-item style="float: right">
-        <el-button v-if="!isDetail" :loading="formLoading" type="primary" @click="submitForm">
-          保存
-        </el-button>
+        <el-button v-if="!isDetail" :loading="formLoading" type="primary" @click="submitForm"> 保存 </el-button>
         <el-button @click="close">返回</el-button>
       </el-form-item>
     </el-form>
@@ -144,6 +137,7 @@ const getDetail = async () => {
       res.skus?.forEach((item) => {
         if (isDetail.value) {
           item.price = floatToFixed2(item.price)
+          item.agentPrice = floatToFixed2(item.agentPrice)
           item.marketPrice = floatToFixed2(item.marketPrice)
           item.costPrice = floatToFixed2(item.costPrice)
           item.firstBrokeragePrice = floatToFixed2(item.firstBrokeragePrice)
@@ -151,6 +145,7 @@ const getDetail = async () => {
         } else {
           // 回显价格分转元
           item.price = formatToFraction(item.price)
+          item.agentPrice = formatToFraction(item.agentPrice)
           item.marketPrice = formatToFraction(item.marketPrice)
           item.costPrice = formatToFraction(item.costPrice)
           item.firstBrokeragePrice = formatToFraction(item.firstBrokeragePrice)
@@ -182,6 +177,7 @@ const submitForm = async () => {
       item.name = deepCopyFormData.name
       // sku相关价格元转分
       item.price = convertToInteger(item.price)
+      item.agentPrice = convertToInteger(item.agentPrice)
       item.marketPrice = convertToInteger(item.marketPrice)
       item.costPrice = convertToInteger(item.costPrice)
       item.firstBrokeragePrice = convertToInteger(item.firstBrokeragePrice)

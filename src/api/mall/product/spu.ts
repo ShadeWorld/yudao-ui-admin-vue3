@@ -33,6 +33,7 @@ export interface Sku {
   spuId?: number // SPU 编号
   properties?: Property[] // 属性数组
   price?: number | string // 商品价格
+  agentPrice?: number | string // 代理价
   marketPrice?: number | string // 市场价
   costPrice?: number | string // 成本价
   barCode?: string // 商品条码

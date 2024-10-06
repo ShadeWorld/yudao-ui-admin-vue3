@@ -1,34 +1,25 @@
 <template>
   <Dialog :title="dialogTitle" v-model="dialogVisible">
-    <el-form
-      ref="formRef"
-      :model="formData"
-      :rules="formRules"
-      label-width="100px"
-      v-loading="formLoading"
-    >
+    <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px" v-loading="formLoading">
       <!--      <el-form-item label="手机号" prop="mobile">-->
       <!--        <el-input v-model="formData.mobile" placeholder="请输入手机号" />-->
       <!--      </el-form-item>-->
       <el-form-item label="状态" prop="status">
         <el-radio-group v-model="formData.status">
-          <el-radio
-            v-for="dict in getIntDictOptions(DICT_TYPE.MEMBER_STATUS)"
-            :key="dict.value"
-            :label="dict.value"
-          >
+          <el-radio v-for="dict in getIntDictOptions(DICT_TYPE.MEMBER_STATUS)" :key="dict.value" :label="dict.value">
             {{ dict.label }}
           </el-radio>
         </el-radio-group>
       </el-form-item>
+      <el-form-item label="是否代理商" prop="isAgent">
+        <el-radio-group v-model="formData.isAgent">
+          <el-radio :label="true"> 是 </el-radio>
+          <el-radio :label="false"> 否 </el-radio>
+        </el-radio-group>
+      </el-form-item>
       <el-form-item label="业务员" prop="userId">
         <el-select v-model="formData.userId" placeholder="请选择业务员">
-          <el-option
-            v-for="user in userList"
-            :key="user.id"
-            :label="user.nickname"
-            :value="user.id"
-          />
+          <el-option v-for="user in userList" :key="user.id" :label="user.nickname" :value="user.id" />
         </el-select>
       </el-form-item>
       <el-form-item label="用户昵称" prop="nickname" v-if="formType === 'update'">
@@ -66,12 +57,7 @@
       <!--        />-->
       <!--      </el-form-item>-->
       <el-form-item label="请选择地址" prop="areaId">
-        <el-tree-select
-          v-model="formData.areaId"
-          :data="areaList"
-          :props="defaultProps"
-          :render-after-expand="true"
-        />
+        <el-tree-select v-model="formData.areaId" :data="areaList" :props="defaultProps" :render-after-expand="true" />
       </el-form-item>
       <el-form-item label="详细地址" prop="address" v-if="formType === 'create'">
         <el-input v-model="formData.address" placeholder="请输入详细地址" />
@@ -116,6 +102,7 @@ const formData = ref({
   mobile: undefined,
   password: undefined,
   status: undefined,
+  isAgent: false,
   contactPerson: undefined,
   mnemonic: undefined,
   userId: undefined,
@@ -196,6 +183,7 @@ const resetForm = () => {
     mobile: undefined,
     password: undefined,
     status: undefined,
+    isAgent: false,
     userId: undefined,
     nickname: undefined,
     contactPerson: undefined,

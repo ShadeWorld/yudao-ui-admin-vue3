@@ -153,6 +153,18 @@
         />
       </template>
     </el-table-column>
+    <el-table-column align="center" label="代理价" min-width="115">
+      <template #default="{ row }">
+        <el-input-number
+          v-model="row.agentPrice"
+          :min="0"
+          :precision="2"
+          :step="0.1"
+          class="w-100%!"
+          controls-position="right"
+        />
+      </template>
+    </el-table-column>
     <el-table-column align="center" label="成本价" min-width="115">
       <template #default="{ row }">
         <el-input-number
@@ -339,6 +351,11 @@
     <el-table-column align="center" label="销售价(元)" min-width="80">
       <template #default="{ row }">
         {{ row.price }}
+      </template>
+    </el-table-column>
+    <el-table-column align="center" label="代理价(元)" min-width="80">
+      <template #default="{ row }">
+        {{ row.agentPrice }}
       </template>
     </el-table-column>
     <el-table-column align="center" label="成本价(元)" min-width="80">
