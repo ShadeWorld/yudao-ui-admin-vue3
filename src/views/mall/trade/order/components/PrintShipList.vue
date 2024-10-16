@@ -150,6 +150,14 @@ const cancel = () => {
               <td>{{ lensItem['axis'] }}</td>
               <td>{{ lensItem.count }}</td>
             </tr>
+            <tr class="tr-border">
+              <td style="min-width: 50px">合计</td>
+              <td style="min-width: 100px"></td>
+              <td style="min-width: 100px"></td>
+              <td style="min-width: 100px"></td>
+              <td style="min-width: 50px"></td>
+              <td style="min-width: 50px">{{ item.lensItems.reduce((a, c) => a + c.count, 0) }}</td>
+            </tr>
           </table>
         </div>
         <div class="print-ship-footer">
