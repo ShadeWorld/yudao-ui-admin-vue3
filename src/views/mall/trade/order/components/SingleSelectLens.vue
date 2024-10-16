@@ -95,6 +95,7 @@ watch(
         add: between(0, [defaultSku.minAdd, defaultSku.maxAdd]) ? 0 : nearZero(defaultSku.minAdd, defaultSku.maxAdd),
         count: 1,
         price: defaultSku?.price,
+        leftOrRight: 2,
         skuId: defaultSku?.id
       }
       if (props.leftOrRight) {
@@ -213,7 +214,7 @@ watch(
               <el-option value="2" label="右" />
             </el-select>
             <el-text v-else>
-              {{ row.leftOrRight === undefined ? '' : row.leftOrRight === 1 ? '左' : '右' }}
+              {{ !row.leftOrRight ? '' : row.leftOrRight === 1 ? '左' : '右' }}
             </el-text>
           </template>
         </el-table-column>
