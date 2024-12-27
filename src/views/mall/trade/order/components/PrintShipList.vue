@@ -140,6 +140,7 @@ const cancel = () => {
               <td style="min-width: 100px">柱镜</td>
               <td style="min-width: 100px">加光</td>
               <td style="min-width: 50px">轴位</td>
+              <td style="min-width: 50px" v-if="item.categoryId === 2">直径</td>
               <td style="min-width: 50px">数量</td>
             </tr>
             <tr v-for="lensItem in item.lensItems" :key="lensItem.orderItemId" class="tr-border">
@@ -148,6 +149,7 @@ const cancel = () => {
               <td>{{ formatDegree(lensItem.cyl) }}</td>
               <td>{{ formatDegree(lensItem.add) }}</td>
               <td>{{ lensItem['axis'] }}</td>
+              <td v-if="item.categoryId === 2">{{ lensItem['customerDiameter'] }}</td>
               <td>{{ lensItem.count }}</td>
             </tr>
             <tr class="tr-border">
@@ -155,6 +157,7 @@ const cancel = () => {
               <td style="min-width: 100px"></td>
               <td style="min-width: 100px"></td>
               <td style="min-width: 100px"></td>
+              <td style="min-width: 50px"></td>
               <td style="min-width: 50px"></td>
               <td style="min-width: 50px">{{ item.lensItems.reduce((a, c) => a + c.count, 0) }}</td>
             </tr>

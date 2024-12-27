@@ -130,7 +130,8 @@ const singleLensDetail = () => {
         price: detailItem.price,
         skuId: detailItem.skuId,
         leftOrRight: item.leftOrRight,
-        axis: item.axis
+        axis: item.axis,
+        diameter: item.diameter
       }
       // 计算柱镜和加光的范围
       calcDegreeRange(orderLens.sph, orderLens, 'sph', skuList.value)
@@ -352,7 +353,14 @@ const onClose = () => {
   >
     <el-row justify="center">
       <BatchSelectLens v-model="rows" v-if="isBatchLens" />
-      <SingleSelectLens v-else v-model="lensList" :sku-list="skuList!" :sph-range="sphRange" :is-detail="false" />
+      <SingleSelectLens
+        v-else
+        :category-id="detailSpu.categoryId"
+        v-model="lensList"
+        :sku-list="skuList!"
+        :sph-range="sphRange"
+        :is-detail="false"
+      />
     </el-row>
     <template #footer>
       <div class="dialog-footer">

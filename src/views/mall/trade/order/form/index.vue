@@ -115,7 +115,8 @@ const onConfirm = (checkedSpu) => {
           i.cyl === item.cyl &&
           i.add === item.add &&
           i.leftOrRight === item.leftOrRight &&
-          i.axis === item.axis
+          i.axis === item.axis &&
+          i.diameter === item.diameter
       )
       if (existsLens) {
         existsLens.count += item.count
@@ -126,7 +127,8 @@ const onConfirm = (checkedSpu) => {
           add: item.add,
           count: item.count,
           leftOrRight: item.leftOrRight,
-          axis: item.axis
+          axis: item.axis,
+          diameter: item.diameter
         })
       }
     } else {
@@ -146,7 +148,8 @@ const onConfirm = (checkedSpu) => {
             add: item.add,
             count: item.count,
             leftOrRight: item.leftOrRight,
-            axis: item.axis
+            axis: item.axis,
+            diameter: item.diameter
           }
         ]
       })

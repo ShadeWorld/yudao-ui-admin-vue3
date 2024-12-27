@@ -26,6 +26,7 @@ export interface OrderLens {
   pd?: number
   ph?: number
   count?: number
+  diameter?: string
   price?: number
   skuId?: number
   cylRange?: number[]
@@ -37,6 +38,7 @@ let defaultRow: OrderLens
 
 const props = withDefaults(
   defineProps<{
+    categoryId: number
     skuList?: Sku[]
     spuId?: number
     sphRange?: number[]
@@ -264,6 +266,22 @@ watch(
             />
             <el-text v-else>
               {{ row.ph }}
+            </el-text>
+          </template>
+        </el-table-column>
+        <el-table-column label="直径" align="center" min-width="15" v-if="!processChoose && categoryId === 2">
+          <template #default="{ row }">
+            <el-select v-model="row.diameter" clearable placeholder="请选择" v-if="!isDetail">
+              <el-option value="50" label="50" />
+              <el-option value="55" label="55" />
+              <el-option value="60" label="60" />
+              <el-option value="65" label="65" />
+              <el-option value="70" label="70" />
+              <el-option value="75" label="75" />
+              <el-option value="80" label="80" />
+            </el-select>
+            <el-text v-else>
+              {{ !row.diameter ? '' : row.diameter }}
             </el-text>
           </template>
         </el-table-column>

@@ -41,6 +41,7 @@ export interface OrderItemLens {
   prism?: number // 棱镜
   pd?: number // 瞳距
   ph?: number // 瞳高
+  diameter?: string // 直径
   count: number // 数量
 }
 

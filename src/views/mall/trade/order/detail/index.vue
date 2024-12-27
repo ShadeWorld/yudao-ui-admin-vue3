@@ -189,6 +189,7 @@
       <SingleSelectLens
         v-model="lensList"
         v-if="isSingleSelect"
+        :category-id="currentDetailItem.categoryId"
         :process-choose="formData.type == TradeOrderTypeEnum.PROCESS"
         :is-detail="true"
       />
@@ -397,6 +398,7 @@ const singleLensDetail = () => {
       prism: item.prism,
       pd: item.pd,
       ph: item.ph,
+      diameter: item.diameter,
       count: item.count
     }
     lensList.value.push(orderLens)

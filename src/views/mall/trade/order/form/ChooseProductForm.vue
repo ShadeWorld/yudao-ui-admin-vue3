@@ -263,6 +263,7 @@ const onClose = () => {
               <!-- 镜片普通选择 -->
               <SingleSelectLens
                 v-else
+                :category-id="spu.categoryId"
                 v-model="lensList"
                 :sku-list="spu.skus!"
                 :sph-range="sphRange"
