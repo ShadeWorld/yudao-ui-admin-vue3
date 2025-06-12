@@ -161,7 +161,9 @@ const cancel = () => {
                   </tr>
                   <tr>
                     <td colspan="2">CT {{ lensItem.centerThickness }}mm</td>
-                    <td colspan="2">Φ {{ lensItem.diameter }}mm</td>
+                    <td colspan="2"
+                      >Φ {{ lensItem.customerDiameter ? lensItem.customerDiameter : lensItem.diameter }}mm</td
+                    >
                   </tr>
                   <tr>
                     <td colspan="5">工艺：</td>
