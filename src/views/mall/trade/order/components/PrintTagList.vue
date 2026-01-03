@@ -13,7 +13,7 @@ let id: number | undefined = undefined
 const open = async (orderVo: OrderVO) => {
   id = orderVo.id!
   orderPrintDetail.value = await getPrintDetail(orderVo.id!, orderVo.no!, 2)
-  orderPrintDetail.value.createTime = orderVo.createTime
+  orderPrintDetail.value.createTime = '2025/12/16'
   dialogVisible.value = true
 }
 defineExpose({ open })
